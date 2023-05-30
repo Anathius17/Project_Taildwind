@@ -1,0 +1,100 @@
+.App {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  width: 100%;
+}
+
+/* nav {
+  background-color: #f2f2f2;
+  width: 200px;
+  padding: 10px;
+} */
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li .nav-item {
+  padding: 10px;
+  cursor: pointer;
+}
+/* 
+.content {
+  flex: 1;
+  padding: 10px;
+  color: #ddd;
+  background-color: #333;
+} */
+
+.nav-child {
+  display: none;
+  /* position: absolute; */
+  background-color: #4e73df;
+  z-index: 1;
+}
+
+.nav-child1 {
+  display: none;
+  position: absolute;
+  background-color: #4e73df;
+  z-index: 1;
+  border-radius: 5px;
+  width: 150px;
+  margin-left: 53px;
+}
+
+/* .nav-child li:hover {
+  background-color: rgb(59, 65, 65);
+} */
+
+.dropdown:hover .nav-child {
+  display: block;
+}
+
+.dropdown1:hover .nav-child1 {
+  display: block;
+}
+
+.dropdown-new {
+  font-weight: bold;
+}
+
+.system-list {
+  font-weight: bold;
+}
+
+.logoSky {
+  width: 136px;
+}
+.logoSkySite {
+  width: 50px;
+}
+
+.child_menu1 {
+  display: none;
+  /* position: absolute; */
+  background-color: #4e73df;
+
+  border-radius: 5px;
+}
+.dropdown-item1:hover .child_menu1 {
+  display: block;
+}
+
+.child_menu2 {
+  display: none;
+  /* position: absolute; */
+  background-color: #4e73df;
+  border-radius: 5px;
+}
+.dropdown-item2:hover .child_menu2 {
+  display: block;
+}
