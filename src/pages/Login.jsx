@@ -404,6 +404,8 @@ const Login = (props) => {
     setInput(event.target.value);
   };
 
+  //sfdsfsf
+
   // const handleSubmit = (event) => {
   //   event.preventDefault();
   //   if (input.toUpperCase() === captcha.toUpperCase()) {
@@ -416,6 +418,9 @@ const Login = (props) => {
   //   }
   // };
 
+  console.log(input);
+  console.log(captcha);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (input === captcha) {
@@ -424,8 +429,7 @@ const Login = (props) => {
     } else {
       alert("CAPTCHA validation failed. Please try again.");
       setCaptcha(generateCaptcha());
-      console.log(input);
-      console.log(captcha);
+
       setInput("");
     }
   };
@@ -486,12 +490,13 @@ const Login = (props) => {
                   <input
                     type="text"
                     value={input}
-                    onChange={handleInputChange}
+                    // onChange={handleInputChange}
+                    onChange={(e) => setInput(e.target.value)}
                     className="input100-captha"
                     placeholder="Enter CAPTCHA"
                   />
                   <br />
-                  <div>
+                  {/* <div>
                     <button
                       className="btn btn-primary text-center items-center"
                       onClick={() => {
@@ -517,9 +522,9 @@ const Login = (props) => {
                       alt="CAPTCHA"
                       className="w-24 my-auto px-2 py-1 mx-auto"
                     />
-                  </div>
+                  </div> */}
 
-                  {/* {expired ? (
+                  {expired ? (
                     <button
                       className="btn btn-primary text-center items-center"
                       onClick={() => {
@@ -546,7 +551,7 @@ const Login = (props) => {
                         className="w-24 my-auto px-2 py-1 mx-auto"
                       />
                     </div>
-                  )} */}
+                  )}
                 </div>
               </div>
               <div className="login-form-btn mx-auto my-2">

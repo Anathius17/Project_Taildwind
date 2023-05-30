@@ -23,8 +23,17 @@ const Modal = ({
   const [status, setStatus] = useState("");
   const [password, setPassword] = useState("");
   const pass = md5(password);
-  const [passwordMd5, setPasswordMd5] = useState(pass);
+  const [passwordMd5, setPasswordMd5] = useState("");
   const passwordDefult = "5fec4ba8376f207d1ff2f0cac0882b01";
+
+  useEffect(() => {
+    if (pass === "d41d8cd98f00b204e9800998ecf8427e") {
+      setPasswordMd5("");
+    }
+    if (pass !== "d41d8cd98f00b204e9800998ecf8427e") {
+      setPasswordMd5(pass);
+    }
+  }, [pass]);
 
   console.log(password);
   console.log(passwordMd5);
@@ -399,10 +408,11 @@ const Modal = ({
                         className="form-control"
                         onChange={(e) => setPassword(e.target.value)}
                       />
+
                       <button
+                        className="rounded-none bg-blue-500 text-white py-2 px-3 "
                         type="button"
-                        onClick={() => setPasswordMd5(passwordDefult)}
-                        className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-r-md hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
+                        onClick={() => setPasswordMd5(passwordDefult)}>
                         <BiReset />
                       </button>
                     </div>
