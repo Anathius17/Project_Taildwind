@@ -7,6 +7,7 @@ import Skysite from "../assets/images/LogoSky.png";
 import "../assets/css/Dashboard.css";
 import Demo from "../component/UserMenagement";
 import Rule from "../component/RuleMenagement";
+import Audit from "../component/AuditTrail";
 import { IconName } from "react-icons/ri";
 import "../assets/css/modal.css";
 import axios from "axios";
@@ -29,6 +30,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
   const navigate = useNavigate();
 
   const [ruleMenagement, setruleMenagement] = useState(false);
+  const [AuditTrail, setauditTrail] = useState(true);
 
   const getTokenApi = () => {
     getToken().then((e) => {
@@ -308,7 +310,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
           <div className="test-sidebar">
             <a
               className="sidebar-brand d-flex align-items-center justify-content-center"
-              href="index.html">
+              href="index.html"
+            >
               <div className="sidebar-brand-icon rotate-n-15">
                 {/* <i className="fas fa-laugh-wink"></i> */}
               </div>
@@ -322,7 +325,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
             </a>
             <ul
               className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
-              id="accordionSidebar">
+              id="accordionSidebar"
+            >
               {/* <li
                 className="nav-item"
                 dangerouslySetInnerHTML={{ __html: html }}></li> */}
@@ -330,7 +334,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 {" "}
                 <a
                   class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(false)}>
+                  onClick={() => setruleMenagement(false)}
+                >
                   <span class="flex items-center space-x-2">
                     <span className="font-bold">User Management</span>
                   </span>
@@ -341,9 +346,22 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 {" "}
                 <a
                   class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(true)}>
+                  onClick={() => setruleMenagement(true)}
+                >
                   <span class="flex items-center space-x-2">
                     <span className="font-bold">Role Management</span>
+                  </span>
+                </a>
+              </li>
+
+              <li className="py-2 px-4 hover:bg-gray-700">
+                {" "}
+                <a
+                  class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
+                  onClick={() => setruleMenagement(true)}
+                >
+                  <span class="flex items-center space-x-2">
+                    <span className="font-bold">Audit Trail</span>
                   </span>
                 </a>
               </li>
@@ -353,7 +371,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
           <div className="test-sidebar-site">
             <a
               className="sidebar-brand d-flex align-items-center justify-content-center"
-              href="index.html">
+              href="index.html"
+            >
               <div className="sidebar-brand-icon rotate-n-15">
                 {/* <i className="fas fa-laugh-wink"></i> */}
               </div>
@@ -367,7 +386,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
             </a>
             <ul
               className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
-              id="accordionSidebar">
+              id="accordionSidebar"
+            >
               {/* <li
                 className="nav-item"
                 dangerouslySetInnerHTML={{ __html: html1 }}></li> */}
@@ -382,12 +402,14 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 <>
                   <button
                     className="btn mr-3"
-                    onClick={() => setSideBarHide(false)}>
+                    onClick={() => setSideBarHide(false)}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6">
+                      className="w-6 h-6"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
@@ -400,12 +422,14 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 <>
                   <button
                     className="btn mr-3 "
-                    onClick={() => setSideBarHide(true)}>
+                    onClick={() => setSideBarHide(true)}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6">
+                      className="w-6 h-6"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
@@ -423,7 +447,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      class="w-6 h-6">
+                      class="w-6 h-6"
+                    >
                       <path
                         fill-rule="evenodd"
                         d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
@@ -437,7 +462,8 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
             </nav>
             {/* <Demo /> */}
 
-            {ruleMenagement === false ? <Demo /> : <Rule />}
+            {ruleMenagement === false ? <Demo /> : <Audit />}
+            {AuditTrail === <AuditTrail />}
           </div>
 
           <footer className="sticky-footer bg-white">
