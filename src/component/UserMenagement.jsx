@@ -11,7 +11,6 @@ import Swal from "sweetalert2";
 
 const UserMenagement = () => {
   const [users, setUsers] = useState([]);
-
   console.log(users);
   const [status, setStatus] = useState();
   const [currentUser, setCurrentUser] = useState(users);
@@ -20,6 +19,7 @@ const UserMenagement = () => {
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
   const token = sessionData;
+  console.log(token);
 
   useEffect(() => {
     if (token !== "") {
@@ -183,6 +183,17 @@ const UserMenagement = () => {
 
   //! Edit User
   const [detaiUserParam, setDetaiUserParam] = useState("");
+  //  localStorage.setItem("tokenData", JSON.stringify(token));
+  // sessionStorage.setItem("userDetailParam", "value");
+
+  useEffect(() => {
+    if (detaiUserParam !== "") {
+      sessionStorage.setItem("userDetailParam", detaiUserParam);
+    }
+  }, [detaiUserParam]);
+
+  const value = sessionStorage.getItem("userDetailParam");
+  console.log(value);
 
   useEffect(() => {
     getUserDetail();
@@ -194,6 +205,8 @@ const UserMenagement = () => {
   };
 
   const [userEdit, setUserEdit] = useState();
+
+  //  GET http://116.206.196.65:30983/skycore/User/getDataUser/ 404 (Not Found)
 
   const getUserDetail = async () => {
     try {
