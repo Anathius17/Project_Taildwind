@@ -27,6 +27,14 @@ const Modal = ({
   const passwordDefult = "5fec4ba8376f207d1ff2f0cac0882b01";
 
   useEffect(() => {
+    setUser(currentUser);
+  }, [onClose]);
+
+  useEffect(() => {
+    reload();
+  }, [isOpen]);
+
+  useEffect(() => {
     if (pass === "d41d8cd98f00b204e9800998ecf8427e") {
       setPasswordMd5("");
     }
@@ -145,6 +153,7 @@ const Modal = ({
 
   const Submit = () => {
     EditUser();
+    reload();
   };
   const EditUser = async () => {
     if (!users.usrname || !users.usrnip) {
