@@ -3,6 +3,7 @@ import axios from "axios";
 import Logo from "../assets/images/LogoSky.png";
 import "../assets/css/style.css";
 import "../assets/css/util.css";
+// import "bootstrap/dist/css/bootstrap.css";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../API/api";
 import md5 from "js-md5";
@@ -83,7 +84,7 @@ const Login = (props) => {
       });
 
       setDataCheck(cekData);
-
+      // console.log(cekData);
       let cekUser = PasswordUser.data.data.map((e) => {
         return e.usruserid;
       });
@@ -351,6 +352,7 @@ const Login = (props) => {
     if (isFristLogin === false) {
       postDataLogUserTracking();
       demo();
+
       console.log("wow");
     }
   }, [isFristLogin]);
@@ -416,6 +418,7 @@ const Login = (props) => {
   //   }
   // };
 
+  //ini handle
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -427,8 +430,7 @@ const Login = (props) => {
     } else {
       alert("CAPTCHA validation failed. Please try again.");
       setCaptcha(generateCaptcha());
-      console.log(input);
-      console.log(captcha);
+
       setInput("");
     }
   };
@@ -445,13 +447,15 @@ const Login = (props) => {
               onSubmit={(event) => {
                 handleSubmitUser(event);
                 handleSubmit(event);
-              }}>
+              }}
+            >
               <div className="mx-auto w-32 my-1">
                 <img src={Logo} alt="Logo" className="logo" />
               </div>
               <div
                 className="mx-auto my-2"
-                data-validate="Username is required">
+                data-validate="Username is required"
+              >
                 <input
                   className="input100"
                   type="text"
@@ -467,7 +471,8 @@ const Login = (props) => {
               </div>
               <div
                 className="mx-auto my-2"
-                data-validate="Password is required">
+                data-validate="Password is required"
+              >
                 <input
                   className="input100"
                   type="password"
@@ -512,25 +517,34 @@ const Login = (props) => {
                       />
                     </svg>
                   </button> */}
+                  <button
+                    className="btn btn-primary text-center items-center"
+                    onClick={() => {
+                      setCaptcha(generateCaptcha());
+                      setInput("");
+                      setExpired(false);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 1536 1536"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M1511 928q0 5-1 7q-64 268-268 434.5T764 1536q-146 0-282.5-55T238 1324l-129 129q-19 19-45 19t-45-19t-19-45V960q0-26 19-45t45-19h448q26 0 45 19t19 45t-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117q8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45t19-45l138-138Q969 256 768 256q-134 0-250 65T332 500q-11 17-53 117q-8 23-30 23H50q-13 0-22.5-9.5T18 608v-7q65-268 270-434.5T768 0q146 0 284 55.5T1297 212l130-129q19-19 45-19t45 19t19 45z"
+                      />
+                    </svg>
+                  </button>
                   {expired ? (
-                    <button
-                      className="btn btn-primary text-center items-center"
-                      onClick={() => {
-                        setCaptcha(generateCaptcha());
-                        setInput("");
-                        setExpired(false);
-                      }}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 1536 1536">
-                        <path
-                          fill="currentColor"
-                          d="M1511 928q0 5-1 7q-64 268-268 434.5T764 1536q-146 0-282.5-55T238 1324l-129 129q-19 19-45 19t-45-19t-19-45V960q0-26 19-45t45-19h448q26 0 45 19t19 45t-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117q8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45t19-45l138-138Q969 256 768 256q-134 0-250 65T332 500q-11 17-53 117q-8 23-30 23H50q-13 0-22.5-9.5T18 608v-7q65-268 270-434.5T768 0q146 0 284 55.5T1297 212l130-129q19-19 45-19t45 19t19 45z"
-                        />
-                      </svg>
-                    </button>
+                    <div>
+                      <img
+                        src={`https://dummyimage.com/200x100/000/fff&text=${captcha}`}
+                        alt="CAPTCHA"
+                        className="w-24 my-auto px-2 py-1 mx-auto"
+                      />
+                    </div>
                   ) : (
                     <div>
                       <img
@@ -545,7 +559,8 @@ const Login = (props) => {
               <div className="login-form-btn mx-auto my-2">
                 <button
                   className="btn-accent px-44 py-1 rounded-full"
-                  type="submit">
+                  type="submit"
+                >
                   Login
                 </button>
               </div>
