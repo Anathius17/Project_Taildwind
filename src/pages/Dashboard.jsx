@@ -30,6 +30,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
   const navigate = useNavigate();
 
   const [ruleMenagement, setruleMenagement] = useState(false);
+  const [clickButton, setclickButton] = useState("");
   const [AuditTrail, setauditTrail] = useState(true);
 
   const getTokenApi = () => {
@@ -244,7 +245,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
   const postJDataUserResetIsLogin = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        "http://localhost:30983/skycore/Login/postJDataUserResetIsLogin",
         JSON.stringify(data),
         {
           headers: {
@@ -277,7 +278,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
   const postDataLogUserTracking = async () => {
     try {
       await axios.post(
-        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
         dataLogUserTracking,
         {
           headers: {
@@ -332,7 +333,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 {" "}
                 <a
                   class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(false)}>
+                  onClick={() => setclickButton("User")}>
                   <span class="flex items-center space-x-2">
                     <span className="font-bold">User Management</span>
                   </span>
@@ -343,7 +344,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 {" "}
                 <a
                   class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(true)}>
+                  onClick={() => setclickButton("Rule")}>
                   <span class="flex items-center space-x-2">
                     <span className="font-bold">Role Management</span>
                   </span>
@@ -354,7 +355,7 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 {" "}
                 <a
                   class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(true)}>
+                  onClick={() => setclickButton("Audit")}>
                   <span class="flex items-center space-x-2">
                     <span className="font-bold">Audit Trail</span>
                   </span>
@@ -450,8 +451,20 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
             </nav>
             {/* <Demo /> */}
 
-            {ruleMenagement === false ? <Demo /> : <Audit />}
-            {AuditTrail === <AuditTrail />}
+            {/* {ruleMenagement === false ? <Demo /> : <Audit />}
+            {AuditTrail === <AuditTrail />} */}
+
+            {clickButton === "User" ? (
+              <Demo />
+            ) : clickButton === "Rule" ? (
+              <Rule />
+            ) : clickButton === "Audit" ? (
+              <Audit />
+            ) : (
+              <div>
+                <h1>Dashboard</h1>
+              </div>
+            )}
           </div>
 
           <footer className="sticky-footer bg-white">

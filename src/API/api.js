@@ -5,7 +5,7 @@ import axios from "axios";
 export const getToken = async () => {
   try {
     const apiToken = await axios.post(
-      "http://116.206.196.65:30983/skycore/token",
+      "http://localhost:30983/skycore/token",
       {
         data: {
           username: "SKYWORXAPIAccess",
