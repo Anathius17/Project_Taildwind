@@ -162,7 +162,7 @@ const Modal = ({
     }
     try {
       await axios.post(
-        "http://localhost:30983/skycore/User/postJDataEditRecord",
+        "http://116.206.196.65:30983/skycore/User/postJDataEditRecord",
         dataEditUser,
         {
           headers: {
@@ -197,7 +197,8 @@ const Modal = ({
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -309,7 +310,8 @@ const Modal = ({
                         id="recipient-name"
                         name="usrbranch"
                         value={users.usrbranch}
-                        onChange={handleInputChange}>
+                        onChange={handleInputChange}
+                      >
                         {branch.map((item, i) => {
                           return (
                             <option value={item.namevalue} key={i}>
@@ -333,7 +335,8 @@ const Modal = ({
                         id="recipient-name"
                         name="usrsupervisor"
                         value={users.usrsupervisor}
-                        onChange={handleInputChange}>
+                        onChange={handleInputChange}
+                      >
                         {superVisior.map((item, i) => {
                           return (
                             <option value={item.namevalue} key={i}>
@@ -358,7 +361,8 @@ const Modal = ({
                         id="recipient-name"
                         name="usraccesslevel"
                         value={users.usraccesslevel}
-                        onChange={handleInputChange}>
+                        onChange={handleInputChange}
+                      >
                         {role.map((item, i) => {
                           return (
                             <option value={item.namevalue} key={i}>
@@ -421,7 +425,8 @@ const Modal = ({
                       <button
                         className="rounded-none bg-blue-500 text-white py-2 px-3 "
                         type="button"
-                        onClick={() => setPasswordMd5(passwordDefult)}>
+                        onClick={() => setPasswordMd5(passwordDefult)}
+                      >
                         <BiReset />
                       </button>
                     </div>
@@ -435,7 +440,8 @@ const Modal = ({
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Submit}>

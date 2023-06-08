@@ -124,7 +124,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const InsertUserNew = async () => {
     try {
       const userNew = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataInsertRecord",
+        "http://116.206.196.65:30983/skycore/User/postJDataInsertRecord",
         JSON.stringify(insertUser),
         {
           headers: {
@@ -169,7 +169,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const postDataLogUserTracking = async () => {
     try {
       await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
+        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
         dataLogUserTracking,
         {
           headers: {
@@ -195,7 +195,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const DropDown = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdown),
         {
           headers: {
@@ -224,7 +224,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const DropDownSv = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdownSv),
         {
           headers: {
@@ -253,7 +253,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const DropDownRl = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdownRl),
         {
           headers: {
@@ -290,7 +290,8 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -406,7 +407,8 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                         className="form-control"
                         id="recipient-name"
                         onChange={(e) => setBranchName(e.target.value)}
-                        required>
+                        required
+                      >
                         {branch.map((item, i) => {
                           return (
                             <option value={item.namevalue} key={i}>
@@ -428,7 +430,8 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                         type="text"
                         className="form-control"
                         id="recipient-name"
-                        onChange={(e) => setSupervisiorName(e.target.value)}>
+                        onChange={(e) => setSupervisiorName(e.target.value)}
+                      >
                         {superVisior.map((item, i) => {
                           return (
                             <option value={item.namevalue} key={i}>
@@ -452,7 +455,8 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                         className="form-control"
                         id="recipient-name"
                         onChange={(e) => setRoleName(e.target.value)}
-                        required>
+                        required
+                      >
                         {role.map((item, i) => {
                           return (
                             <option value={item.namevalue} key={i}>
@@ -507,7 +511,8 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Save}>

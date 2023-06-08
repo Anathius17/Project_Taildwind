@@ -3,7 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { getToken } from "../../API/api";
 import "react-datepicker/dist/react-datepicker.css";
-import { browserName, osName,browserVersion } from "react-device-detect";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 const ModalAddBranch = ({ isOpen, onClose, reload }) => {
   const [code, setCodeBranch] = useState("");
@@ -20,10 +20,10 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
     setNoTelepon("");
   }, [onClose]);
 
-   // get userid 
-   const userid = JSON.parse(localStorage.getItem("userid"));
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
 
-   // untuk Token yang tersimpan di session
+  // untuk Token yang tersimpan di session
   //  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   //  const token = sessionData;
   const [token, setToken] = useState();
@@ -37,7 +37,6 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
     getTokenApi();
   }, [token]);
 
-
   // insert log activity
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
@@ -45,43 +44,44 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
     const res = await axios.get("https://api.ipify.org/?format=json");
     console.log(res.data);
     setIP(res.data.ip);
-  }; 
+  };
   useEffect(() => {
     //passing getData method to the lifecycle method
     getData();
   }, []);
-    const dataLogUserTracking = {
-      plcd: "branch_mgmt",
-      plusr: userid,
-      plhtt: "OFF",
-      plsvrn: window.location.hostname,
-      plact: "Add Branch Management",
-      plpgur: window.location.href,
-      plqry: "-",
-      plbro: browserName +" " +browserVersion,
-      plos: osName,
-      plcli: ip,
-    };
+  const dataLogUserTracking = {
+    plcd: "branch_mgmt",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Add Branch Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
 
   const postDataLogUserTracking = async () => {
-    let log = ""; 
+    let log = "";
     try {
-      await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
-        dataLogUserTracking,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ) 
-      .then((response) => {
-        console.log(response.data.data[0].resultprocess);
-        setlogid(response.data.data[0].resultprocess);
-        log = response.data.data[0].resultprocess;
-      });
- 
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          setlogid(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
       await insertobjectdata(log);
       // alert("postDataLogUserTracking Berhasil");
     } catch (error) {
@@ -90,17 +90,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
     }
   };
 
-
-
- 
-   const Save = async (e) => {
-    if (
-      !code ||
-      !name ||
-      !address ||
-      !city ||
-      !phonenum
-    ) {
+  const Save = async (e) => {
+    if (!code || !name || !address || !city || !phonenum) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -110,58 +101,46 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
       return;
     }
     postDataLogUserTracking();
-  
   };
 
-  
   const insertobjectdata = (val) => {
     InsertBranchNew(val);
-
-  }
-   
+  };
 
   const InsertBranchNew = (val) => {
-
-    
     try {
-      const branchNew =  axios.post(
-        "http://localhost:30983/skycore/Branch/insert",
-        //JSON.stringify(insertBranch),
-        {
-          code: code,
-          name: name,
-          address: address,
-          city: city,
-          phonenum: phonenum,
-          logid: val,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      const branchNew = axios
+        .post(
+          "http://116.206.196.65:30983/skycore/Branch/insert",
+          //JSON.stringify(insertBranch),
+          {
+            code: code,
+            name: name,
+            address: address,
+            city: city,
+            phonenum: phonenum,
+            logid: val,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status === "true")
-        {
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
             reload();
             onClose();
-        }
-        else
-        {
+          } else {
             Swal.fire(response.data.message, "", "error");
             reload();
             onClose();
-        }
-
-      });
-      
-    
+          }
+        });
     } catch (error) {
-
       Swal.fire({
         icon: "error",
         title: error,
@@ -171,7 +150,6 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
     }
   };
 
- 
   if (!isOpen) return null;
   return (
     <div class="fixed inset-0 flex items-center justify-center z-50">
@@ -184,7 +162,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -193,12 +172,12 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                   {" "}
                   <div className=" row mb-2">
                     <div className="col-4">
-                      <label  class="form-label">
+                      <label class="form-label">
                         Branch Code <span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div className="col-8" >
-                      <input 
+                    <div className="col-8">
+                      <input
                         type="text"
                         value={code}
                         className="form-control"
@@ -211,7 +190,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                   </div>
                   <div className=" row mb-2">
                     <div className="col-4">
-                      <label  class="form-label">
+                      <label class="form-label">
                         Branch Name <span className="text-danger">*</span>
                       </label>
                     </div>
@@ -229,7 +208,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                   </div>
                   <div className=" row mb-2">
                     <div className="col-4">
-                      <label  class="form-label">
+                      <label class="form-label">
                         Branch Address <span className="text-danger">*</span>
                       </label>
                     </div>
@@ -246,12 +225,12 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                   </div>
                   <div className=" row mb-2">
                     <div className="col-4">
-                      <label  class="form-label">
+                      <label class="form-label">
                         Branch City <span className="text-danger">*</span>
                       </label>
                     </div>
                     <div className="col-8">
-                    <input
+                      <input
                         type="text"
                         className="form-control"
                         value={city}
@@ -266,8 +245,9 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                   </div>
                   <div className=" row mb-2">
                     <div className="col-4">
-                      <label  class="form-label">
-                       Branch Phone Number <span className="text-danger">*</span>
+                      <label class="form-label">
+                        Branch Phone Number{" "}
+                        <span className="text-danger">*</span>
                       </label>
                     </div>
                     <div className="col-8">
@@ -290,7 +270,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Save}>

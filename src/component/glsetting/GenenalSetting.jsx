@@ -4,38 +4,34 @@ import { getToken } from "../../API/api";
 import ModalEdit from "./ModalEditGeneral";
 import axios from "axios";
 
-
 const GeneralSetting = () => {
-    const [general, setGeneral] = useState([]);
-    const [currentGeneral, setCurrentGeneral] = useState(general);
-    //const [token, setToken] = useState();
+  const [general, setGeneral] = useState([]);
+  const [currentGeneral, setCurrentGeneral] = useState(general);
+  //const [token, setToken] = useState();
 
-    // hit token 
-    const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-    // console.log(sessionData);
-    const token = sessionData;
-    // Dapatkan data sesi
+  // hit token
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  // console.log(sessionData);
+  const token = sessionData;
+  // Dapatkan data sesi
 
-    // get userid 
-    //const userid = JSON.parse(localStorage.getItem("userid"));
-    //console.log("test1233");
-    //console.log(userid);
-    //const userid = sessionUserid;
-    // Dapatkan data sesi
-
-
+  // get userid
+  //const userid = JSON.parse(localStorage.getItem("userid"));
+  //console.log("test1233");
+  //console.log(userid);
+  //const userid = sessionUserid;
+  // Dapatkan data sesi
 
   useEffect(() => {
     if (token && token.map !== "") {
       getGeneralList();
     }
-    
   }, [token]);
 
   const getGeneralList = async () => {
     try {
       const listgeneral = await axios.get(
-        "http://localhost:30983/skycore/Global/config/list",
+        "http://116.206.196.65:30983/skycore/Global/config/list",
         {
           headers: {
             "Content-Type": "application/json",
@@ -49,15 +45,11 @@ const GeneralSetting = () => {
       });
 
       setGeneral(cekData);
-
     } catch (error) {
-
       alert(error);
-
     }
   };
 
- 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,9 +87,7 @@ const GeneralSetting = () => {
   //! Edit General
   const [detaiGeneralParam, setDetaiGeneralParam] = useState("");
 
-
   const editGeneral = (generalcode) => {
-  
     setDetaiGeneralParam(generalcode);
     setIsModalOpenEdit(true);
   };
@@ -105,11 +95,10 @@ const GeneralSetting = () => {
   const [generalEdit, setGeneralEdit] = useState();
 
   const getGeneralDetail = async () => {
-  
     console.log(detaiGeneralParam);
     try {
       const listGeneralDetail = await axios.get(
-        "http://localhost:30983/skycore/Global/config/detail/" +
+        "http://16.206.196.65:30983/skycore/Global/config/detail/" +
           detaiGeneralParam,
         {
           headers: {
@@ -122,21 +111,17 @@ const GeneralSetting = () => {
       const cekData = listGeneralDetail.data.data.map((e) => {
         console.log(e);
         return e;
-       
       });
-    
+
       //console.log(cekData[0]);
       console.log(listGeneralDetail.data.status);
       setGeneralEdit(cekData[0]);
     } catch (errorUser) {
-
       console.log(errorUser);
-
     }
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -173,7 +158,8 @@ const GeneralSetting = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control">
+                className="form-control"
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -208,7 +194,8 @@ const GeneralSetting = () => {
                 {currentItems.map((glc) => (
                   <tr
                     key={glc.glc_code}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
+                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                  >
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {glc.glc_code}
                     </td>
@@ -224,12 +211,12 @@ const GeneralSetting = () => {
                     <td className="py-3 px-6 text-center  whitespace-nowrap ">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={() => editGeneral(glc.glc_code)}>
-                       detail
+                        onClick={() => editGeneral(glc.glc_code)}
+                      >
+                        detail
                       </button>
-                      
-                        <></>
-                     
+
+                      <></>
                     </td>
                   </tr>
                 ))}
@@ -246,7 +233,8 @@ const GeneralSetting = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}>
+                          disabled={currentPage === 1}
+                        >
                           Previous
                         </button>
                       </li>
@@ -259,7 +247,8 @@ const GeneralSetting = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}>
+                            disabled={pageNumber === currentPage}
+                          >
                             {pageNumber}
                           </button>
                         ))}
@@ -268,7 +257,8 @@ const GeneralSetting = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}>
+                          disabled={currentPage === totalPages}
+                        >
                           Next
                         </button>
                       </li>
@@ -281,12 +271,11 @@ const GeneralSetting = () => {
         </div>
       </div>
 
-     
       {generalEdit !== undefined ? (
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
-          currentGeneral ={generalEdit}
+          currentGeneral={generalEdit}
           reload={getGeneralList}
         />
       ) : (
@@ -294,6 +283,5 @@ const GeneralSetting = () => {
       )}
     </div>
   );
-
 };
 export default GeneralSetting;

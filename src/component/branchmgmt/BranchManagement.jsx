@@ -5,44 +5,42 @@ import Modal from "./ModalAddBranch";
 import ModalEdit from "./ModalEditBranch";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { browserName, osName,browserVersion } from "react-device-detect";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 const BranchMenagement = () => {
-    const [branch, setBranch] = useState([]);
-    const [currentBranch, setCurrentBranch] = useState(branch);
-    //const [token, setToken] = useState();
+  const [branch, setBranch] = useState([]);
+  const [currentBranch, setCurrentBranch] = useState(branch);
+  //const [token, setToken] = useState();
 
-    // hit token 
-    // const getTokenApi = () => {
-    //     getToken().then((e) => {
-    //       setToken(e);
-    //     });
-    //   };
+  // hit token
+  // const getTokenApi = () => {
+  //     getToken().then((e) => {
+  //       setToken(e);
+  //     });
+  //   };
 
-    //   useEffect(() => {
-    //     getTokenApi();
-    //   }, [token]);
-      
-    const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-    // console.log(sessionData);
-    const token = sessionData;
-    // Dapatkan data sesi
+  //   useEffect(() => {
+  //     getTokenApi();
+  //   }, [token]);
 
-    // get userid 
-    const userid = JSON.parse(localStorage.getItem("userid"));
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  // console.log(sessionData);
+  const token = sessionData;
+  // Dapatkan data sesi
 
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
 
   useEffect(() => {
     if (token && token.map !== "") {
       getBranchList();
     }
-    
   }, [token]);
 
   const getBranchList = async () => {
     try {
       const listbranch = await axios.get(
-        "http://localhost:30983/skycore/Branch/list",
+        "http://1116.206.196.65:30983/skycore/Branch/list",
         {
           headers: {
             "Content-Type": "application/json",
@@ -56,11 +54,8 @@ const BranchMenagement = () => {
       });
 
       setBranch(cekData);
-
     } catch (errorbranch) {
-
       alert(errorbranch);
-
     }
   };
 
@@ -85,29 +80,29 @@ const BranchMenagement = () => {
     plact: "Delete Branch Management",
     plpgur: window.location.href,
     plqry: "-",
-    plbro: browserName +" " +browserVersion,
+    plbro: browserName + " " + browserVersion,
     plos: osName,
     plcli: ip,
   };
 
   const postDataLogUserTracking = async () => {
-    let log = ""; 
+    let log = "";
     try {
-      const frisLogin = await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
-        JSON.stringify(dataLogUserTracking),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.data[0].resultprocess);
-        log = response.data.data[0].resultprocess;
-       
-      });
+      const frisLogin = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          JSON.stringify(dataLogUserTracking),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
       await deletebranchbycode(log);
       //alert("postDataLogUserTracking Berhasil");
     } catch (error) {
@@ -122,41 +117,35 @@ const BranchMenagement = () => {
 
   const deletebranchbycode = (val) => {
     Deletebranch(val);
-  }
-   
-  const Deletebranch = async (val) => {
-   
-    try {
-      const branchDelete = await axios.post(
-        "http://localhost:30983/skycore/Branch/delete",
-        //JSON.stringify(hitDelete),
-        {
-          code: branchcode,
-          logid: val,
+  };
 
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+  const Deletebranch = async (val) => {
+    try {
+      const branchDelete = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/Branch/delete",
+          //JSON.stringify(hitDelete),
+          {
+            code: branchcode,
+            logid: val,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status === "true")
-        {
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
             Swal.fire("Branch Successfully Deleted", "", "success");
             getBranchList();
-        }
-        else
-        {
+          } else {
             Swal.fire(response.data.message, "", "error");
             getBranchList();
-        }
-
-      });
-      
+          }
+        });
     } catch (error) {
       alert(error);
     }
@@ -168,31 +157,22 @@ const BranchMenagement = () => {
     //   deletebranch(id);
     //   setbranchcode(id);
     // }
-    
+
     Swal.fire({
-        title: 'Are you sure you want to delete this data?',
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: "OK",
-        cancelButtonText: "Cancel",
-        icon: 'warning'
-    }
-    ).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) 
-        {
-            //postDataLogUserTracking();
-            deletebranch(id);
-            setbranchcode(id);
-
-            
-
-        } else
-            Swal.fire(' Cancelled', '', 'error');
-           
-
-    })
-
+      title: "Are you sure you want to delete this data?",
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      icon: "warning",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        //postDataLogUserTracking();
+        deletebranch(id);
+        setbranchcode(id);
+      } else Swal.fire(" Cancelled", "", "error");
+    });
   };
 
   useEffect(() => {
@@ -242,12 +222,11 @@ const BranchMenagement = () => {
   //! Edit branch
   const [detaiBranchParam, setDetaiBranchParam] = useState("");
 
-//   useEffect(() => {
-//     getBranchDetail();
-//   }, [detaiBranchParam]);
+  //   useEffect(() => {
+  //     getBranchDetail();
+  //   }, [detaiBranchParam]);
 
   const editBranch = (branchcode) => {
-  
     setDetaiBranchParam(branchcode);
     setIsModalOpenEdit(true);
   };
@@ -259,8 +238,7 @@ const BranchMenagement = () => {
     console.log(detaiBranchParam);
     try {
       const listBranchDetail = await axios.get(
-        "http://localhost:30983/skycore/Branch/detail/" +
-          detaiBranchParam,
+        "http://116.206.196.65:30983/skycore/Branch/detail/" + detaiBranchParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -272,16 +250,13 @@ const BranchMenagement = () => {
       const cekData = listBranchDetail.data.data.map((e) => {
         console.log(e);
         return e;
-       
       });
-    
+
       //console.log(cekData[0]);
       console.log(listBranchDetail.data.status);
       setBranchEdit(cekData[0]);
     } catch (errorUser) {
-
       console.log(errorUser);
-
     }
   };
 
@@ -318,7 +293,7 @@ const BranchMenagement = () => {
         </div>
         <div className="btn-new">
           <button className="btn btn-primary" onClick={openModal}>
-             Add new
+            Add new
           </button>
         </div>
       </div>
@@ -331,7 +306,8 @@ const BranchMenagement = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control">
+                className="form-control"
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -367,7 +343,8 @@ const BranchMenagement = () => {
                 {currentItems.map((brc) => (
                   <tr
                     key={brc.lbrc_id}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
+                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                  >
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {brc.lbrc_code}
                     </td>
@@ -386,12 +363,14 @@ const BranchMenagement = () => {
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={() => editBranch(brc.lbrc_code)}>
+                        onClick={() => editBranch(brc.lbrc_code)}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6">
+                          className="w-6 h-6"
+                        >
                           <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                           <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                         </svg>
@@ -399,13 +378,13 @@ const BranchMenagement = () => {
                       <button
                         className="btn btn-danger btn-sm ml-1"
                         onClick={() => handleDeletebranch(brc.lbrc_code)}
-                        
-                        >
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6">
+                          className="w-6 h-6"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
@@ -413,8 +392,7 @@ const BranchMenagement = () => {
                           />
                         </svg>
                       </button>
-                        <></>
-                     
+                      <></>
                     </td>
                   </tr>
                 ))}
@@ -431,7 +409,8 @@ const BranchMenagement = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}>
+                          disabled={currentPage === 1}
+                        >
                           Previous
                         </button>
                       </li>
@@ -444,7 +423,8 @@ const BranchMenagement = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}>
+                            disabled={pageNumber === currentPage}
+                          >
                             {pageNumber}
                           </button>
                         ))}
@@ -453,7 +433,8 @@ const BranchMenagement = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}>
+                          disabled={currentPage === totalPages}
+                        >
                           Next
                         </button>
                       </li>
@@ -474,7 +455,7 @@ const BranchMenagement = () => {
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
-          currentBranch ={branchEdit}
+          currentBranch={branchEdit}
           reload={getBranchList}
         />
       ) : (
@@ -482,6 +463,5 @@ const BranchMenagement = () => {
       )}
     </div>
   );
-
 };
 export default BranchMenagement;

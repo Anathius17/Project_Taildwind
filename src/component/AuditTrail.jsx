@@ -4,13 +4,20 @@ import DatePicker from "react-datepicker";
 import { format, parse } from "date-fns";
 const AuditTrail = () => {
   const [users, setUsers] = useState([]);
+  const [usersName, setUsersName] = useState([]);
+  const [moduls, setModuls] = useState([]);
+  const [modulsName, setModulsName] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState();
   const [currentUser, setCurrentUser] = useState(users);
   const [startDate, setStartDate] = useState(null);
-  const [tampung, setTampung] = useState(null);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const [formattedFromDate, setFormattedFromDate] = useState(null);
+  const [formattedToDate, setFormattedToDate] = useState(null);
+  // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
@@ -18,16 +25,16 @@ const AuditTrail = () => {
   console.log(users);
 
   useEffect(() => {
-    if (token !== "") {
+    if (token && token.map !== "") {
       getUserList();
-      console.log(1);
+      getListModul();
     }
   }, [token]);
 
   const getUserList = async () => {
     try {
-      const listUser = await axios.get(
-        "http://localhost:30998/skyaudittrail/audit/list_name_user",
+      const listbranch = await axios.get(
+        "http://116.206.196.65:30991/skyaudittrail/audit/list_name_user",
         {
           headers: {
             "Content-Type": "application/json",
@@ -36,22 +43,59 @@ const AuditTrail = () => {
         }
       );
 
-      const cekData = listUser.data.data.map((e) => {
+      const cekData = listbranch.data.data.map((e) => {
         return e;
       });
-      console.log(cekData);
+
       setUsers(cekData);
-    } catch (errorUser) {
-      alert(errorUser);
+    } catch (errorbranch) {
+      alert(errorbranch);
+    }
+  };
+
+  const getListModul = async () => {
+    try {
+      const listbranch = await axios.get(
+        "http://116.206.196.65:30991/skyaudittrail/audit/list_modul",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const cekData = listbranch.data.data.map((e) => {
+        return e;
+      });
+
+      setModuls(cekData);
+    } catch (errorbranch) {
+      alert(errorbranch);
     }
   };
 
   useEffect(() => {
-    if (startDate !== null) {
-      const formattedDate = format(startDate, "yyyy-MM-dd");
-      setTampung(formattedDate);
+    if (fromDate !== null) {
+      const formattedDate = format(fromDate, "yyyy-MM-dd");
+      setFormattedFromDate(formattedDate);
     }
-  }, [startDate]);
+  }, [fromDate]);
+
+  useEffect(() => {
+    if (toDate !== null) {
+      const formattedDate = format(toDate, "yyyy-MM-dd");
+      setFormattedToDate(formattedDate);
+    }
+  }, [toDate]);
+
+  const handleFromChange = (date) => {
+    setFromDate(date);
+  };
+
+  const handleToChange = (date) => {
+    setToDate(date);
+  };
 
   // Menghitung indeks item pertama dan item terakhir
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -59,7 +103,7 @@ const AuditTrail = () => {
 
   // Mengambil data yang sesuai dengan halaman saat ini dan term pencarian
   const filteredData = users.filter((item) =>
-    item.usrname.toLowerCase().includes(searchTerm.toLowerCase())
+    item.p_username.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -82,6 +126,16 @@ const AuditTrail = () => {
     setSearchTerm(event.target.value);
     setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
   };
+
+  const handleSearch = () => {
+    // Logika pencarian atau tindakan lainnya setelah tombol "Search" ditekan
+    console.log("Search button clicked");
+    console.log("From Date:", formattedFromDate);
+    console.log("To Date:", formattedToDate);
+    console.log("Selected User:", usersName);
+    console.log("Selected Modul:", modulsName);
+  };
+
   return (
     <div className="card shadow mb-4">
       <div className="card-header justify-content-between mb-2">
@@ -99,16 +153,18 @@ const AuditTrail = () => {
               <select
                 type="text"
                 className="form-control"
+                selected={usersName}
                 id="recipient-name"
-                // onChange={(e) => setBranchName(e.target.value)}
-                required>
-                {/* {branch.map((item, i) => {
+                onChange={(e) => setUsersName(e.target.value)}
+                required
+              >
+                {users.map((item, i) => {
                   return (
-                    <option value={item.namevalue} key={i}>
-                      {item.nameview}
+                    <option value={item.p_userid} key={i}>
+                      {item.p_username}
                     </option>
                   );
-                })} */}
+                })}
               </select>
             </div>
           </div>
@@ -122,16 +178,17 @@ const AuditTrail = () => {
               <select
                 type="text"
                 className="form-control"
+                selected={modulsName}
                 id="recipient-name"
-                // onChange={(e) => setSupervisiorName(e.target.value)}
+                onChange={(e) => setModulsName(e.target.value)}
               >
-                {/* {superVisior.map((item, i) => {
+                {moduls.map((item, i) => {
                   return (
-                    <option value={item.namevalue} key={i}>
-                      {item.nameview}
+                    <option value={item.lgc_val} key={i}>
+                      {item.lgc_name}
                     </option>
                   );
-                })} */}
+                })}
               </select>
             </div>
           </div>
@@ -146,8 +203,8 @@ const AuditTrail = () => {
             <div className="col-9">
               <DatePicker
                 className="form-control"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                selected={fromDate}
+                onChange={handleFromChange}
                 dateFormat="yyyy/MM/dd"
               />
             </div>
@@ -161,8 +218,8 @@ const AuditTrail = () => {
             <div className="col-9">
               <DatePicker
                 className="form-control"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                selected={toDate}
+                onChange={handleToChange}
                 dateFormat="yyyy/MM/dd"
               />
             </div>
@@ -171,13 +228,27 @@ const AuditTrail = () => {
       </div>
       <div className="card-body">
         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
-          <div className="datatable-top mb-3 d-flex justify-content-between">
+          <div className="flex justify-end mb-3">
+            <button className="btn btn-success btn-sm" onClick={handleSearch}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-6 h-6"
+              >
+                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+              </svg>
+            </button>
+          </div>
+          <div className="datatable-top mb-3 flex justify-content-between">
             <div className="page-item">
               <span>Show entries:</span>
               <select
                 value={itemsPerPage}
-                onChange={handleEntriesChange}
-                className="form-control">
+                // onChange={handleEntriesChange}
+                className="form-control"
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -190,7 +261,7 @@ const AuditTrail = () => {
                 type="text"
                 placeholder="Search by Name"
                 value={searchTerm}
-                onChange={handleSearchChange}
+                // onChange={handleSearchChange}
                 className="form-control"
               />
             </div>
@@ -210,7 +281,7 @@ const AuditTrail = () => {
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-gray-600 text-sm font-light border-b">
+              {/* <tbody className="text-gray-600 text-sm font-light border-b">
                 {currentItems.map((user) => (
                   <tr
                     key={user.usrid}
@@ -285,7 +356,7 @@ const AuditTrail = () => {
                     </td>
                   </tr>
                 ))}
-              </tbody>
+              </tbody> */}
             </table>
             {/* Pagination */}
             <nav className="mt-2">
@@ -298,7 +369,8 @@ const AuditTrail = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}>
+                          disabled={currentPage === 1}
+                        >
                           Previous
                         </button>
                       </li>
@@ -311,7 +383,8 @@ const AuditTrail = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}>
+                            disabled={pageNumber === currentPage}
+                          >
                             {pageNumber}
                           </button>
                         ))}
@@ -320,7 +393,8 @@ const AuditTrail = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}>
+                          disabled={currentPage === totalPages}
+                        >
                           Next
                         </button>
                       </li>

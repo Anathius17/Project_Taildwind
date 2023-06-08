@@ -3,23 +3,16 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { getToken } from "../../API/api";
-import { browserName, osName,browserVersion } from "react-device-detect";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalGeneral = ({
-    isOpen,
-    onClose,
-    currentGeneral,
-    reload,
-  }) => {
-
+const ModalGeneral = ({ isOpen, onClose, currentGeneral, reload }) => {
   const [token, setToken] = useState();
   const [general, setGeneral] = useState(currentGeneral);
 
-   // get userid 
-   const userid = JSON.parse(localStorage.getItem("userid"));
-    console.log("test1233");
-    console.log(userid);
-
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
+  console.log("test1233");
+  console.log(userid);
 
   const getTokenApi = () => {
     getToken().then((e) => {
@@ -33,7 +26,7 @@ const ModalGeneral = ({
   }, [currentGeneral]);
 
   const handleInputChange = (event) => {
-  const { name, value } = event.target;
+    const { name, value } = event.target;
 
     setGeneral((prevState) => ({
       ...prevState,
@@ -48,42 +41,43 @@ const ModalGeneral = ({
     const res = await axios.get("https://api.ipify.org/?format=json");
     console.log(res.data);
     setIP(res.data.ip);
-  }; 
+  };
   useEffect(() => {
     getData();
   }, []);
 
-    const dataLogUserTracking = {
-      plcd: "general_setting",
-      plusr: userid,
-      plhtt: "OFF",
-      plsvrn: window.location.hostname,
-      plact: "Update General Setting",
-      plpgur: window.location.href,
-      plqry: "-",
-      plbro: browserName +" " +browserVersion,
-      plos: osName,
-      plcli: ip,
-    };
+  const dataLogUserTracking = {
+    plcd: "general_setting",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Update General Setting",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
 
   const postDataLogUserTracking = async () => {
-    let log = ""; 
+    let log = "";
     try {
-      await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
-        dataLogUserTracking,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ) 
-      .then((response) => {
-        console.log(response.data.data[0].resultprocess);
-        log = response.data.data[0].resultprocess;
-      });
- 
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
       await Updateobjectdata(log);
       // alert("postDataLogUserTracking Berhasil");
     } catch (error) {
@@ -94,42 +88,37 @@ const ModalGeneral = ({
 
   const Updateobjectdata = (val) => {
     EditGeneral(val);
-  }
+  };
   const Submit = () => {
     postDataLogUserTracking();
   };
 
   const EditGeneral = async (val) => {
-   
     try {
-      await axios.post(
-        "http://localhost:30983/skycore/Global/config/update",
-        {
-          code: general.glc_code,
-          usr: userid,
-          value: general.glc_value,
-          logid: val,
-
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/Global/config/update",
+          {
+            code: general.glc_code,
+            usr: userid,
+            value: general.glc_value,
+            logid: val,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status === "true")
-        {
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
             Swal.fire("Update Successfully ", "", "success");
-        }
-        else
-        {
+          } else {
             Swal.fire(response.data.message, "", "error");
-        }
-
-      });
+          }
+        });
       //Swal.fire("Save Berhasil", "", "success");
 
       reload();
@@ -151,7 +140,8 @@ const ModalGeneral = ({
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -161,7 +151,7 @@ const ModalGeneral = ({
                   <div className=" row mb-1">
                     <div className="col-4">
                       <label for="exampleInputEmail1" class="form-label">
-                       Code 
+                        Code
                       </label>
                     </div>
                     <div className="col-8">
@@ -180,11 +170,11 @@ const ModalGeneral = ({
                   <div className=" row mb-1">
                     <div className="col-4">
                       <label for="exampleInputName" class="form-label">
-                       Name 
+                        Name
                       </label>
                     </div>
                     <div className="col-8">
-                    <input
+                      <input
                         type="text"
                         className="form-control"
                         id="recipient-name"
@@ -192,34 +182,32 @@ const ModalGeneral = ({
                         value={general.glc_name}
                         onChange={handleInputChange}
                         disabled
-                       
                       />
                     </div>
                   </div>
                   <div className=" row mb-1">
                     <div className="col-4">
                       <label for="exampleInputAddress" class="form-label">
-                        Description 
+                        Description
                       </label>
                     </div>
                     <div className="col-8">
-                    <textarea
-                       rows={4}
-                       cols={4}
+                      <textarea
+                        rows={4}
+                        cols={4}
                         className="form-control"
                         id="recipient-name"
                         name="glc_desc"
                         value={general.glc_desc}
                         onChange={handleInputChange}
                         disabled
-                       
                       />
                     </div>
                   </div>
                   <div className=" row mb-1">
                     <div className="col-4">
                       <label for="exampleInputCity" class="form-label">
-                        Value 
+                        Value
                       </label>
                     </div>
                     <div className="col-8">
@@ -242,7 +230,8 @@ const ModalGeneral = ({
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Submit}>

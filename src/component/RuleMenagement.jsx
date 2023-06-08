@@ -37,7 +37,7 @@ const RuleMenagement = () => {
   const getList = async () => {
     try {
       const listUser = await axios.get(
-        "http://localhost:30983/skycore/role/list",
+        "http://116.206.196.65:30983/skycore/role/list",
         {
           headers: {
             "Content-Type": "application/json",
@@ -122,7 +122,8 @@ const RuleMenagement = () => {
                 {filteredUsers.map((user) => (
                   <tr
                     key={user.rl_id}
-                    className=" transition duration-300 ease-in-out hover:bg-pink-100 dark:border-neutral-500 dark:hover:bg-neutral-600">
+                    className=" transition duration-300 ease-in-out hover:bg-pink-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
+                  >
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {user.rl_name}
                     </td>
@@ -193,7 +194,8 @@ const RuleMenagement = () => {
                           className={`page-link ${
                             currentPage === index + 1 ? "active" : ""
                           }`}
-                          onClick={() => paginate(index + 1)}>
+                          onClick={() => paginate(index + 1)}
+                        >
                           {index + 1}
                         </button>
                       </li>
