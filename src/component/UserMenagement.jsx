@@ -93,7 +93,7 @@ const UserMenagement = () => {
   const DeleteUser = async () => {
     try {
       const userDelete = await axios.post(
-        "http://116.206.196.65:30983/skycore/User/postJDataDelRecord",
+        "http://1116.206.196.65:30983/skycore/User/postJDataDelRecord",
         JSON.stringify(hitDelete),
         {
           headers: {
@@ -210,7 +210,7 @@ const UserMenagement = () => {
   const getUserDetail = async () => {
     try {
       const listUserDetail = await axios.get(
-        "http://116.206.196.65:30983/skycore/User/getDataUser/" +
+        "http://1116.206.196.65:30983/skycore/User/getDataUser/" +
           detaiUserParam,
         {
           headers: {

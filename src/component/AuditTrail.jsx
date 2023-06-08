@@ -17,6 +17,8 @@ const AuditTrail = () => {
   const [toDate, setToDate] = useState(null);
   const [formattedFromDate, setFormattedFromDate] = useState(null);
   const [formattedToDate, setFormattedToDate] = useState(null);
+  const [listbranch, setListbranch] = useState([]);
+
   // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
@@ -75,6 +77,28 @@ const AuditTrail = () => {
     }
   };
 
+  // const getListLog = async () => {
+  //   try {
+  //     const listbranch = await axios.post(
+  //       "http://116.206.196.65:30991/skyaudittrail/audit/list_log",
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     const cekData = listbranch.data.data.map((e) => {
+  //       return e;
+  //     });
+
+  //     return cekData; // Mengembalikan nilai listbranch
+  //   } catch (errorbranch) {
+  //     alert(errorbranch);
+  //   }
+  // };
+
   useEffect(() => {
     if (fromDate !== null) {
       const formattedDate = format(fromDate, "yyyy-MM-dd");
@@ -127,13 +151,48 @@ const AuditTrail = () => {
     setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
   };
 
-  const handleSearch = () => {
-    // Logika pencarian atau tindakan lainnya setelah tombol "Search" ditekan
+  const handleSearch = async () => {
     console.log("Search button clicked");
     console.log("From Date:", formattedFromDate);
     console.log("To Date:", formattedToDate);
     console.log("Selected User:", usersName);
     console.log("Selected Modul:", modulsName);
+
+    try {
+      const params = {
+        user: {
+          val_users: usersName,
+        },
+        modul: {
+          val_code: modulsName,
+        },
+        fromDate: {
+          val_form: formattedFromDate,
+        },
+        toDate: {
+          val_to: formattedToDate,
+        },
+      };
+
+      const response = await axios.post(
+        "http://116.206.196.65:30991/skyaudittrail/audit/list_log",
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const listbranch = response.data.data.map((e) => {
+        return e;
+      });
+
+      setListbranch(listbranch);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
@@ -153,7 +212,7 @@ const AuditTrail = () => {
               <select
                 type="text"
                 className="form-control"
-                selected={usersName}
+                value={usersName} // Use value instead of selected
                 id="recipient-name"
                 onChange={(e) => setUsersName(e.target.value)}
                 required
@@ -178,7 +237,7 @@ const AuditTrail = () => {
               <select
                 type="text"
                 className="form-control"
-                selected={modulsName}
+                value={modulsName} // Use value instead of selected
                 id="recipient-name"
                 onChange={(e) => setModulsName(e.target.value)}
               >
@@ -281,82 +340,41 @@ const AuditTrail = () => {
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
-              {/* <tbody className="text-gray-600 text-sm font-light border-b">
-                {currentItems.map((user) => (
-                  <tr
-                    key={user.usrid}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
-                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {user.usruserid}
-                    </td>
-                    <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
-                      {user.usrname}
-                    </td>
-                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                      {user.usrnip}
-                    </td>
-                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                      {user.usraccesslevel}
-                    </td>
-                    <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold ">
-                      {user.usrstatusformat}
-                    </td>
-                    <td className="py-3 px-6 text-left  whitespace-nowrap ">
-                      <button
-                        className="btn btn-success btn-sm"
-                        // onClick={() => editUser(user.usruserid)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6">
-                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm ml-1"
-                        // onClick={() => handleDeleteUser(user.usruserid)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                      {user.usrstatusformat !== "Active" ? (
-                        <button
-                          className="btn btn-warning btn-sm ml-1"
-                          //   onClick={() => handleActiveUser(user.usruserid)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </button>
-                      ) : (
-                        <></>
-                      )}
+              <tbody className="text-gray-600 text-sm font-light border-b">
+                {listbranch.length > 0 ? (
+                  listbranch.map((modul) => (
+                    <tr
+                      key={modul.b_log_id}
+                      className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                    >
+                      <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                        {modul.b_code}
+                      </td>
+                      <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
+                        {modul.b_log_userid}
+                      </td>
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                        {modul.b_log_action_date}
+                      </td>
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                        {modul.b_log_https}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
+                        {modul.b_log_server_name}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
+                        {modul.b_log_activity}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="py-3 px-6 text-center">
+                      No data available
                     </td>
                   </tr>
-                ))}
-              </tbody> */}
+                )}
+              </tbody>
             </table>
             {/* Pagination */}
             <nav className="mt-2">
