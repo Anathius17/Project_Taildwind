@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ModalTrail from "./ModalTrail";
 import DatePicker from "react-datepicker";
 import { format, parse } from "date-fns";
 const AuditTrail = () => {
@@ -104,9 +105,10 @@ const AuditTrail = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   // Mengambil data yang sesuai dengan halaman saat ini dan term pencarian
-  const filteredData = users.filter((item) =>
-    item.p_username.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = logList.filter((item) =>
+    item.b_log_action_date.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
@@ -126,7 +128,7 @@ const AuditTrail = () => {
   // Mengubah term pencarian saat input pencarian berubah
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
+    setCurrentPage(1);
   };
 
   const handleSearch = async () => {
@@ -210,6 +212,7 @@ const AuditTrail = () => {
                 value={modulsName} // Use value instead of selected
                 id="recipient-name"
                 onChange={(e) => setModulsName(e.target.value)}
+                required
               >
                 {moduls.map((item, i) => {
                   return (
@@ -235,6 +238,7 @@ const AuditTrail = () => {
                 selected={fromDate}
                 onChange={handleFromChange}
                 dateFormat="yyyy/MM/dd"
+                required
               />
             </div>
           </div>
@@ -250,6 +254,7 @@ const AuditTrail = () => {
                 selected={toDate}
                 onChange={handleToChange}
                 dateFormat="yyyy/MM/dd"
+                required
               />
             </div>
           </div>
@@ -259,14 +264,8 @@ const AuditTrail = () => {
         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
           <div className="flex justify-end mb-3">
             <button className="btn btn-success btn-sm" onClick={handleSearch}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+              <svg fill="currentColor" viewBox="0 0 16 16" className="w-6 h-6">
+                <path d="M6.5 13a6.474 6.474 0 003.845-1.258h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85a1.008 1.008 0 00-.115-.1A6.471 6.471 0 0013 6.5 6.502 6.502 0 006.5 0a6.5 6.5 0 100 13zm0-8.518c1.664-1.673 5.825 1.254 0 5.018-5.825-3.764-1.664-6.69 0-5.018z" />
               </svg>
             </button>
           </div>
@@ -275,7 +274,7 @@ const AuditTrail = () => {
               <span>Show entries:</span>
               <select
                 value={itemsPerPage}
-                // onChange={handleEntriesChange}
+                onChange={handleEntriesChange}
                 className="form-control"
               >
                 <option value={5}>5</option>
@@ -290,7 +289,7 @@ const AuditTrail = () => {
                 type="text"
                 placeholder="Search by Name"
                 value={searchTerm}
-                // onChange={handleSearchChange}
+                onChange={handleSearchChange}
                 className="form-control"
               />
             </div>
@@ -311,8 +310,8 @@ const AuditTrail = () => {
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
-                {logList.length > 0 ? (
-                  logList.map((modul) => (
+                {currentItems.length > 0 ? (
+                  currentItems.map((modul) => (
                     <tr
                       key={modul.b_log_id}
                       className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
@@ -334,6 +333,22 @@ const AuditTrail = () => {
                       </td>
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         {modul.b_log_activity}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
+                        <button
+                          className="btn btn-success btn-sm"
+                          // onClick={openModal}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                            <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                          </svg>
+                        </button>
                       </td>
                     </tr>
                   ))
