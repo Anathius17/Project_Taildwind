@@ -17,7 +17,7 @@ const AuditTrail = () => {
   const [toDate, setToDate] = useState(null);
   const [formattedFromDate, setFormattedFromDate] = useState(null);
   const [formattedToDate, setFormattedToDate] = useState(null);
-  const [listbranch, setListbranch] = useState([]);
+  const [logList, setLogList] = useState([]);
 
   // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
@@ -35,7 +35,7 @@ const AuditTrail = () => {
 
   const getUserList = async () => {
     try {
-      const listbranch = await axios.get(
+      const userList = await axios.get(
         "http://116.206.196.65:30991/skyaudittrail/audit/list_name_user",
         {
           headers: {
@@ -45,19 +45,19 @@ const AuditTrail = () => {
         }
       );
 
-      const cekData = listbranch.data.data.map((e) => {
+      const cekData = userList.data.data.map((e) => {
         return e;
       });
 
       setUsers(cekData);
-    } catch (errorbranch) {
-      alert(errorbranch);
+    } catch (errorusers) {
+      console.log(errorusers);
     }
   };
 
   const getListModul = async () => {
     try {
-      const listbranch = await axios.get(
+      const modulList = await axios.get(
         "http://116.206.196.65:30991/skyaudittrail/audit/list_modul",
         {
           headers: {
@@ -67,37 +67,15 @@ const AuditTrail = () => {
         }
       );
 
-      const cekData = listbranch.data.data.map((e) => {
+      const cekData = modulList.data.data.map((e) => {
         return e;
       });
 
       setModuls(cekData);
-    } catch (errorbranch) {
-      alert(errorbranch);
+    } catch (errormoduls) {
+      console.log(errormoduls);
     }
   };
-
-  // const getListLog = async () => {
-  //   try {
-  //     const listbranch = await axios.post(
-  //       "http://116.206.196.65:30991/skyaudittrail/audit/list_log",
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     const cekData = listbranch.data.data.map((e) => {
-  //       return e;
-  //     });
-
-  //     return cekData; // Mengembalikan nilai listbranch
-  //   } catch (errorbranch) {
-  //     alert(errorbranch);
-  //   }
-  // };
 
   useEffect(() => {
     if (fromDate !== null) {
@@ -159,24 +137,16 @@ const AuditTrail = () => {
     console.log("Selected Modul:", modulsName);
 
     try {
-      const params = {
-        user: {
-          val_users: usersName,
-        },
-        modul: {
-          val_code: modulsName,
-        },
-        fromDate: {
-          val_form: formattedFromDate,
-        },
-        toDate: {
-          val_to: formattedToDate,
-        },
+      const body = {
+        val_users: usersName,
+        val_code: modulsName,
+        val_form: formattedFromDate,
+        val_to: formattedToDate,
       };
 
       const response = await axios.post(
         "http://116.206.196.65:30991/skyaudittrail/audit/list_log",
-        params,
+        body,
         {
           headers: {
             "Content-Type": "application/json",
@@ -185,11 +155,11 @@ const AuditTrail = () => {
         }
       );
 
-      const listbranch = response.data.data.map((e) => {
+      const logList = response.data.data.map((e) => {
         return e;
       });
 
-      setListbranch(listbranch);
+      setLogList(logList);
     } catch (error) {
       alert(error);
     }
@@ -341,8 +311,8 @@ const AuditTrail = () => {
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
-                {listbranch.length > 0 ? (
-                  listbranch.map((modul) => (
+                {logList.length > 0 ? (
+                  logList.map((modul) => (
                     <tr
                       key={modul.b_log_id}
                       className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
