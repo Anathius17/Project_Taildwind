@@ -6,7 +6,7 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
   const [modalData, setModalData] = useState(null);
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
-  console.log(modulName)
+  console.log(modulName);
 
   useEffect(() => {
     fetchData();
