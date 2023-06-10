@@ -20,6 +20,7 @@ const AuditTrail = () => {
   const [formattedToDate, setFormattedToDate] = useState(null);
   const [logList, setLogList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedModulName, setSelectedModulName] = useState("");
 
   // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
@@ -168,7 +169,8 @@ const AuditTrail = () => {
     }
   };
 
-  const openModal = () => {
+  const openModal = (modulName) => {
+    setSelectedModulName(modulName);
     setIsModalOpen(true);
   };
 
@@ -346,7 +348,7 @@ const AuditTrail = () => {
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         <button
                           className="btn btn-success btn-sm"
-                          onClick={openModal}
+                          onClick={() => openModal(modul.b_code)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -421,7 +423,7 @@ const AuditTrail = () => {
       <ModalTrail
         isOpen={isModalOpen}
         onClose={closeModal}
-        // reload={getUserList}
+        modulName={selectedModulName}
       ></ModalTrail>
     </div>
   );

@@ -19,14 +19,16 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
               <div className="mb-2">
                 <label
                   for="name"
-                  className="block text-gray-700 text-sm font-bold mb-2">
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
                   Name
                 </label>
                 <input type="text" id="name" className="form-control" />
@@ -34,7 +36,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
               <div class="mb-2">
                 <label
                   for="description"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Description
                 </label>
                 <input type="text" id="description" className="form-control" />
@@ -49,7 +52,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                 />
                 <label
                   class="inline-block pl-[0.15rem] hover:cursor-pointer"
-                  for="flexSwitchCheckDefault">
+                  for="flexSwitchCheckDefault"
+                >
                   Status
                 </label>
               </div>
@@ -64,7 +68,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="w-5 h-5">
+                            className="w-5 h-5"
+                          >
                             <path
                               fillRule="evenodd"
                               d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
@@ -81,7 +86,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                         />
                         <label
                           for="checked-checkbox"
-                          class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                          class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
                           Dashboard
                         </label>
                       </div>
@@ -93,7 +99,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="w-5 h-5">
+                            className="w-5 h-5"
+                          >
                             <path
                               fillRule="evenodd"
                               d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
@@ -110,7 +117,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                         />
                         <label
                           for="checked-checkbox"
-                          class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                          class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
                           Administrator
                         </label>
                       </div>
@@ -122,7 +130,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="w-5 h-5">
+                            className="w-5 h-5"
+                          >
                             <path
                               fillRule="evenodd"
                               d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
@@ -139,7 +148,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                         />
                         <label
                           for="checked-checkbox"
-                          class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                          class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
                           Parameter
                         </label>
                       </div>
@@ -158,7 +168,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button
