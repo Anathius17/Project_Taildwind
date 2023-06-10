@@ -163,6 +163,8 @@ const AuditTrail = () => {
         }
       );
 
+      console.log("Response list log:", response);
+
       const logList = response.data.data.map((e) => {
         const matchedModul = moduls.find((modul) => modul.lgc_val === e.b_code);
         return {
@@ -316,8 +318,8 @@ const AuditTrail = () => {
             <table className="min-w-max w-full table-auto">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-left">Code</th>
-                  <th className="py-3 px-6 text-left">User Id</th>
+                  <th className="py-3 px-6 text-center">Code</th>
+                  <th className="py-3 px-6 text-center">User Id</th>
                   <th className="py-3 px-6 text-center">Action Date</th>
                   <th className="py-3 px-6 text-center">Client IP</th>
                   <th className="py-3 px-6 text-center">Server Name</th>
@@ -332,10 +334,10 @@ const AuditTrail = () => {
                       key={modul.b_log_id}
                       className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
                     >
-                      <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                         {modul.lgc_name}
                       </td>
-                      <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         {modul.b_log_userid}
                       </td>
                       <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
