@@ -12,7 +12,7 @@ const ModalTrail = ({ isOpen, onClose }) => {
       <div class="absolute bg-white p-6 rounded-lg shadow-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">General Setting | Edit</h5>
+            <h5 className="modal-title">Audit Trail</h5>
             <button
               type="button"
               className="btn-close"
@@ -21,94 +21,54 @@ const ModalTrail = ({ isOpen, onClose }) => {
               //   onClick={onClose}
             ></button>
           </div>
-          {/* <div className="modal-body">
-            <form>
-              <div className="row">
-                <div className="col-12">
-                  {" "}
-                  <div className=" row mb-1">
-                    <div className="col-4">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Code
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        name="glc_code"
-                        // value={general.glc_code}
-                        // onChange={handleInputChange}
-                        disabled
-                        // onChange={(e) => setUserId(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-4">
-                      <label for="exampleInputName" class="form-label">
-                        Name
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        name="glc_name"
-                        // value={general.glc_name}
-                        // onChange={handleInputChange}
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-4">
-                      <label for="exampleInputAddress" class="form-label">
-                        Description
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <textarea
-                        rows={4}
-                        cols={4}
-                        className="form-control"
-                        id="recipient-name"
-                        name="glc_desc"
-                        // value={general.glc_desc}
-                        // onChange={handleInputChange}
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-4">
-                      <label for="exampleInputCity" class="form-label">
-                        Value
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <input
-                        type="text"
-                        className="form-control"
-                        // value={general.glc_value}
-                        name="glc_value"
-                        // onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
+          <div className="modal-body">
+            <table className="min-w-max w-full table-auto">
+              <thead>
+                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <th className="py-3 px-6 text-left">Code</th>
+                  <th className="py-3 px-6 text-left">User Id</th>
+                  <th className="py-3 px-6 text-left">User Id</th>
+                </tr>
+                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                    User Id
+                  </td>
+                  <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
+                    code
+                  </td>
+                  <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
+                    code
+                  </td>
+                </tr>
+                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                    User Id
+                  </td>
+                  <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
+                    code
+                  </td>
+                  <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
+                    code
+                  </td>
+                </tr>
+                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  Code
+                </tr>
+                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  Code
+                </tr>
+                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  Code
+                </tr>
+              </thead>
+            </table>
           </div>
           <div className="modal-footer">
             <button
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              //   onClick={onClose}
+              onClick={onClose}
             >
               Close
             </button>
@@ -119,7 +79,7 @@ const ModalTrail = ({ isOpen, onClose }) => {
             >
               Save changes
             </button>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
