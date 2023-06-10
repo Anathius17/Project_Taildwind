@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ModalTrail from "./ModalTrail";
+import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
+
 const AuditTrail = () => {
   const [users, setUsers] = useState([]);
   const [usersName, setUsersName] = useState([]);
@@ -187,51 +190,45 @@ const AuditTrail = () => {
         <div className="flex">
           <div className="col-6 row mb-2">
             <div className="col-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label htmlFor="exampleInputEmail1" className="form-label">
                 Log Users<span className="text-danger">*</span>
               </label>
             </div>
             <div className="col-9">
               <select
-                type="text"
                 className="form-control"
-                value={usersName} // Use value instead of selected
-                id="recipient-name"
+                value={usersName || ""}
                 onChange={(e) => setUsersName(e.target.value)}
                 required
               >
-                {users.map((item, i) => {
-                  return (
-                    <option value={item.p_userid} key={i}>
-                      {item.p_username}
-                    </option>
-                  );
-                })}
+                <option value="">Select One</option>
+                {users.map((item, i) => (
+                  <option value={item.p_userid} key={i}>
+                    {item.p_username}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
           <div className="col-6 row mb-2">
             <div className="col-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label htmlFor="exampleInputEmail1" className="form-label">
                 Log Modul<span className="text-danger">*</span>
               </label>
             </div>
             <div className="col-9">
               <select
-                type="text"
                 className="form-control"
-                value={modulsName} // Use value instead of selected
-                id="recipient-name"
+                value={modulsName || ""}
                 onChange={(e) => setModulsName(e.target.value)}
                 required
               >
-                {moduls.map((item, i) => {
-                  return (
-                    <option value={item.lgc_val} key={i}>
-                      {item.lgc_name}
-                    </option>
-                  );
-                })}
+                <option value="">Select One</option>
+                {moduls.map((item, i) => (
+                  <option value={item.lgc_val} key={i}>
+                    {item.lgc_name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

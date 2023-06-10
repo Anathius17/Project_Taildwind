@@ -36,7 +36,34 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
     }
   };
 
-  console.log("Modal Data:", modalData);
+  const renderTableCell = (fieldName) => {
+    const beforeValue = modalData?.find(
+      (data) => data.p_log_action_mode === "Before"
+    )?.[fieldName];
+    const afterValue = modalData?.find(
+      (data) => data.p_log_action_mode === "After"
+    )?.[fieldName];
+    const hasDifference = beforeValue !== afterValue;
+
+    // Perbarui bagian ini untuk menangani tampilan status dengan benar
+    let beforeRenderValue = beforeValue;
+    let afterRenderValue = afterValue;
+    if (fieldName === "p_usr_status") {
+      beforeRenderValue = beforeValue ? "true" : "false";
+      afterRenderValue = afterValue ? "true" : "false";
+    }
+
+    return (
+      <>
+        <td className={hasDifference ? "text-red-500" : ""}>
+          {beforeRenderValue}
+        </td>
+        <td className={hasDifference ? "text-red-500" : ""}>
+          {afterRenderValue}
+        </td>
+      </>
+    );
+  };
 
   if (!isOpen) return null;
   return (
@@ -65,159 +92,39 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
               <tbody>
                 <tr>
                   <td className="py-3 px-6 text-left">User ID</td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_userid !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_userid
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_userid}
-                  </td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_userid !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_userid
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "After"
-                      )?.p_usr_userid}
-                  </td>
+                  {renderTableCell("p_usr_userid")}
                 </tr>
                 <tr>
                   <td className="py-3 px-6 text-left">User Name</td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_name !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_name
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_name}
-                  </td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_name !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_name
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "After"
-                      )?.p_usr_name}
-                  </td>
+                  {renderTableCell("p_usr_name")}
                 </tr>
                 <tr>
                   <td className="py-3 px-6 text-left">User Email</td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_email !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_email
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_email}
-                  </td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_email !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_email
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "After"
-                      )?.p_usr_email}
-                  </td>
+                  {renderTableCell("p_usr_email")}
                 </tr>
                 <tr>
                   <td className="py-3 px-6 text-left">NIP</td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_nip !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_nip
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_nip}
-                  </td>
-                  <td
-                    className={
-                      modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "Before"
-                      )?.p_usr_nip !==
-                        modalData.find(
-                          (data) => data.p_log_action_mode === "After"
-                        )?.p_usr_nip
-                        ? "text-red-500"
-                        : ""
-                    }
-                  >
-                    {modalData &&
-                      modalData.find(
-                        (data) => data.p_log_action_mode === "After"
-                      )?.p_usr_nip}
-                  </td>
+                  {renderTableCell("p_usr_nip")}
+                </tr>
+                <tr>
+                  <td className="py-3 px-6 text-left">Access Level</td>
+                  {renderTableCell("p_usr_access_level")}
+                </tr>
+                <tr>
+                  <td className="py-3 px-6 text-left">User Effective Date</td>
+                  {renderTableCell("p_usr_efective_date")}
+                </tr>
+                <tr>
+                  <td className="py-3 px-6 text-left">Branch</td>
+                  {renderTableCell("p_usr_branch")}
+                </tr>
+                <tr>
+                  <td className="py-3 px-6 text-left">User Supervisor</td>
+                  {renderTableCell("p_usr_supervisor")}
+                </tr>
+                <tr>
+                  <td className="py-3 px-6 text-left">Status</td>
+                  {renderTableCell("p_usr_status")}
                 </tr>
               </tbody>
             </table>
