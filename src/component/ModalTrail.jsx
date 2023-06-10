@@ -57,10 +57,10 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
 
     return (
       <>
-        <td className={`py-3 px-6 ${hasDifference ? "text-red-500" : ""}`}>
+        <td className={`py-3 px-6 text-left ${hasDifference ? "text-red-500" : ""}`}>
           {beforeRenderValue}
         </td>
-        <td className={`py-3 px-6 ${hasDifference ? "text-red-500" : ""}`}>
+        <td className={`py-3 px-6 text-left ${hasDifference ? "text-red-500" : ""}`}>
           {afterRenderValue}
         </td>
       </>
