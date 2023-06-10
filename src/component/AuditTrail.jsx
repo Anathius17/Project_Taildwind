@@ -24,6 +24,7 @@ const AuditTrail = () => {
   const [logList, setLogList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModulName, setSelectedModulName] = useState("");
+  const [selectedLgcName, setSelectedLgcName] = useState("");
 
   // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
@@ -163,7 +164,11 @@ const AuditTrail = () => {
       );
 
       const logList = response.data.data.map((e) => {
-        return e;
+        const matchedModul = moduls.find((modul) => modul.lgc_val === e.b_code);
+        return {
+          ...e,
+          lgc_name: matchedModul ? matchedModul.lgc_name : e.b_code,
+        };
       });
 
       setLogList(logList);
@@ -173,8 +178,11 @@ const AuditTrail = () => {
   };
 
   const openModal = (modulName) => {
-    setSelectedModulName(modulName);
-    setIsModalOpen(true);
+    const selectedModul = moduls.find((item) => item.lgc_val === modulName);
+    if (selectedModul) {
+      setSelectedLgcName(selectedModul.lgc_name);
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
@@ -325,7 +333,7 @@ const AuditTrail = () => {
                       className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
                     >
                       <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                        {modul.b_code}
+                        {modul.lgc_name}
                       </td>
                       <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
                         {modul.b_log_userid}
@@ -420,7 +428,7 @@ const AuditTrail = () => {
       <ModalTrail
         isOpen={isModalOpen}
         onClose={closeModal}
-        modulName={selectedModulName}
+        modulName={selectedLgcName}
       ></ModalTrail>
     </div>
   );

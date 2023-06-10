@@ -6,6 +6,7 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
   const [modalData, setModalData] = useState(null);
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
+  console.log(modulName)
 
   useEffect(() => {
     fetchData();
@@ -16,6 +17,7 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
       const body = {
         id: "13",
         code: "user_management",
+        // code: modulName,
       };
 
       const response = await axios.post(
@@ -29,7 +31,7 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
         }
       );
 
-      console.log("API Response:", response.data);
+      console.log("API Response:", response.data.data);
       setModalData(response.data.data);
     } catch (error) {
       console.error(error);
