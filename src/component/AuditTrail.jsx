@@ -33,7 +33,7 @@ const AuditTrail = () => {
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
   const token = sessionData;
-  console.log(users);
+  // console.log(users);
 
   useEffect(() => {
     if (token && token.map !== "") {

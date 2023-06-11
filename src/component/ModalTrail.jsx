@@ -11,7 +11,8 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [modulName, b_log_id]);
+  
 
   const fetchData = async () => {
     try {
@@ -69,7 +70,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
         setModalData({ beforeData, afterData });
       }
     } catch (error) {
-      alert(error);
+      console.log(error);
     }
   };
 
