@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const ModalTrail = ({ isOpen, onClose, modulName }) => {
+const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
   const [modalData, setModalData] = useState(null);
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
   console.log(modulName);
+  console.log(b_log_id);
 
   useEffect(() => {
     fetchData();
@@ -15,9 +16,10 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
   const fetchData = async () => {
     try {
       const body = {
-        id: "13",
-        code: "user_management",
-        // code: modulName,
+        // id:"13",
+        id: b_log_id,
+        code: modulName,
+        // code: "user_management",
       };
 
       const response = await axios.post(
@@ -94,12 +96,19 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
   };
 
   if (!isOpen) return null;
+
+  // Ubah format modulName menjadi User Access
+  const formattedModulName = modulName
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute bg-white p-6 rounded-lg shadow-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Audit Trail - {modulName}</h5>
+            <h5 className="modal-title">Audit Trail - {formattedModulName}</h5>
             <button
               type="button"
               className="btn-close"
