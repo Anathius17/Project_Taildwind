@@ -26,6 +26,7 @@ const AuditTrail = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModulName, setSelectedModulName] = useState("");
   const [selectedLgcName, setSelectedLgcName] = useState("");
+  const [selectedBLogId, setSelectedBLogId] = useState(null);
 
   // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
@@ -186,10 +187,14 @@ const AuditTrail = () => {
     }
   };
 
-  const openModal = (modulName) => {
+  const openModal = (modulName, b_log_id) => {
     const selectedModul = moduls.find((item) => item.lgc_val === modulName);
     if (selectedModul) {
-      setSelectedLgcName(selectedModul.lgc_name);
+      const formattedModulName = selectedModul.lgc_name
+        .toLowerCase()
+        .replace(/\s+/g, "_");
+      setSelectedLgcName(formattedModulName);
+      setSelectedBLogId(b_log_id);
       setIsModalOpen(true);
     }
   };
@@ -391,7 +396,9 @@ const AuditTrail = () => {
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         <button
                           className="btn btn-success btn-sm"
-                          onClick={() => openModal(modul.b_code)}
+                          onClick={() =>
+                            openModal(modul.b_code, modul.b_log_id)
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -467,6 +474,7 @@ const AuditTrail = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         modulName={selectedLgcName}
+        b_log_id={selectedBLogId}
       ></ModalTrail>
     </div>
   );
