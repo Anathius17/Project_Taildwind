@@ -1,16 +1,34 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ModalTrail from "./ModalTrail";
+import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
+import { saveAs } from "file-saver";
+
 const AuditTrail = () => {
   const [users, setUsers] = useState([]);
+  const [usersName, setUsersName] = useState([]);
+  const [moduls, setModuls] = useState([]);
+  const [modulsName, setModulsName] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState();
   const [currentUser, setCurrentUser] = useState(users);
   const [startDate, setStartDate] = useState(null);
-  const [tampung, setTampung] = useState(null);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const [formattedFromDate, setFormattedFromDate] = useState(null);
+  const [formattedToDate, setFormattedToDate] = useState(null);
+  const [logList, setLogList] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedModulName, setSelectedModulName] = useState("");
+  const [selectedLgcName, setSelectedLgcName] = useState("");
+  const [selectedBLogId, setSelectedBLogId] = useState(null);
+
+  // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
@@ -18,16 +36,16 @@ const AuditTrail = () => {
   console.log(users);
 
   useEffect(() => {
-    if (token !== "") {
+    if (token && token.map !== "") {
       getUserList();
-      console.log(1);
+      getListModul();
     }
   }, [token]);
 
   const getUserList = async () => {
     try {
-      const listUser = await axios.get(
-        "http://116.206.196.65:30998/skyaudittrail/audit/list_name_user",
+      const userList = await axios.get(
+        "http://116.206.196.65:30991/skyaudittrail/audit/list_name_user",
         {
           headers: {
             "Content-Type": "application/json",
@@ -36,31 +54,69 @@ const AuditTrail = () => {
         }
       );
 
-      const cekData = listUser.data.data.map((e) => {
+      const cekData = userList.data.data.map((e) => {
         return e;
       });
-      console.log(cekData);
+
       setUsers(cekData);
-    } catch (errorUser) {
-      alert(errorUser);
+    } catch (errorusers) {
+      console.log(errorusers);
+    }
+  };
+
+  const getListModul = async () => {
+    try {
+      const modulList = await axios.get(
+        "http://116.206.196.65:30991/skyaudittrail/audit/list_modul",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const cekData = modulList.data.data.map((e) => {
+        return e;
+      });
+
+      setModuls(cekData);
+    } catch (errormoduls) {
+      console.log(errormoduls);
     }
   };
 
   useEffect(() => {
-    if (startDate !== null) {
-      const formattedDate = format(startDate, "yyyy-MM-dd");
-      setTampung(formattedDate);
+    if (fromDate !== null) {
+      const formattedDate = format(fromDate, "yyyy-MM-dd");
+      setFormattedFromDate(formattedDate);
     }
-  }, [startDate]);
+  }, [fromDate]);
+
+  useEffect(() => {
+    if (toDate !== null) {
+      const formattedDate = format(toDate, "yyyy-MM-dd");
+      setFormattedToDate(formattedDate);
+    }
+  }, [toDate]);
+
+  const handleFromChange = (date) => {
+    setFromDate(date);
+  };
+
+  const handleToChange = (date) => {
+    setToDate(date);
+  };
 
   // Menghitung indeks item pertama dan item terakhir
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   // Mengambil data yang sesuai dengan halaman saat ini dan term pencarian
-  const filteredData = users.filter((item) =>
-    item.usrname.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = logList.filter((item) =>
+    item.b_log_action_date.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
@@ -80,8 +136,93 @@ const AuditTrail = () => {
   // Mengubah term pencarian saat input pencarian berubah
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
+    setCurrentPage(1);
   };
+
+  const handleSearch = async () => {
+    console.log("Search button clicked");
+    console.log("From Date:", formattedFromDate);
+    console.log("To Date:", formattedToDate);
+    console.log("Selected User:", usersName);
+    console.log("Selected Modul:", modulsName);
+
+    // Menampilkan alert jika salah satu opsi belum dipilih
+    if (!usersName || !modulsName || !formattedFromDate || !formattedToDate) {
+      alert("Please select all options");
+      return;
+    }
+
+    try {
+      const body = {
+        val_users: usersName,
+        val_code: modulsName,
+        val_form: formattedFromDate,
+        val_to: formattedToDate,
+      };
+
+      const response = await axios.post(
+        "http://116.206.196.65:30991/skyaudittrail/audit/list_log",
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Response list log:", response);
+
+      const logList = response.data.data.map((e) => {
+        const matchedModul = moduls.find((modul) => modul.lgc_val === e.b_code);
+        return {
+          ...e,
+          lgc_name: matchedModul ? matchedModul.lgc_name : e.b_code,
+        };
+      });
+
+      setLogList(logList);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  const openModal = (modulName, b_log_id) => {
+    setSelectedLgcName(modulName); // Menggunakan modulName langsung sebagai lgc_name
+    setSelectedBLogId(b_log_id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleExportCSV = () => {
+    const csvContent = [
+      [
+        "Module Name",
+        "User ID",
+        "Action Date",
+        "HTTPS",
+        "Server Name",
+        "Activity",
+      ],
+      ...currentItems.map((modul) => [
+        modul.lgc_name,
+        modul.b_log_userid,
+        modul.b_log_action_date,
+        modul.b_log_https,
+        modul.b_log_server_name,
+        modul.b_log_activity,
+      ]),
+    ];
+
+    const csvRows = csvContent.map((row) => row.join(";")); // Menggunakan tanda titik koma (;) sebagai pemisah kolom
+    const csvData = csvRows.join("\n");
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+    saveAs(blob, "log_data.csv");
+  };
+
   return (
     <div className="card shadow mb-4">
       <div className="card-header justify-content-between mb-2">
@@ -91,47 +232,45 @@ const AuditTrail = () => {
         <div className="flex">
           <div className="col-6 row mb-2">
             <div className="col-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label htmlFor="exampleInputEmail1" className="form-label">
                 Log Users<span className="text-danger">*</span>
               </label>
             </div>
             <div className="col-9">
               <select
-                type="text"
                 className="form-control"
-                id="recipient-name"
-                // onChange={(e) => setBranchName(e.target.value)}
-                required>
-                {/* {branch.map((item, i) => {
-                  return (
-                    <option value={item.namevalue} key={i}>
-                      {item.nameview}
-                    </option>
-                  );
-                })} */}
+                value={usersName || ""}
+                onChange={(e) => setUsersName(e.target.value)}
+                required
+              >
+                <option value="">Select One</option>
+                {users.map((item, i) => (
+                  <option value={item.p_userid} key={i}>
+                    {item.p_username}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
           <div className="col-6 row mb-2">
             <div className="col-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label htmlFor="exampleInputEmail1" className="form-label">
                 Log Modul<span className="text-danger">*</span>
               </label>
             </div>
             <div className="col-9">
               <select
-                type="text"
                 className="form-control"
-                id="recipient-name"
-                // onChange={(e) => setSupervisiorName(e.target.value)}
+                value={modulsName || ""}
+                onChange={(e) => setModulsName(e.target.value)}
+                required
               >
-                {/* {superVisior.map((item, i) => {
-                  return (
-                    <option value={item.namevalue} key={i}>
-                      {item.nameview}
-                    </option>
-                  );
-                })} */}
+                <option value="">Select One</option>
+                {moduls.map((item, i) => (
+                  <option value={item.lgc_val} key={i}>
+                    {item.lgc_name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -146,9 +285,10 @@ const AuditTrail = () => {
             <div className="col-9">
               <DatePicker
                 className="form-control"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                selected={fromDate}
+                onChange={handleFromChange}
                 dateFormat="yyyy/MM/dd"
+                required
               />
             </div>
           </div>
@@ -161,9 +301,10 @@ const AuditTrail = () => {
             <div className="col-9">
               <DatePicker
                 className="form-control"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                selected={toDate}
+                onChange={handleToChange}
                 dateFormat="yyyy/MM/dd"
+                required
               />
             </div>
           </div>
@@ -171,13 +312,24 @@ const AuditTrail = () => {
       </div>
       <div className="card-body">
         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
-          <div className="datatable-top mb-3 d-flex justify-content-between">
+          <div className="flex justify-between mb-3">
+            <button className="btn btn-primary" onClick={handleExportCSV}>
+              Export to CSV
+            </button>
+            <button className="btn btn-success btn-sm" onClick={handleSearch}>
+              <svg fill="currentColor" viewBox="0 0 16 16" className="w-6 h-6">
+                <path d="M6.5 13a6.474 6.474 0 003.845-1.258h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85a1.008 1.008 0 00-.115-.1A6.471 6.471 0 0013 6.5 6.502 6.502 0 006.5 0a6.5 6.5 0 100 13zm0-8.518c1.664-1.673 5.825 1.254 0 5.018-5.825-3.764-1.664-6.69 0-5.018z" />
+              </svg>
+            </button>
+          </div>
+          <div className="datatable-top mb-3 flex justify-content-between">
             <div className="page-item">
               <span>Show entries:</span>
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control">
+                className="form-control"
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -201,8 +353,8 @@ const AuditTrail = () => {
             <table className="min-w-max w-full table-auto">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-left">Code</th>
-                  <th className="py-3 px-6 text-left">User Id</th>
+                  <th className="py-3 px-6 text-center">Code</th>
+                  <th className="py-3 px-6 text-center">User Id</th>
                   <th className="py-3 px-6 text-center">Action Date</th>
                   <th className="py-3 px-6 text-center">Client IP</th>
                   <th className="py-3 px-6 text-center">Server Name</th>
@@ -211,80 +363,57 @@ const AuditTrail = () => {
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
-                {currentItems.map((user) => (
-                  <tr
-                    key={user.usrid}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
-                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {user.usruserid}
-                    </td>
-                    <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
-                      {user.usrname}
-                    </td>
-                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                      {user.usrnip}
-                    </td>
-                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                      {user.usraccesslevel}
-                    </td>
-                    <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold ">
-                      {user.usrstatusformat}
-                    </td>
-                    <td className="py-3 px-6 text-left  whitespace-nowrap ">
-                      <button
-                        className="btn btn-success btn-sm"
-                        // onClick={() => editUser(user.usruserid)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6">
-                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm ml-1"
-                        // onClick={() => handleDeleteUser(user.usruserid)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                      {user.usrstatusformat !== "Active" ? (
+                {currentItems.length > 0 ? (
+                  currentItems.map((modul) => (
+                    <tr
+                      key={modul.b_log_id}
+                      className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                    >
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                        {modul.lgc_name}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
+                        {modul.b_log_userid}
+                      </td>
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                        {modul.b_log_action_date}
+                      </td>
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                        {modul.b_log_https}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
+                        {modul.b_log_server_name}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
+                        {modul.b_log_activity}
+                      </td>
+                      <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         <button
-                          className="btn btn-warning btn-sm ml-1"
-                          //   onClick={() => handleActiveUser(user.usruserid)}
+                          className="btn btn-success btn-sm"
+                          onClick={() =>
+                            openModal(modul.b_code, modul.b_log_id)
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
                             viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
+                            fill="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                            <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                           </svg>
                         </button>
-                      ) : (
-                        <></>
-                      )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="py-3 px-6 text-center">
+                      No data available
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
             {/* Pagination */}
@@ -298,7 +427,8 @@ const AuditTrail = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}>
+                          disabled={currentPage === 1}
+                        >
                           Previous
                         </button>
                       </li>
@@ -311,7 +441,8 @@ const AuditTrail = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}>
+                            disabled={pageNumber === currentPage}
+                          >
                             {pageNumber}
                           </button>
                         ))}
@@ -320,7 +451,8 @@ const AuditTrail = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}>
+                          disabled={currentPage === totalPages}
+                        >
                           Next
                         </button>
                       </li>
@@ -332,6 +464,12 @@ const AuditTrail = () => {
           </div>
         </div>
       </div>
+      <ModalTrail
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        modulName={modulsName} // Menggunakan modulsName sebagai modulName
+        b_log_id={selectedBLogId}
+      ></ModalTrail>
     </div>
   );
 };
