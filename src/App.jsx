@@ -421,7 +421,7 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            <Dashboard listmenu={users} levelmenu={dataRoleUserDetail} />
+            <Dashboard listmenu={users} levelmenu={menuLevel} />
           }
         />
         <Route path="*" element={<Navigate to="/dashboard/" replace />} />

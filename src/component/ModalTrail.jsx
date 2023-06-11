@@ -16,10 +16,8 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
   const fetchData = async () => {
     try {
       const body = {
-        // id:"13",
         id: b_log_id,
         code: modulName,
-        // code: "user_management",
       };
 
       const response = await axios.post(
@@ -34,29 +32,42 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
       );
 
       console.log("API Response:", response.data.data);
-      const sortedData = response.data.data.sort(
-        (a, b) =>
-          new Date(b.p_usr_efective_date) - new Date(a.p_usr_efective_date)
-      );
 
-      let beforeData = null;
-      let afterData = null;
+      if (modulName === "branch_mgmt") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.p_lbrc_action.localeCompare(b.p_lbrc_action)
+        );
 
-      for (let i = 0; i < sortedData.length; i++) {
-        if (sortedData[i].p_log_action_mode === "Before") {
-          beforeData = sortedData[i];
-          break;
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].p_lbrc_action === "BEFORE") {
+            beforeData = sortedData[i];
+          } else if (sortedData[i].p_lbrc_action === "AFTER") {
+            afterData = sortedData[i];
+          }
         }
-      }
 
-      for (let i = 0; i < sortedData.length; i++) {
-        if (sortedData[i].p_log_action_mode === "After") {
-          afterData = sortedData[i];
-          break;
+        setModalData({ beforeData, afterData });
+      } else if (modulName === "user_management") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.p_usr_action.localeCompare(b.p_usr_action)
+        );
+
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].p_usr_action === "BEFORE") {
+            beforeData = sortedData[i];
+          } else if (sortedData[i].p_usr_action === "AFTER") {
+            afterData = sortedData[i];
+          }
         }
-      }
 
-      setModalData({ beforeData, afterData });
+        setModalData({ beforeData, afterData });
+      }
     } catch (error) {
       alert(error);
     }
@@ -118,43 +129,84 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
             ></button>
           </div>
           <div className="modal-body">
-            <table className="min-w-max w-full table-auto">
-              <thead>
-                <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-left">Field Name</th>
-                  <th className="py-3 px-6 text-left">Before</th>
-                  <th className="py-3 px-6 text-left">After</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  const fieldNames = [
-                    { fieldName: "p_usr_userid", label: "User ID" },
-                    { fieldName: "p_usr_name", label: "User Name" },
-                    { fieldName: "p_usr_email", label: "User Email" },
-                    { fieldName: "p_usr_nip", label: "NIP" },
-                    { fieldName: "p_usr_access_level", label: "Access Level" },
-                    {
-                      fieldName: "p_usr_efective_date",
-                      label: "User Effective Date",
-                    },
-                    { fieldName: "p_usr_branch", label: "Branch" },
-                    { fieldName: "p_usr_supervisor", label: "User Supervisor" },
-                    { fieldName: "p_usr_status", label: "Status" },
-                  ];
+            {modulName === "branch_mgmt" && (
+              <table className="min-w-max w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-6 text-left">Field Name</th>
+                    <th className="py-3 px-6 text-left">Before</th>
+                    <th className="py-3 px-6 text-left">After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const fieldNames = [
+                      { fieldName: "p_lbrc_code", label: "Code" },
+                      { fieldName: "p_lbrc_name", label: "Name" },
+                      { fieldName: "p_lbrc_address", label: "Address" },
+                      { fieldName: "p_lbrc_city", label: "City" },
+                      { fieldName: "p_lbrc_phone_num", label: "Phone Number" },
+                    ];
 
-                  return fieldNames.map(({ fieldName, label }) => {
-                    const tableCells = renderTableCell(fieldName);
-                    return (
-                      <tr key={fieldName}>
-                        <td className="py-3 px-6 text-left">{label}</td>
-                        {tableCells}
-                      </tr>
-                    );
-                  });
-                })()}
-              </tbody>
-            </table>
+                    return fieldNames.map(({ fieldName, label }) => {
+                      const tableCells = renderTableCell(fieldName);
+                      return (
+                        <tr key={fieldName}>
+                          <td className="py-3 px-6 text-left">{label}</td>
+                          {tableCells}
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            )}
+
+            {modulName === "user_management" && (
+              <table className="min-w-max w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-6 text-left">Field Name</th>
+                    <th className="py-3 px-6 text-left">Before</th>
+                    <th className="py-3 px-6 text-left">After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const fieldNames = [
+                      { fieldName: "p_usr_userid", label: "User ID" },
+                      { fieldName: "p_usr_name", label: "User Name" },
+                      { fieldName: "p_usr_email", label: "User Email" },
+                      { fieldName: "p_usr_nip", label: "NIP" },
+                      {
+                        fieldName: "p_usr_access_level",
+                        label: "Access Level",
+                      },
+                      {
+                        fieldName: "p_usr_efective_date",
+                        label: "User Effective Date",
+                      },
+                      { fieldName: "p_usr_branch", label: "Branch" },
+                      {
+                        fieldName: "p_usr_supervisor",
+                        label: "User Supervisor",
+                      },
+                      { fieldName: "p_usr_status", label: "Status" },
+                    ];
+
+                    return fieldNames.map(({ fieldName, label }) => {
+                      const tableCells = renderTableCell(fieldName);
+                      return (
+                        <tr key={fieldName}>
+                          <td className="py-3 px-6 text-left">{label}</td>
+                          {tableCells}
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            )}
           </div>
           <div className="modal-footer">
             <button
