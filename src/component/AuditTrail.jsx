@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
+import { saveAs } from "file-saver";
 
 const AuditTrail = () => {
   const [users, setUsers] = useState([]);
@@ -197,6 +198,32 @@ const AuditTrail = () => {
     setIsModalOpen(false);
   };
 
+  const handleExportCSV = () => {
+    const csvContent = [
+      [
+        "Module Name",
+        "User ID",
+        "Action Date",
+        "HTTPS",
+        "Server Name",
+        "Activity",
+      ],
+      ...currentItems.map((modul) => [
+        modul.lgc_name,
+        modul.b_log_userid,
+        modul.b_log_action_date,
+        modul.b_log_https,
+        modul.b_log_server_name,
+        modul.b_log_activity,
+      ]),
+    ];
+
+    const csvRows = csvContent.map((row) => row.join(";")); // Menggunakan tanda titik koma (;) sebagai pemisah kolom
+    const csvData = csvRows.join("\n");
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+    saveAs(blob, "log_data.csv");
+  };
+
   return (
     <div className="card shadow mb-4">
       <div className="card-header justify-content-between mb-2">
@@ -286,7 +313,10 @@ const AuditTrail = () => {
       </div>
       <div className="card-body">
         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
-          <div className="flex justify-end mb-3">
+          <div className="flex justify-between mb-3">
+            <button className="btn btn-primary" onClick={handleExportCSV}>
+              Export to CSV
+            </button>
             <button className="btn btn-success btn-sm" onClick={handleSearch}>
               <svg fill="currentColor" viewBox="0 0 16 16" className="w-6 h-6">
                 <path d="M6.5 13a6.474 6.474 0 003.845-1.258h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 001.415-1.414l-3.85-3.85a1.008 1.008 0 00-.115-.1A6.471 6.471 0 0013 6.5 6.502 6.502 0 006.5 0a6.5 6.5 0 100 13zm0-8.518c1.664-1.673 5.825 1.254 0 5.018-5.825-3.764-1.664-6.69 0-5.018z" />
