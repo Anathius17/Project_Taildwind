@@ -144,6 +144,12 @@ const AuditTrail = () => {
     console.log("Selected User:", usersName);
     console.log("Selected Modul:", modulsName);
 
+    // Menampilkan alert jika salah satu opsi belum dipilih
+    if (!usersName || !modulsName || !formattedFromDate || !formattedToDate) {
+      alert("Please select all options");
+      return;
+    }
+
     try {
       const body = {
         val_users: usersName,

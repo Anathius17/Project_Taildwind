@@ -32,19 +32,37 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
       );
 
       console.log("API Response:", response.data.data);
-      setModalData(response.data.data);
+      const sortedData = response.data.data.sort(
+        (a, b) =>
+          new Date(b.p_usr_efective_date) - new Date(a.p_usr_efective_date)
+      );
+
+      let beforeData = null;
+      let afterData = null;
+
+      for (let i = 0; i < sortedData.length; i++) {
+        if (sortedData[i].p_log_action_mode === "Before") {
+          beforeData = sortedData[i];
+          break;
+        }
+      }
+
+      for (let i = 0; i < sortedData.length; i++) {
+        if (sortedData[i].p_log_action_mode === "After") {
+          afterData = sortedData[i];
+          break;
+        }
+      }
+
+      setModalData({ beforeData, afterData });
     } catch (error) {
       alert(error);
     }
   };
 
   const renderTableCell = (fieldName) => {
-    const beforeValue = modalData?.find(
-      (data) => data.p_log_action_mode === "Before"
-    )?.[fieldName];
-    const afterValue = modalData?.find(
-      (data) => data.p_log_action_mode === "After"
-    )?.[fieldName];
+    const beforeValue = modalData?.beforeData?.[fieldName];
+    const afterValue = modalData?.afterData?.[fieldName];
     const hasDifference = beforeValue !== afterValue;
 
     // Perbarui bagian ini untuk menangani tampilan status dengan benar
@@ -101,7 +119,6 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
               </thead>
               <tbody>
                 {(() => {
-                  const tableRows = [];
                   const fieldNames = [
                     { fieldName: "p_usr_userid", label: "User ID" },
                     { fieldName: "p_usr_name", label: "User Name" },
@@ -117,19 +134,15 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
                     { fieldName: "p_usr_status", label: "Status" },
                   ];
 
-                  for (let i = 0; i < fieldNames.length; i++) {
-                    const { fieldName, label } = fieldNames[i];
-                    const tableCells = renderTableCell(fieldName, label);
-                    const tableRow = (
+                  return fieldNames.map(({ fieldName, label }) => {
+                    const tableCells = renderTableCell(fieldName);
+                    return (
                       <tr key={fieldName}>
                         <td className="py-3 px-6 text-left">{label}</td>
                         {tableCells}
                       </tr>
                     );
-                    tableRows.push(tableRow);
-                  }
-
-                  return tableRows;
+                  });
                 })()}
               </tbody>
             </table>
