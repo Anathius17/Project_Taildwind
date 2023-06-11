@@ -51,7 +51,7 @@ const UserMenagement = () => {
 
   // ! nanti atur secara dinamis
   const dataLogUserTracking = {
-    plcd: "ua",
+    plcd: "user_management",
     plusr: "crm_admin",
     plhtt: "OFF",
     plsvrn: "uat-web-los",
@@ -129,22 +129,6 @@ const UserMenagement = () => {
     setUsers(users.filter((user) => user.usruserid !== id));
   };
   //! ----batas Hit Api delete-----
-
-  // const ubahPage = (e) => {
-  //   const { value } = e.target;
-  //   setUsersPerPage(value);
-  // };
-
-  // const [test, setTest] = useState(0);
-  // console.log(test);
-
-  // console.log(typeof test);
-
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [usersPerPage, setUsersPerPage] = useState(3);
-  // console.log(usersPerPage);
-
-  // !
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -425,8 +409,7 @@ const UserMenagement = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control"
-              >
+                className="form-control">
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -447,7 +430,7 @@ const UserMenagement = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full table-auto">
+            <table className="min-w-max w-full table-bordered ">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-left">User Id</th>
@@ -462,8 +445,7 @@ const UserMenagement = () => {
                 {currentItems.map((user) => (
                   <tr
                     key={user.usrid}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
-                  >
+                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {user.usruserid}
                     </td>
@@ -482,28 +464,24 @@ const UserMenagement = () => {
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={() => editUser(user.usruserid)}
-                      >
+                        onClick={() => editUser(user.usruserid)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6"
-                        >
+                          className="w-6 h-6">
                           <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                           <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                         </svg>
                       </button>
                       <button
                         className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeleteUser(user.usruserid)}
-                      >
+                        onClick={() => handleDeleteUser(user.usruserid)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6"
-                        >
+                          className="w-6 h-6">
                           <path
                             fillRule="evenodd"
                             d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
@@ -514,16 +492,14 @@ const UserMenagement = () => {
                       {user.usrstatusformat !== "Active" ? (
                         <button
                           className="btn btn-warning btn-sm ml-1"
-                          onClick={() => handleActiveUser(user.usruserid)}
-                        >
+                          onClick={() => handleActiveUser(user.usruserid)}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth={1.5}
                             stroke="currentColor"
-                            className="w-6 h-6"
-                          >
+                            className="w-6 h-6">
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -550,8 +526,7 @@ const UserMenagement = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}
-                        >
+                          disabled={currentPage === 1}>
                           Previous
                         </button>
                       </li>
@@ -564,8 +539,7 @@ const UserMenagement = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}
-                          >
+                            disabled={pageNumber === currentPage}>
                             {pageNumber}
                           </button>
                         ))}
@@ -574,8 +548,7 @@ const UserMenagement = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}
-                        >
+                          disabled={currentPage === totalPages}>
                           Next
                         </button>
                       </li>

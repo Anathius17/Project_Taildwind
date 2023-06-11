@@ -8,6 +8,10 @@ import "../assets/css/Dashboard.css";
 import Demo from "../component/UserMenagement";
 import Rule from "../component/RuleMenagement";
 import Audit from "../component/AuditTrail";
+import BranchMenagement from "../component/branchmgmt/BranchManagement";
+import GeneralSettings from "../component/glsetting/GenenalSetting";
+import BatchScheduler from "../component/system/BatchScheduler";
+// import BatchScheduler from "../component/system/BatchScheduler";
 import { IconName } from "react-icons/ri";
 import "../assets/css/modal.css";
 import axios from "axios";
@@ -19,17 +23,268 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-const Dashboard = ({ listmenu, levelmenu, user }) => {
-  const [menuList, setMenuList] = useState(listmenu);
-  const [menuLevel, setMenuLevel] = useState(levelmenu);
-  const [menuList1, setMenuList1] = useState(listmenu);
-  const [menuLevel1, setMenuLevel1] = useState(levelmenu);
+import { Link, NavLink } from "react-router-dom";
+
+const users = [
+  {
+    id: "1",
+    mn_name: "Dashboard",
+    mn_link: "/dashboard",
+    mn_parentid: "0",
+    mn_acl: "lvl_dash",
+    mn_order: "1",
+    mn_icon: "fa fa-dashboard",
+    mn_breadcrumb: " ",
+    child: [],
+  },
+  {
+    id: "2",
+    mn_name: "Administrator",
+    mn_link: "",
+    mn_parentid: "0",
+    mn_acl: "lvl_adm",
+    mn_order: "2",
+    mn_icon: "fa fa-users",
+    mn_breadcrumb: " ",
+    element: "",
+    child: [
+      {
+        id: "4",
+        mn_name: "User Management",
+        mn_link: "user",
+        mn_parentid: "2",
+        mn_acl: "lvl_adm_mgt",
+        mn_order: "1",
+        mn_icon: "",
+        mn_breadcrumb: "User Management",
+        element: <Demo />,
+        child: [],
+      },
+      {
+        id: "5",
+        mn_name: "Role Management",
+        mn_link: "/RoleManagement",
+        mn_parentid: "2",
+        mn_acl: "lvl_adm_acl",
+        mn_order: "2",
+        mn_icon: "",
+        mn_breadcrumb: "Role Management",
+        element: <Rule />,
+        child: [],
+      },
+      {
+        id: "6",
+        mn_name: "System",
+        mn_link: "",
+        mn_parentid: "2",
+        mn_acl: "lvl_adm_sys",
+        mn_order: "3",
+        mn_icon: "",
+        mn_breadcrumb: "fa fa-cogs",
+        child: [
+          {
+            id: "11",
+            mn_name: "Batch Schedule",
+            mn_link: "/BatchSchedule",
+            mn_parentid: "6",
+            mn_acl: "lvl_sys_bch_sch",
+            mn_order: "1",
+            mn_icon: "",
+            mn_breadcrumb: "Batch Schedule",
+            child: [],
+          },
+          {
+            id: "12",
+            mn_name: "Batch Schedule Checker",
+            mn_link: "/BatchSchedule/Checker",
+            mn_parentid: "6",
+            mn_acl: "lvl_sys_bch_sch_chk",
+            mn_order: "2",
+            mn_icon: "",
+            mn_breadcrumb: "Batch Schedule Checker",
+            child: [],
+          },
+          {
+            id: "13",
+            mn_name: "Batch Schedule Approval",
+            mn_link: "/BatchSchedule/Approval",
+            mn_parentid: "6",
+            mn_acl: "lvl_sys_bch_sch_apr",
+            mn_order: "3",
+            mn_icon: "",
+            mn_breadcrumb: "Batch Schedule Approval",
+            child: [],
+          },
+        ],
+      },
+      {
+        id: "7",
+        mn_name: "Audit Trail",
+        mn_link: "/AuditTrail",
+        mn_parentid: "2",
+        mn_acl: "lvl_adm_adt",
+        mn_order: "4",
+        mn_icon: "",
+        mn_breadcrumb: "Audit Trail",
+        child: [],
+      },
+    ],
+  },
+  {
+    id: "3",
+    mn_name: "Parameter",
+    mn_link: "",
+    mn_parentid: "0",
+    mn_acl: "lvl_prm",
+    mn_order: "3",
+    mn_icon: "",
+    mn_breadcrumb: " ",
+    child: [
+      {
+        id: "9",
+        mn_name: "Global Setting",
+        mn_link: "/global",
+        mn_parentid: "3",
+        mn_acl: "lvl_prm_gnr",
+        mn_order: "1",
+        mn_icon: "",
+        mn_breadcrumb: "Global Setting",
+        child: [],
+      },
+      {
+        id: "10",
+        mn_name: "Branch Management",
+        mn_link: "/Branch",
+        mn_parentid: "3",
+        mn_acl: "lvl_sys_bch_m",
+        mn_order: "2",
+        mn_icon: "",
+        mn_breadcrumb: "Branch Management",
+        child: [],
+      },
+    ],
+  },
+];
+
+const menuLevel = [
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_dash",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_adm",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_prm",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_adm_mgt",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_adm_acl",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_adm_sys",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_adm_adt",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_prm_gnr",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_prm_brm",
+    modules: "CORE",
+  },
+  {
+    usruserid: "crm_admin",
+    usrname: "crm_admin",
+    usrnip: "crm_admin",
+    usraccesslevel: "1",
+    usrbranch: "BC001",
+    usrstatus: 1,
+    ldlmdescription: "lvl_sys_bch_sch",
+    modules: "CORE",
+  },
+];
+
+const Dashboard = (props) => {
+  const [activeUsers, setActiveUsers] = useState([]);
+
+  const menuTest = props.listmenu;
+  const levelm = props.levelmenu;
+
+  console.log(menuTest);
+  console.log(levelm);
+
   const [sideBarHide, setSideBarHide] = useState(true);
-  const [userActive, setUserActive] = useState(user);
+  // const [userActive, setUserActive] = useState(user);
   const [token, setToken] = useState();
   const navigate = useNavigate();
 
   const [ruleMenagement, setruleMenagement] = useState(false);
+  const [clickButton, setclickButton] = useState("");
   const [AuditTrail, setauditTrail] = useState(true);
 
   const getTokenApi = () => {
@@ -40,353 +295,110 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
 
   useEffect(() => {
     getTokenApi();
-  }, [menuList]);
-
-  useEffect(() => {
-    if (token !== "") {
-      postJDataUserResetIsLogin();
-    }
   }, []);
 
-  useEffect(() => {
-    if (menuList === undefined) {
-      setMenuList(listMenu);
-    }
-    if (menuLevel === undefined) {
-      setMenuLevel(levelMenu);
-    }
-    if (menuList1 === undefined) {
-      setMenuList1(listMenu);
-    }
-    if (menuLevel1 === undefined) {
-      setMenuLevel1(levelMenu);
-    }
-  }, [menuList, menuLevel, menuList1, menuLevel1]);
+  // useEffect(() => {
+  //   if (token !== "") {
+  //     postJDataUserResetIsLogin();
+  //   }
+  // }, []);
 
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("sessionData"));
   const listMenu = JSON.parse(localStorage.getItem("ListMenu"));
   const levelMenu = JSON.parse(localStorage.getItem("LevelMenu"));
-  console.log(menuList);
-  console.log(menuLevel);
-  console.log(menuList1);
-  console.log(menuLevel1);
-  console.log(listMenu);
-  console.log(levelMenu);
 
-  const lvusr = menuLevel;
-  const objParent = menuList;
-  let html = "";
-  html +=
-    '<ul className="nav side-menu" style="padding-left:16px;color: white">';
+  const filteredUsers = menuTest.filter((user) => {
+    const matchingMenuLevel = levelm.find(
+      (menu) => menu.ldlmdescription === user.mn_acl
+    );
+    return matchingMenuLevel !== undefined;
+  });
 
-  // for (let i = 0; i < objParent.data.data.length; i++) {
-  //   for (let d = 0; d < lvusr.length; d++) {
-  //     if (lvusr[d].ldlmdescription === objParent.data.data[i].mn_acl) {
-  //       if (objParent.data.data[i].child.length > 0) {
-  //         //bagian admin dan parameter
-  //         html =
-  //           html +
-  //           `<li class="nav-item dropdown"><a class='dropdown-new'><i class="` +
-  //           objParent.data.data[i].mn_icon +
-  //           '"></i> ' +
-  //           objParent.data.data[i].mn_name;
-  //         html = html + ` <span class="fas fa-chevron-down"></span></a>`;
-  //         html = html + `<ul class="nav-child" >`;
-
-  //         for (var z = 0; z < objParent.data.data[i].child.length; z++) {
-  //           for (var o = 0; o < lvusr.length; o++) {
-  //             if (
-  //               lvusr[o].ldlmdescription ===
-  //               objParent.data.data[i].child[z].mn_acl
-  //             ) {
-  //               if (objParent.data.data[i].child[z].child.length > 0) {
-  //                 html +=
-  //                   `<li class='dropdown-item2' style = 'color:white'><a class='system-list' >` +
-  //                   objParent.data.data[i].child[z].mn_name;
-  //                 html += '<span class="fa fa-chevron-down"></span></a>';
-  //                 html += '<ul class="nav child_menu2">';
-  //                 for (
-  //                   var u = 0;
-  //                   u < objParent.data.data[i].child[z].child.length;
-  //                   u++
-  //                 ) {
-  //                   for (var h = 0; h < lvusr.length; h++) {
-  //                     if (
-  //                       lvusr[h].ldlmdescription ===
-  //                       objParent.data.data[i].child[z].child[u].mn_acl
-  //                     ) {
-  //                       html +=
-  //                         '<li class="sub_menu"><a href="${local_server}' +
-  //                         objParent.data.data[i].child[z].child[u].mn_link +
-  //                         '">' +
-  //                         objParent.data.data[i].child[z].child[u].mn_name +
-  //                         "</a></li>";
-  //                     }
-  //                   }
-  //                 }
-  //                 html += "</ul>";
-  //                 html += "</li>";
-  //               } else {
-  //                 html +=
-  //                   '<li className="dropdown-item"><a href="${local_server}' +
-  //                   objParent.data.data[i].child[z].mn_link +
-  //                   '">' +
-  //                   objParent.data.data[i].child[z].mn_name;
-  //                 html += "</li>";
-  //               }
-  //             }
-  //           }
-  //         }
-  //         html += "</ul>";
-  //         html += "</li>";
-  //       } else {
-  //         html +=
-  //           '<li class="nav-item"><a class="dropdown-new" href="${local_server}' +
-  //           objParent.data.data[i].mn_link +
-  //           `"><i class="` +
-  //           objParent.data.data[i].mn_icon +
-  //           `"></i>` +
-  //           objParent.data.data[i].mn_name;
-  //         html += "</li>";
-  //       }
-  //     }
-  //   }
-  // }
-  // html += "</ul>";
-
-  // const lvusr1 = menuLevel1;
-  // const objParent1 = menuList1;
-  // let html1 = "";
-  // html1 +=
-  //   '<ul className="nav side-menu" style="padding-left:16px;color: white">';
-
-  // for (let a = 0; a < objParent1.data.data.length; a++) {
-  //   for (let b = 0; b < lvusr1.length; b++) {
-  //     if (lvusr1[b].ldlmdescription === objParent1.data.data[a].mn_acl) {
-  //       if (objParent1.data.data[a].child.length > 0) {
-  //         //bagian admin dan parameter
-  //         html1 =
-  //           html1 +
-  //           `<li class="nav-item dropdown1"><a class='dropdown-new'><i class="` +
-  //           "<RiAdminFill/>" +
-  //           '"></i> ';
-  //         // +
-  //         // objParent1.data.data[a].mn_name;
-  //         html1 = html1 + ` <span class="item"></span></a>`;
-  //         html1 = html1 + `<ul class="nav-child1" >`;
-  //         for (var y = 0; y < objParent1.data.data[a].child.length; y++) {
-  //           for (var p = 0; p < lvusr1.length; p++) {
-  //             if (
-  //               lvusr1[p].ldlmdescription ===
-  //               objParent1.data.data[a].child[y].mn_acl
-  //             ) {
-  //               if (objParent1.data.data[a].child[y].child.length > 0) {
-  //                 html1 +=
-  //                   `<li class='dropdown-item1' style = 'color:white'><a class='system-list' >` +
-  //                   objParent1.data.data[a].child[y].mn_name;
-  //                 html1 += '<span class="fa fa-chevron-down"></span></a>';
-  //                 html1 += '<ul class="nav child_menu1">';
-  //                 for (
-  //                   var n = 0;
-  //                   n < objParent1.data.data[a].child[y].child.length;
-  //                   n++
-  //                 ) {
-  //                   for (var c = 0; c < lvusr1.length; c++) {
-  //                     if (
-  //                       lvusr1[c].ldlmdescription ===
-  //                       objParent1.data.data[a].child[y].child[n].mn_acl
-  //                     ) {
-  //                       html1 +=
-  //                         '<li class="sub_menu-site"><a href="${local_server}' +
-  //                         objParent1.data.data[a].child[y].child[n].mn_link +
-  //                         '">' +
-  //                         objParent1.data.data[a].child[y].child[n].mn_name +
-  //                         "</a></li>";
-  //                     }
-  //                   }
-  //                 }
-  //                 html1 += "</ul>";
-  //                 html1 += "</li>";
-  //               } else {
-  //                 html1 +=
-  //                   '<li className="dropdown-item"><a href="${local_server}' +
-  //                   objParent1.data.data[a].child[y].mn_link +
-  //                   '">' +
-  //                   objParent1.data.data[a].child[y].mn_name;
-  //                 html1 += "</li>";
-  //               }
-  //             }
-  //           }
-  //         }
-  //         html1 += "</ul>";
-  //         html1 += "</li>";
-  //       } else {
-  //         html1 +=
-  //           '<li class="nav-item"><a class="dropdown-new" href="${local_server}' +
-  //           objParent1.data.data[a].mn_link +
-  //           `"><i class="` +
-  //           objParent1.data.data[a].mn_icon +
-  //           `"></i>`;
-  //         //  +
-  //         // objParent1.data.data[a].mn_name;
-  //         html1 += "</li>";
-  //       }
-  //     }
-  //   }
-  // }
-  // html1 += "</ul>";
-
-  const data = {
-    p_usr: userActive,
-  };
-
-  const postJDataUserResetIsLogin = async () => {
-    try {
-      const listDropdown = await axios.post(
-        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
-        JSON.stringify(data),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const cekData = listDropdown.data.data.map((e) => {
-        return e;
-      });
-    } catch (error) {
-      console.log(error);
+  const toggleDropdown = (user) => {
+    if (activeUsers.includes(user)) {
+      setActiveUsers(activeUsers.filter((activeUser) => activeUser !== user));
+    } else {
+      setActiveUsers([...activeUsers, user]);
     }
   };
 
-  const dataLogUserTracking = {
-    plcd: "ua",
-    plusr: userActive,
-    plhtt: "OFF",
-    plsvrn: "uat-web-los",
-    plact: "Login Success",
-    plpgur: "/lmsadmin_ocbc/login/v6/nc",
-    plqry: "-",
-    plbro: "Firefox 72.0",
-    plos: "linux",
-    plcli: "uat-web-los/10.1.1.1",
+  const demo = (test) => {
+    setclickButton(test);
+  };
+  console.log(clickButton);
+
+  const renderChildMenu = (children) => {
+    return (
+      <ul className="dropdown-menu1">
+        {children
+          .filter((child) => {
+            const level = levelm.find(
+              (menu) => menu.ldlmdescription === child.mn_acl
+            );
+            return level;
+          })
+          .map((child) => (
+            <li key={child.id} className="cabang p-0">
+              {child.child && child.child.length > 0 ? (
+                <div>
+                  <button
+                    onClick={() => toggleDropdown(child)}
+                    className="text-white ml-3">
+                    {child.mn_name}
+                  </button>
+                  {activeUsers.includes(child) && renderChildMenu(child.child)}
+                </div>
+              ) : (
+                <button
+                  className="text-white ml-3"
+                  onClick={() => setclickButton(child.mn_link)}>
+                  {child.mn_name}
+                </button>
+              )}
+            </li>
+          ))}
+      </ul>
+    );
   };
 
-  const postDataLogUserTracking = async () => {
-    try {
-      await axios.post(
-        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
-        dataLogUserTracking,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert("postDataLogUserTracking Berhasil");
-    } catch (error) {
-      alert("postDataLogUserTracking Tidak Berhasil");
-      console.log(error);
-    }
-  };
-
-  const logOut = () => {
-    postJDataUserResetIsLogin();
-    postDataLogUserTracking();
-    navigate("/");
-  };
-
-  const testing = () => {
-    setruleMenagement(true);
-  };
+  // <NavLink to={`/dasboard ${child.mn_link}`}>
+  //   <button>{child.mn_name}</button>
+  // </NavLink>;
   return (
     <div id="page-top">
       <div id="wrapper">
-        {sideBarHide === true ? (
-          <div className="test-sidebar">
-            <a
-              className="sidebar-brand d-flex align-items-center justify-content-center"
-              href="index.html">
-              <div className="sidebar-brand-icon rotate-n-15">
-                {/* <i className="fas fa-laugh-wink"></i> */}
-              </div>
-              <div className="sidebar-brand-text mx-3 shadow">
-                <img src={Sky} alt="" className="logoSky" />
-              </div>
+        <div className="test-sidebar">
+          <a
+            className="sidebar-brand d-flex align-items-center justify-content-center"
+            href="index.html">
+            <div className="sidebar-brand-icon rotate-n-15"></div>
+            <div className="sidebar-brand-text mx-3 shadow">
+              <img src={Sky} alt="" className="logoSky" />
+            </div>
+          </a>
 
-              {/* <button
-                className="fa fa-bars"
-                onClick={() => setSideBarHide(false)}></button> */}
-            </a>
-            <ul
-              className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
-              id="accordionSidebar">
-              {/* <li
-                className="nav-item"
-                dangerouslySetInnerHTML={{ __html: html }}></li> */}
-              <li className="py-2 px-4 hover:bg-gray-700">
-                {" "}
-                <a
-                  class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(false)}>
-                  <span class="flex items-center space-x-2">
-                    <span className="font-bold">User Management</span>
+          <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion ">
+            {filteredUsers.map((user) => (
+              <li className="ml-4" key={user.id}>
+                {user.child && user.child.length > 0 ? (
+                  <div>
+                    <button
+                      onClick={() => toggleDropdown(user)}
+                      className="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <span className="">{user.mn_name}</span>
+                    </button>
+                    {activeUsers.includes(user) && renderChildMenu(user.child)}
+                  </div>
+                ) : (
+                  <span className="flex items-center p-2 text-white rounded-lg dark:text-white  ">
+                    {user.mn_name}
                   </span>
-                </a>
+                )}
               </li>
-
-              <li className="py-2 px-4 hover:bg-gray-700">
-                {" "}
-                <a
-                  class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(true)}>
-                  <span class="flex items-center space-x-2">
-                    <span className="font-bold">Role Management</span>
-                  </span>
-                </a>
-              </li>
-
-              <li className="py-2 px-4 hover:bg-gray-700">
-                {" "}
-                <a
-                  class=" text-white-500 flex items-center justify-between py-1.5 px-4 rounded cursor-pointer"
-                  onClick={() => setruleMenagement(true)}>
-                  <span class="flex items-center space-x-2">
-                    <span className="font-bold">Audit Trail</span>
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        ) : (
-          <div className="test-sidebar-site">
-            <a
-              className="sidebar-brand d-flex align-items-center justify-content-center"
-              href="index.html">
-              <div className="sidebar-brand-icon rotate-n-15">
-                {/* <i className="fas fa-laugh-wink"></i> */}
-              </div>
-              <div className="sidebar-brand-text mx-3 shadow">
-                <img src={Skysite} alt="" className="logoSkySite" />
-              </div>
-
-              {/* <button
-                className="fa fa-bars"
-                onClick={() => setSideBarHide(true)}></button> */}
-            </a>
-            <ul
-              className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
-              id="accordionSidebar">
-              {/* <li
-                className="nav-item"
-                dangerouslySetInnerHTML={{ __html: html1 }}></li> */}
-            </ul>
-          </div>
-        )}
+            ))}
+          </ul>
+        </div>
 
         <div id="content-wrapper" className="d-flex flex-column">
           <div id="content">
@@ -436,11 +448,11 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      class="w-6 h-6">
+                      className="w-6 h-6">
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       />
                     </svg>
                     <span>Log Out</span>
@@ -448,16 +460,65 @@ const Dashboard = ({ listmenu, levelmenu, user }) => {
                 </li>
               </ul>
             </nav>
-            {/* <Demo /> */}
 
-            {ruleMenagement === false ? <Demo /> : <Audit />}
-            {AuditTrail === <AuditTrail />}
+            {clickButton === "user" ? (
+              <Demo />
+            ) : clickButton === "RoleManagement" ? (
+              <Rule />
+            ) : clickButton === "AuditTrail" ? (
+              <Audit />
+            ) : clickButton === "Branch" ? (
+              <BranchMenagement />
+            ) : clickButton === "global" ? (
+              <GeneralSettings />
+            ) : clickButton === "BatchSchedule" ? (
+              <BatchScheduler />
+            ) : (
+              <div>
+                <h1>Dashboard</h1>
+              </div>
+            )}
+
+            {/* <Routes>
+              <Route exact path={"/user"} element={<Demo />}></Route>
+              <Route path={"/RoleManagement"} element={<Rule />}></Route>
+            </Routes> */}
+
+            {/* <Routes>
+              {users.map((link, pages) => (
+                <Routes exact path={link.mn_link} element={link.element} />
+              ))}
+            </Routes> */}
+
+            {/* <Routes>
+              {menuTest.map(
+                (menu) =>
+                  menu.mn_name === "Dashboard" &&
+                  child.map(({ , element }) => (
+                    <Route exact path={path} element={element} />
+                  ))
+              )}
+            </Routes> */}
+
+            {/* <Routes>
+              {menuTest.map(
+                (menu) =>
+                  menu.name === "Dashboard" &&
+                  menu.child.map((childs) => (
+                    <Route
+                      exact
+                      path={childs.mn_link}
+                      element={childs.element}
+                    />
+                  ))
+              )}
+            </Routes> */}
           </div>
 
           <footer className="sticky-footer bg-white">
             <div className="container my-auto">
               <div className="copyright text-center my-auto">
-                <span>Copyright &copy; Your Website 2023</span>
+                <span>Copyright &copy; SkyWorx 2023</span>
               </div>
             </div>
           </footer>

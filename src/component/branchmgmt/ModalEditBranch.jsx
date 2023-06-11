@@ -3,21 +3,15 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { getToken } from "../../API/api";
-import { browserName, osName,browserVersion } from "react-device-detect";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalBranch = ({
-    isOpen,
-    onClose,
-    currentBranch,
-    reload,
-  }) => {
-
-    // get userid 
-   const userid = JSON.parse(localStorage.getItem("userid"));
+const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
 
   const [token, setToken] = useState();
   const [branch, setBranch] = useState(currentBranch);
- 
+
   const getTokenApi = () => {
     getToken().then((e) => {
       setToken(e);
@@ -45,42 +39,43 @@ const ModalBranch = ({
     const res = await axios.get("https://api.ipify.org/?format=json");
     console.log(res.data);
     setIP(res.data.ip);
-  }; 
+  };
   useEffect(() => {
     getData();
   }, []);
 
-    const dataLogUserTracking = {
-      plcd: "branch_mgmt",
-      plusr: userid,
-      plhtt: "OFF",
-      plsvrn: window.location.hostname,
-      plact: "Update Branch Management",
-      plpgur: window.location.href,
-      plqry: "-",
-      plbro: browserName +" " +browserVersion,
-      plos: osName,
-      plcli: ip,
-    };
+  const dataLogUserTracking = {
+    plcd: "branch_mgmt",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Update Branch Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
 
   const postDataLogUserTracking = async () => {
-    let log = ""; 
+    let log = "";
     try {
-      await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
-        dataLogUserTracking,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ) 
-      .then((response) => {
-        console.log(response.data.data[0].resultprocess);
-        log = response.data.data[0].resultprocess;
-      });
- 
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
       await Updateobjectdata(log);
       // alert("postDataLogUserTracking Berhasil");
     } catch (error) {
@@ -88,7 +83,6 @@ const ModalBranch = ({
       console.log(error);
     }
   };
-
 
   // const dataEditBranch = {
   //   code: branch.lbrc_code,
@@ -101,48 +95,49 @@ const ModalBranch = ({
 
   const Updateobjectdata = (val) => {
     EditBranch(val);
-
-  }
+  };
   const Submit = () => {
     postDataLogUserTracking();
   };
 
   const EditBranch = async (val) => {
-    if (!branch.lbrc_code || !branch.lbrc_name || !branch.lbrc_address || !branch.lbrc_city || !branch.lbrc_phone_num) {
+    if (
+      !branch.lbrc_code ||
+      !branch.lbrc_name ||
+      !branch.lbrc_address ||
+      !branch.lbrc_city ||
+      !branch.lbrc_phone_num
+    ) {
       Swal.fire("Please completed all fields", "", "error");
       return;
     }
     try {
-      await axios.post(
-        "http://localhost:30983/skycore/Branch/update",
-        {
-          code: branch.lbrc_code,
-          name: branch.lbrc_name,
-          address: branch.lbrc_address,
-          city: branch.lbrc_city,
-          phonenum: branch.lbrc_phone_num,
-          logid: val,
-
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/Branch/update",
+          {
+            code: branch.lbrc_code,
+            name: branch.lbrc_name,
+            address: branch.lbrc_address,
+            city: branch.lbrc_city,
+            phonenum: branch.lbrc_phone_num,
+            logid: val,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status === "true")
-        {
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
             Swal.fire("Update Successfully ", "", "success");
-        }
-        else
-        {
+          } else {
             Swal.fire(response.data.message, "", "error");
-        }
-
-      });
+          }
+        });
       //Swal.fire("Save Berhasil", "", "success");
 
       reload();
@@ -246,7 +241,8 @@ const ModalBranch = ({
                   <div className=" row mb-1">
                     <div className="col-4">
                       <label for="exampleInputnumberphone" class="form-label">
-                        Branch Phone Number <span className="text-danger">*</span>
+                        Branch Phone Number{" "}
+                        <span className="text-danger">*</span>
                       </label>
                     </div>
                     <div className="col-8">
@@ -262,7 +258,6 @@ const ModalBranch = ({
                     </div>
                   </div>
                 </div>
-                
               </div>
             </form>
           </div>
