@@ -241,8 +241,7 @@ const AuditTrail = () => {
                 className="form-control"
                 value={usersName || ""}
                 onChange={(e) => setUsersName(e.target.value)}
-                required
-              >
+                required>
                 <option value="">Select One</option>
                 {users.map((item, i) => (
                   <option value={item.p_userid} key={i}>
@@ -263,8 +262,7 @@ const AuditTrail = () => {
                 className="form-control"
                 value={modulsName || ""}
                 onChange={(e) => setModulsName(e.target.value)}
-                required
-              >
+                required>
                 <option value="">Select One</option>
                 {moduls.map((item, i) => (
                   <option value={item.lgc_val} key={i}>
@@ -328,8 +326,7 @@ const AuditTrail = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control"
-              >
+                className="form-control">
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -350,7 +347,7 @@ const AuditTrail = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full table-auto">
+            <table className="min-w-max w-full table-auto table-bordered ">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-center">Code</th>
@@ -367,8 +364,7 @@ const AuditTrail = () => {
                   currentItems.map((modul) => (
                     <tr
                       key={modul.b_log_id}
-                      className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
-                    >
+                      className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
                       <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                         {modul.lgc_name}
                       </td>
@@ -392,14 +388,12 @@ const AuditTrail = () => {
                           className="btn btn-success btn-sm"
                           onClick={() =>
                             openModal(modul.b_code, modul.b_log_id)
-                          }
-                        >
+                          }>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="currentColor"
-                            className="w-6 h-6"
-                          >
+                            className="w-6 h-6">
                             <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                             <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                           </svg>
@@ -427,8 +421,7 @@ const AuditTrail = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}
-                        >
+                          disabled={currentPage === 1}>
                           Previous
                         </button>
                       </li>
@@ -441,8 +434,7 @@ const AuditTrail = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}
-                          >
+                            disabled={pageNumber === currentPage}>
                             {pageNumber}
                           </button>
                         ))}
@@ -451,8 +443,7 @@ const AuditTrail = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}
-                        >
+                          disabled={currentPage === totalPages}>
                           Next
                         </button>
                       </li>
@@ -468,8 +459,7 @@ const AuditTrail = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         modulName={modulsName} // Menggunakan modulsName sebagai modulName
-        b_log_id={selectedBLogId}
-      ></ModalTrail>
+        b_log_id={selectedBLogId}></ModalTrail>
     </div>
   );
 };

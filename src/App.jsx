@@ -109,7 +109,7 @@ function App() {
             {
               id: "12",
               mn_name: "Batch Schedule Checker",
-              mn_link: "/BatchSchedule/Checker",
+              mn_link: "BatchScheduleChecker",
               mn_parentid: "6",
               mn_acl: "lvl_sys_bch_sch_chk",
               mn_order: "2",
@@ -120,7 +120,7 @@ function App() {
             {
               id: "13",
               mn_name: "Batch Schedule Approval",
-              mn_link: "/BatchSchedule/Approval",
+              mn_link: "BatchScheduleApproval",
               mn_parentid: "6",
               mn_acl: "lvl_sys_bch_sch_apr",
               mn_order: "3",
@@ -404,6 +404,116 @@ function App() {
       ldlmdescription: "lvl_sys_bch_sch",
       modules: "CORE",
     },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_sys_bch_sch_chk",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_sys_bch_sch_apr",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_adm_mgt_read",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_adm_mgt_add",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_adm_mgt_edit",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_adm_mgt_del",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_adm_mgt_act",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_prm_brm_add",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_prm_brm_edit",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_prm_brm_del",
+      modules: "CORE",
+    },
+    {
+      usruserid: "crm_admin",
+      usrname: "crm_admin",
+      usrnip: "crm_admin",
+      usraccesslevel: "1",
+      usrbranch: "BC001",
+      usrstatus: 1,
+      ldlmdescription: "lvl_prm_api",
+      modules: "CORE",
+    },
   ];
   return (
     <Router>
@@ -420,9 +530,7 @@ function App() {
         />
         <Route
           path="/dashboard/*"
-          element={
-            <Dashboard listmenu={users} levelmenu={dataRoleUserDetail} />
-          }
+          element={<Dashboard listmenu={users} levelmenu={menuLevel} />}
         />
         <Route path="*" element={<Navigate to="/dashboard/" replace />} />
       </Routes>

@@ -11,6 +11,8 @@ import Audit from "../component/AuditTrail";
 import BranchMenagement from "../component/branchmgmt/BranchManagement";
 import GeneralSettings from "../component/glsetting/GenenalSetting";
 import BatchScheduler from "../component/system/BatchScheduler";
+import BatchSchedulerApp from "../component/system/BatchSchedulerApproval";
+import BatchSchedulerCk from "../component/system/BatchSchedulerChecker";
 // import BatchScheduler from "../component/system/BatchScheduler";
 import { IconName } from "react-icons/ri";
 import "../assets/css/modal.css";
@@ -473,6 +475,10 @@ const Dashboard = (props) => {
               <GeneralSettings />
             ) : clickButton === "BatchSchedule" ? (
               <BatchScheduler />
+            ) : clickButton === "BatchScheduleApproval" ? (
+              <BatchSchedulerApp />
+            ) : clickButton === "BatchScheduleChecker" ? (
+              <BatchSchedulerCk />
             ) : (
               <div>
                 <h1>Dashboard</h1>
