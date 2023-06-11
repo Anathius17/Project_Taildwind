@@ -12,7 +12,6 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
   useEffect(() => {
     fetchData();
   }, [modulName, b_log_id]);
-  
 
   const fetchData = async () => {
     try {
@@ -68,6 +67,39 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
         }
 
         setModalData({ beforeData, afterData });
+      } else if (modulName === "general_setting") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.glc_log_action.localeCompare(b.glc_log_action)
+        );
+
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].glc_log_action === "BEFORE") {
+            beforeData = sortedData[i];
+          } else if (sortedData[i].glc_log_action === "AFTER") {
+            afterData = sortedData[i];
+          }
+        }
+
+        setModalData({ beforeData, afterData });
+      } else if (modulName === "user_access") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.log_action_date.localeCompare(b.log_action_date)
+        );
+
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (sortedData[i].log_activity === "Login Success") {
+            beforeData = sortedData[i];
+            break; // Stop the loop after finding the matching entry
+          }
+        }
+
+        setModalData({ beforeData, afterData });
       }
     } catch (error) {
       console.log(error);
@@ -117,7 +149,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute bg-white p-6 rounded-lg shadow-lg">
+      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Audit Trail - {formattedModulName}</h5>
@@ -201,6 +233,93 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
                         <tr key={fieldName}>
                           <td className="py-3 px-6 text-left">{label}</td>
                           {tableCells}
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            )}
+
+            {modulName === "general_setting" && (
+              <table className="min-w-max w-full table-auto table-bordered">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-6 text-left">Field Name</th>
+                    <th className="py-3 px-6 text-left">Before</th>
+                    <th className="py-3 px-6 text-left">After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const fieldNames = [
+                      { fieldName: "glc_code", label: "Code" },
+                      { fieldName: "glc_name", label: "Name" },
+                      { fieldName: "glc_desc", label: "Description" },
+                      { fieldName: "glc_value", label: "Value" },
+                      { fieldName: "glc_action_by", label: "Action By" },
+                      { fieldName: "glc_log_date", label: "Log Date" },
+                    ];
+
+                    return fieldNames.map(({ fieldName, label }) => {
+                      const tableCells = renderTableCell(fieldName);
+                      return (
+                        <tr key={fieldName}>
+                          <td className="py-3 px-6 text-left">{label}</td>
+                          {tableCells}
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            )}
+
+            {modulName === "user_access" && (
+              <table className="min-w-max w-full table-auto table-bordered">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-6 text-left">Field Name</th>
+                    <th className="py-3 px-6 text-left">Before</th>
+                    <th className="py-3 px-6 text-left">After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const fieldNames = [
+                      { fieldName: "usr_userid", label: "User ID" },
+                      { fieldName: "usr_name", label: "Name" },
+                      { fieldName: "usr_nip", label: "NIP" },
+                      { fieldName: "usr_access_level", label: "Access Level" },
+                      { fieldName: "usr_branch", label: "Branch" },
+                      { fieldName: "status", label: "Status" },
+                      { fieldName: "usr_last_access", label: "Last Access" },
+                      { fieldName: "usr_is_login", label: "Is Login" },
+                      { fieldName: "usr_fail_login", label: "Fail Login" },
+                      { fieldName: "log_action_date", label: "Action Date" },
+                      { fieldName: "log_server_name", label: "Server Name" },
+                      { fieldName: "log_activity", label: "Activity" },
+                      { fieldName: "log_browser", label: "Browser" },
+                      {
+                        fieldName: "log_operating_system",
+                        label: "Operating System",
+                      },
+                      { fieldName: "client_ip", label: "Client IP" },
+                    ];
+
+                    return fieldNames.map(({ fieldName, label }) => {
+                      const beforeValue = modalData.beforeData
+                        ? modalData.beforeData[fieldName]
+                        : "";
+                      const afterValue = modalData.afterData
+                        ? modalData.afterData[fieldName]
+                        : "";
+
+                      return (
+                        <tr key={fieldName}>
+                          <td className="py-3 px-6 text-left">{label}</td>
+                          <td className="py-3 px-6 text-left">{beforeValue}</td>
+                          <td className="py-3 px-6 text-left">{afterValue}</td>
                         </tr>
                       );
                     });
