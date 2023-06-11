@@ -5,44 +5,42 @@ import Modal from "./ModalAddBranch";
 import ModalEdit from "./ModalEditBranch";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { browserName, osName,browserVersion } from "react-device-detect";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 const BranchMenagement = () => {
-    const [branch, setBranch] = useState([]);
-    const [currentBranch, setCurrentBranch] = useState(branch);
-    //const [token, setToken] = useState();
+  const [branch, setBranch] = useState([]);
+  const [currentBranch, setCurrentBranch] = useState(branch);
+  //const [token, setToken] = useState();
 
-    // hit token 
-    // const getTokenApi = () => {
-    //     getToken().then((e) => {
-    //       setToken(e);
-    //     });
-    //   };
+  // hit token
+  // const getTokenApi = () => {
+  //     getToken().then((e) => {
+  //       setToken(e);
+  //     });
+  //   };
 
-    //   useEffect(() => {
-    //     getTokenApi();
-    //   }, [token]);
-      
-    const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-    // console.log(sessionData);
-    const token = sessionData;
-    // Dapatkan data sesi
+  //   useEffect(() => {
+  //     getTokenApi();
+  //   }, [token]);
 
-    // get userid 
-    const userid = JSON.parse(localStorage.getItem("userid"));
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  // console.log(sessionData);
+  const token = sessionData;
+  // Dapatkan data sesi
 
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
 
   useEffect(() => {
     if (token && token.map !== "") {
       getBranchList();
     }
-    
   }, [token]);
 
   const getBranchList = async () => {
     try {
       const listbranch = await axios.get(
-        "http://localhost:30983/skycore/Branch/list",
+        "http://116.206.196.65:30983/skycore/Branch/list",
         {
           headers: {
             "Content-Type": "application/json",
@@ -56,11 +54,8 @@ const BranchMenagement = () => {
       });
 
       setBranch(cekData);
-
     } catch (errorbranch) {
-
       alert(errorbranch);
-
     }
   };
 
@@ -85,29 +80,29 @@ const BranchMenagement = () => {
     plact: "Delete Branch Management",
     plpgur: window.location.href,
     plqry: "-",
-    plbro: browserName +" " +browserVersion,
+    plbro: browserName + " " + browserVersion,
     plos: osName,
     plcli: ip,
   };
 
   const postDataLogUserTracking = async () => {
-    let log = ""; 
+    let log = "";
     try {
-      const frisLogin = await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
-        JSON.stringify(dataLogUserTracking),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.data[0].resultprocess);
-        log = response.data.data[0].resultprocess;
-       
-      });
+      const frisLogin = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          JSON.stringify(dataLogUserTracking),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
       await deletebranchbycode(log);
       //alert("postDataLogUserTracking Berhasil");
     } catch (error) {
@@ -122,41 +117,35 @@ const BranchMenagement = () => {
 
   const deletebranchbycode = (val) => {
     Deletebranch(val);
-  }
-   
-  const Deletebranch = async (val) => {
-   
-    try {
-      const branchDelete = await axios.post(
-        "http://localhost:30983/skycore/Branch/delete",
-        //JSON.stringify(hitDelete),
-        {
-          code: branchcode,
-          logid: val,
+  };
 
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+  const Deletebranch = async (val) => {
+    try {
+      const branchDelete = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/Branch/delete",
+          //JSON.stringify(hitDelete),
+          {
+            code: branchcode,
+            logid: val,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status === "true")
-        {
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
             Swal.fire("Branch Successfully Deleted", "", "success");
             getBranchList();
-        }
-        else
-        {
+          } else {
             Swal.fire(response.data.message, "", "error");
             getBranchList();
-        }
-
-      });
-      
+          }
+        });
     } catch (error) {
       alert(error);
     }
@@ -168,31 +157,22 @@ const BranchMenagement = () => {
     //   deletebranch(id);
     //   setbranchcode(id);
     // }
-    
+
     Swal.fire({
-        title: 'Are you sure you want to delete this data?',
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: "OK",
-        cancelButtonText: "Cancel",
-        icon: 'warning'
-    }
-    ).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) 
-        {
-            //postDataLogUserTracking();
-            deletebranch(id);
-            setbranchcode(id);
-
-            
-
-        } else
-            Swal.fire(' Cancelled', '', 'error');
-           
-
-    })
-
+      title: "Are you sure you want to delete this data?",
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      icon: "warning",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        //postDataLogUserTracking();
+        deletebranch(id);
+        setbranchcode(id);
+      } else Swal.fire(" Cancelled", "", "error");
+    });
   };
 
   useEffect(() => {
@@ -242,12 +222,11 @@ const BranchMenagement = () => {
   //! Edit branch
   const [detaiBranchParam, setDetaiBranchParam] = useState("");
 
-//   useEffect(() => {
-//     getBranchDetail();
-//   }, [detaiBranchParam]);
+  //   useEffect(() => {
+  //     getBranchDetail();
+  //   }, [detaiBranchParam]);
 
   const editBranch = (branchcode) => {
-  
     setDetaiBranchParam(branchcode);
     setIsModalOpenEdit(true);
   };
@@ -259,8 +238,7 @@ const BranchMenagement = () => {
     console.log(detaiBranchParam);
     try {
       const listBranchDetail = await axios.get(
-        "http://localhost:30983/skycore/Branch/detail/" +
-          detaiBranchParam,
+        "http://116.206.196.65:30983/skycore/Branch/detail/" + detaiBranchParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -272,16 +250,13 @@ const BranchMenagement = () => {
       const cekData = listBranchDetail.data.data.map((e) => {
         console.log(e);
         return e;
-       
       });
-    
+
       //console.log(cekData[0]);
       console.log(listBranchDetail.data.status);
       setBranchEdit(cekData[0]);
     } catch (errorUser) {
-
       console.log(errorUser);
-
     }
   };
 
@@ -318,7 +293,7 @@ const BranchMenagement = () => {
         </div>
         <div className="btn-new">
           <button className="btn btn-primary" onClick={openModal}>
-             Add new
+            Add new
           </button>
         </div>
       </div>
@@ -398,9 +373,7 @@ const BranchMenagement = () => {
                       </button>
                       <button
                         className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeletebranch(brc.lbrc_code)}
-                        
-                        >
+                        onClick={() => handleDeletebranch(brc.lbrc_code)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -413,8 +386,7 @@ const BranchMenagement = () => {
                           />
                         </svg>
                       </button>
-                        <></>
-                     
+                      <></>
                     </td>
                   </tr>
                 ))}
@@ -474,7 +446,7 @@ const BranchMenagement = () => {
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
-          currentBranch ={branchEdit}
+          currentBranch={branchEdit}
           reload={getBranchList}
         />
       ) : (
@@ -482,6 +454,5 @@ const BranchMenagement = () => {
       )}
     </div>
   );
-
 };
 export default BranchMenagement;

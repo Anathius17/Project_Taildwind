@@ -6,6 +6,7 @@ import "../assets/css/util.css";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../API/api";
 import md5 from "js-md5";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 // ? membuat isi dalam captcha
 const generateCaptcha = () => {
@@ -42,12 +43,26 @@ const Login = (props) => {
   const [userDataCekLogin, setUserLoginDataCek] = useState("");
   const [userFaillLogin, setuserFaillLogin] = useState();
 
+  const [ip, setIP] = useState("");
+  const getData = async () => {
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    console.log(res.data);
+    setIP(res.data.ip);
+  };
+
+  useEffect(() => {
+    //passing getData method to the lifecycle method
+    getData();
+  }, []);
+
+  console.log(osName);
+
   const [dataRoleUserDetail, setDataRoleUserDetail] = useState([]); // ! Hasil data yang di ambil dari getroleuserdetail
 
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const [listMenuSend, setListMenuSend] = useState({});
+  const [listMenuSend, setListMenuSend] = useState([]);
 
   // Simpan data sesi
   localStorage.setItem("tokenData", JSON.stringify(token));
@@ -69,7 +84,7 @@ const Login = (props) => {
   const getPasswordUser = async () => {
     try {
       const PasswordUser = await axios.get(
-        "http://localhost:30983/skycore/Login/getPasswordUser/" + username,
+        "http://116.206.196.65:30983/skycore/Login/getPasswordUser/" + username,
         {
           headers: {
             "Content-Type": "application/json",
@@ -120,7 +135,7 @@ const Login = (props) => {
   const resetFailLogin = async () => {
     try {
       const failLogin = await axios.get(
-        "http://localhost:30983/skycore/Login/resetFailLogin/" + username,
+        "http://116.206.196.65:30983/skycore/Login/resetFailLogin/" + username,
         {
           headers: {
             "Content-Type": "application/json",
@@ -144,7 +159,7 @@ const Login = (props) => {
   const getDataUserRoleDetail = async () => {
     try {
       const userRoleDetail = await axios.post(
-        "http://localhost:30983/skycore/Login/getDataUserRoleDetail",
+        "http://116.206.196.65:30983/skycore/Login/getDataUserRoleDetail",
         JSON.stringify(data1),
         {
           headers: {
@@ -168,7 +183,7 @@ const Login = (props) => {
   const generalListMenuAPI = async () => {
     try {
       const listMenu = await axios.get(
-        "http://localhost:30983/skycore/Login/GenerateListMenu/0",
+        "http://116.206.196.65:30983/skycore/Login/GenerateListMenu/0",
         {
           headers: {
             "Content-Type": "application/json",
@@ -178,12 +193,12 @@ const Login = (props) => {
       );
 
       console.log(listMenu);
-      const generalListMenu = listMenu.data.data.map((e) => {
+      let generalListMenu = listMenu.data.data.map((e) => {
         return e;
       });
 
       console.log(listMenu);
-      setListMenuSend(listMenu);
+      setListMenuSend(generalListMenu);
       // setListMenuSend(generalListMenu);
 
       // alert("List Menu Berhasil");
@@ -200,7 +215,7 @@ const Login = (props) => {
   const getIsFristLogin = async () => {
     try {
       const frisLogin = await axios.post(
-        "http://localhost:30983/skycore/LogActivity/IsFirstLogin",
+        "http://116.206.196.65:30983/skycore/LogActivity/IsFirstLogin",
         JSON.stringify(dataFristLogin),
         {
           headers: {
@@ -230,22 +245,22 @@ const Login = (props) => {
 
   // !  atur secara dinamis
   const dataLogUserTracking = {
-    plcd: "ua",
+    plcd: "user_access",
     plusr: username,
     plhtt: "OFF",
-    plsvrn: "uat-web-los",
+    plsvrn: window.location.hostname,
     plact: "Login Success",
-    plpgur: "/login/v6/nc",
+    plpgur: window.location.href,
     plqry: "-",
-    plbro: "Firefox 72.0",
-    plos: "linux",
-    plcli: "uat-web-los/10.1.1.1",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
   };
 
   const postDataLogUserTracking = async () => {
     try {
       const frisLogin = await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
+        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
         JSON.stringify(dataLogUserTracking),
         {
           headers: {
@@ -264,7 +279,7 @@ const Login = (props) => {
   const faillLogin = async () => {
     try {
       const failLoginuser = await axios.get(
-        "http://localhost:30983/skycore/Login/UserFailLogin/" + username,
+        "http://116.206.196.65:30983/skycore/Login/UserFailLogin/" + username,
         {
           headers: {
             "Content-Type": "application/json",
@@ -281,24 +296,6 @@ const Login = (props) => {
       setuserFaillLogin(cekFailLogin.usrfaillogin);
     } catch (error) {
       alert("Sorry, the username has not been activated or is blocked");
-    }
-  };
-
-  const handleSubmitUser = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.get(
-        "https://api.themoviedb.org/3/movie/popular?api_key=84c4bc8c920f2bfed2ee39df70529b04",
-        {
-          username,
-          password,
-        }
-      );
-      // console.log(response.data); // ! Tampilkan data response dari API
-      setErrorMessage(""); // ! Reset pesan error jika login berhasil
-    } catch (error) {
-      console.error(error);
-      setErrorMessage(alert("Username atau Password Salah")); // Set pesan error jika login gagal
     }
   };
 
@@ -404,18 +401,6 @@ const Login = (props) => {
     setInput(event.target.value);
   };
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   if (input.toUpperCase() === captcha.toUpperCase()) {
-  //     alert("CAPTCHA validated successfully!");
-  //     getTokenApi();
-  //   } else {
-  //     alert("CAPTCHA validation failed. Please try again.");
-  //     setCaptcha(generateCaptcha());
-  //     setInput("");
-  //   }
-  // };
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -443,7 +428,6 @@ const Login = (props) => {
             <form
               className="mx-auto px-1"
               onSubmit={(event) => {
-                handleSubmitUser(event);
                 handleSubmit(event);
               }}>
               <div className="mx-auto w-32 my-1">
@@ -484,7 +468,7 @@ const Login = (props) => {
               <span>
                 {errorMessage && <p className="eror">{errorMessage}</p>}{" "}
               </span>
-              <div class="bg-zinc-600 rounded-md item-center mx-auto">
+              <div className="bg-zinc-600 rounded-md item-center mx-auto">
                 <div className="flex flex-nowrap gap-1 px-1 py-1 mx-auto my-auto">
                   <input
                     type="text"

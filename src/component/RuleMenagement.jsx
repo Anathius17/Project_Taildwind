@@ -37,7 +37,7 @@ const RuleMenagement = () => {
   const getList = async () => {
     try {
       const listUser = await axios.get(
-        "http://localhost:30983/skycore/role/list",
+        "http://116.206.196.65:30983/skycore/role/list",
         {
           headers: {
             "Content-Type": "application/json",

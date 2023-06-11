@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
-import ModalEdit from "./ModalEditGeneral";
+import ModalEdit from "./ModalEditSchedulerChecker";
+
 import axios from "axios";
 
-const GeneralSetting = () => {
-  const [general, setGeneral] = useState([]);
-  const [currentGeneral, setCurrentGeneral] = useState(general);
+const BatchSchedulerChecker = () => {
+  const [bs, setSchedulerChecker] = useState([]);
+
   //const [token, setToken] = useState();
 
   // hit token
@@ -15,23 +16,16 @@ const GeneralSetting = () => {
   const token = sessionData;
   // Dapatkan data sesi
 
-  // get userid
-  //const userid = JSON.parse(localStorage.getItem("userid"));
-  //console.log("test1233");
-  //console.log(userid);
-  //const userid = sessionUserid;
-  // Dapatkan data sesi
-
   useEffect(() => {
     if (token && token.map !== "") {
-      getGeneralList();
+      getSchedulerCheckerList();
     }
   }, [token]);
 
-  const getGeneralList = async () => {
+  const getSchedulerCheckerList = async () => {
     try {
-      const listgeneral = await axios.get(
-        "http://116.206.196.65:30983/skycore/Global/config/list",
+      const listbs = await axios.get(
+        "http://116.206.196.65:30999/skybatch/Batchscheduler/list/approval/checked",
         {
           headers: {
             "Content-Type": "application/json",
@@ -40,11 +34,11 @@ const GeneralSetting = () => {
         }
       );
 
-      const cekData = listgeneral.data.data.map((e) => {
+      const cekData = listbs.data.data.map((e) => {
         return e;
       });
 
-      setGeneral(cekData);
+      setSchedulerChecker(cekData);
     } catch (error) {
       alert(error);
     }
@@ -59,8 +53,8 @@ const GeneralSetting = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   // Mengambil data yang sesuai dengan halaman saat ini dan term pencarian
-  const filteredData = general.filter((item) =>
-    item.glc_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = bs.filter((item) =>
+    item.p_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -84,49 +78,8 @@ const GeneralSetting = () => {
     setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
   };
 
-  //! Edit General
-  const [detaiGeneralParam, setDetaiGeneralParam] = useState("");
-
-  const editGeneral = (generalcode) => {
-    setDetaiGeneralParam(generalcode);
-    setIsModalOpenEdit(true);
-  };
-
-  const [generalEdit, setGeneralEdit] = useState();
-
-  const getGeneralDetail = async () => {
-    console.log(detaiGeneralParam);
-    try {
-      const listGeneralDetail = await axios.get(
-        "http://116.206.196.65:30983/skycore/Global/config/detail/" +
-          detaiGeneralParam,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const cekData = listGeneralDetail.data.data.map((e) => {
-        console.log(e);
-        return e;
-      });
-
-      //console.log(cekData[0]);
-      console.log(listGeneralDetail.data.status);
-      setGeneralEdit(cekData[0]);
-    } catch (errorUser) {
-      console.log(errorUser);
-    }
-  };
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
+  //! Edit Scheduler
+  //const [detaiSchedulerParam, setDetaiSchedulerParam] = useState("");
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
 
   const openModalEdit = () => {
@@ -138,15 +91,51 @@ const GeneralSetting = () => {
     // window.location.reload();
   };
 
-  useEffect(() => {
-    getGeneralDetail();
-  }, [detaiGeneralParam]);
+  const editSchedulerChecker = (id) => {
+    getSchedulerDetailChecker(id);
+    //setDetaiSchedulerParam(id);
+    setIsModalOpenEdit(true);
+  };
+
+  const [bsEdit, setSchedulerEdit] = useState();
+  const [bsEditdetail, setSchedulerDetail] = useState();
+
+  const getSchedulerDetailChecker = async (val) => {
+    try {
+      const listbsDetail = await axios.post(
+        "http://116.206.196.65:30999/skybatch/Batchscheduler/detail",
+        {
+          id: val,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // console.log("12443");
+      // //console.log(cekData[0]);
+      // console.log(listbsDetail.data.detail);
+      setSchedulerEdit(listbsDetail.data.data);
+      setSchedulerDetail(listbsDetail.data.detail);
+    } catch (errorUser) {
+      console.log(errorUser);
+    }
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="card shadow mb-4">
       <div className="card-header d-flex justify-content-between mb-2">
         <div className="test">
-          <h4> General Setting</h4>
+          <h4> Batch Schedule Checker</h4>
         </div>
       </div>
 
@@ -169,7 +158,7 @@ const GeneralSetting = () => {
             <div className="page-iittem">
               <input
                 type="text"
-                placeholder="Search by Name"
+                placeholder="Search by Job Name"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="form-control"
@@ -179,40 +168,47 @@ const GeneralSetting = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full ">
+            <table className="min-w-max w-full  table-bordered">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-center">Code</th>
-                  <th className="py-3 px-6 text-center">Name</th>
-                  <th className="py-3 px-6 text-center">Description</th>
-                  <th className="py-3 px-6 text-center">Value</th>
+                  <th className="py-3 px-6 text-center">Job Category</th>
+                  <th className="py-3 px-6 text-center">Job Name</th>
+                  <th className="py-3 px-6 text-center">Schedule</th>
+                  <th className="py-3 px-6 text-center">Last Run</th>
+                  <th className="py-3 px-6 text-center">Last Status</th>
+                  <th className="py-3 px-6 text-center">Status</th>
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
-                {currentItems.map((glc) => (
+                {currentItems.map((bs) => (
                   <tr
-                    key={glc.glc_code}
+                    key={bs.p_id}
                     className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {glc.glc_code}
+                      {bs.p_category}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
-                      {glc.glc_name}
+                      {bs.p_name}
                     </td>
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {glc.glc_desc}
+                      {bs.p_scheduler}
                     </td>
-                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                      {glc.glc_value}
+                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      {bs.p_last_run}
+                    </td>
+                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      {bs.p_status}
+                    </td>
+                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      {bs.p_approved_status}
                     </td>
                     <td className="py-3 px-6 text-center  whitespace-nowrap ">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={() => editGeneral(glc.glc_code)}>
-                        detail
+                        onClick={() => editSchedulerChecker(bs.p_id)}>
+                        Checked
                       </button>
-
                       <></>
                     </td>
                   </tr>
@@ -265,12 +261,13 @@ const GeneralSetting = () => {
         </div>
       </div>
 
-      {generalEdit !== undefined ? (
+      {bsEdit !== undefined ? (
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
-          currentGeneral={generalEdit}
-          reload={getGeneralList}
+          currentScheduler={bsEdit}
+          currentSchedulerdetail={bsEditdetail}
+          reload={getSchedulerCheckerList}
         />
       ) : (
         <></>
@@ -278,4 +275,4 @@ const GeneralSetting = () => {
     </div>
   );
 };
-export default GeneralSetting;
+export default BatchSchedulerChecker;

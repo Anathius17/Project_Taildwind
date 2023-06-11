@@ -30,7 +30,7 @@ const UserMenagement = () => {
   const getUserList = async () => {
     try {
       const listUser = await axios.get(
-        "http://localhost:30983/skycore/User/list",
+        "http://116.206.196.65:30983/skycore/User/list",
         {
           headers: {
             "Content-Type": "application/json",
@@ -51,7 +51,7 @@ const UserMenagement = () => {
 
   // ! nanti atur secara dinamis
   const dataLogUserTracking = {
-    plcd: "ua",
+    plcd: "user_management",
     plusr: "crm_admin",
     plhtt: "OFF",
     plsvrn: "uat-web-los",
@@ -66,7 +66,7 @@ const UserMenagement = () => {
   const postDataLogUserTracking = async () => {
     try {
       const frisLogin = await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
+        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
         JSON.stringify(dataLogUserTracking),
         {
           headers: {
@@ -93,7 +93,7 @@ const UserMenagement = () => {
   const DeleteUser = async () => {
     try {
       const userDelete = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataDelRecord",
+        "http://116.206.196.65:30983/skycore/User/postJDataDelRecord",
         JSON.stringify(hitDelete),
         {
           headers: {
@@ -129,22 +129,6 @@ const UserMenagement = () => {
     setUsers(users.filter((user) => user.usruserid !== id));
   };
   //! ----batas Hit Api delete-----
-
-  // const ubahPage = (e) => {
-  //   const { value } = e.target;
-  //   setUsersPerPage(value);
-  // };
-
-  // const [test, setTest] = useState(0);
-  // console.log(test);
-
-  // console.log(typeof test);
-
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [usersPerPage, setUsersPerPage] = useState(3);
-  // console.log(usersPerPage);
-
-  // !
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -205,12 +189,13 @@ const UserMenagement = () => {
 
   const [userEdit, setUserEdit] = useState();
 
-  //  GET http://localhost:30983/skycore/User/getDataUser/ 404 (Not Found)
+  //  GET http://116.206.196.65:30983/skycore/User/getDataUser/ 404 (Not Found)
 
   const getUserDetail = async () => {
     try {
       const listUserDetail = await axios.get(
-        "http://localhost:30983/skycore/User/getDataUser/" + detaiUserParam,
+        "http://116.206.196.65:30983/skycore/User/getDataUser/" +
+          detaiUserParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -287,7 +272,7 @@ const UserMenagement = () => {
   const Active = async () => {
     try {
       await axios.post(
-        "http://localhost:30983/skycore/User/activeByUser/",
+        "http://116.206.196.65:30983/skycore/User/activeByUser/",
         userActive,
         {
           headers: {
@@ -323,7 +308,7 @@ const UserMenagement = () => {
   const DropDown = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdown),
         {
           headers: {
@@ -353,7 +338,7 @@ const UserMenagement = () => {
   const DropDownSv = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdownSv),
         {
           headers: {
@@ -383,7 +368,7 @@ const UserMenagement = () => {
   const DropDownRl = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdownRl),
         {
           headers: {
@@ -445,7 +430,7 @@ const UserMenagement = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full table-auto">
+            <table className="min-w-max w-full table-bordered ">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-left">User Id</th>
@@ -646,7 +631,7 @@ export default UserMenagement;
 //   const getUserList = async () => {
 //     try {
 //       const listUser = await axios.get(
-//         "http://localhost:30983/skycore/User/list",
+//         "http://116.206.196.65:30983/skycore/User/list",
 //         {
 //           headers: {
 //             "Content-Type": "application/json",
@@ -682,7 +667,7 @@ export default UserMenagement;
 //   const postDataLogUserTracking = async () => {
 //     try {
 //       const frisLogin = await axios.post(
-//         "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
+//         "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
 //         JSON.stringify(dataLogUserTracking),
 //         {
 //           headers: {
@@ -706,7 +691,7 @@ export default UserMenagement;
 //   const DeleteUser = async () => {
 //     try {
 //       const userDelete = await axios.post(
-//         "http://localhost:30983/skycore/User/postJDataDelRecord",
+//         "http://116.206.196.65:30983/skycore/User/postJDataDelRecord",
 //         JSON.stringify(hitDelete),
 //         {
 //           headers: {

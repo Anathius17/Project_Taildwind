@@ -162,7 +162,7 @@ const Modal = ({
     }
     try {
       await axios.post(
-        "http://localhost:30983/skycore/User/postJDataEditRecord",
+        "http://116.206.196.65:30983/skycore/User/postJDataEditRecord",
         dataEditUser,
         {
           headers: {

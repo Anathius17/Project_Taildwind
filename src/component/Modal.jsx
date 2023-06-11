@@ -124,7 +124,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const InsertUserNew = async () => {
     try {
       const userNew = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataInsertRecord",
+        "http://116.206.196.65:30983/skycore/User/postJDataInsertRecord",
         JSON.stringify(insertUser),
         {
           headers: {
@@ -169,7 +169,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const postDataLogUserTracking = async () => {
     try {
       await axios.post(
-        "http://localhost:30983/skycore/LogActivity/postDataLogUserTracking",
+        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
         dataLogUserTracking,
         {
           headers: {
@@ -195,7 +195,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const DropDown = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdown),
         {
           headers: {
@@ -224,7 +224,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const DropDownSv = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdownSv),
         {
           headers: {
@@ -253,7 +253,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const DropDownRl = async () => {
     try {
       const listDropdown = await axios.post(
-        "http://localhost:30983/skycore/User/postJDataCallParameterDDL",
+        "http://116.206.196.65:30983/skycore/User/postJDataCallParameterDDL",
         JSON.stringify(hitDropdownRl),
         {
           headers: {

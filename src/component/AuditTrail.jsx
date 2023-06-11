@@ -27,7 +27,7 @@ const AuditTrail = () => {
   const getUserList = async () => {
     try {
       const listUser = await axios.get(
-        "http://localhost:30998/skyaudittrail/audit/list_name_user",
+        "http://116.206.196.65:30998/skyaudittrail/audit/list_name_user",
         {
           headers: {
             "Content-Type": "application/json",
