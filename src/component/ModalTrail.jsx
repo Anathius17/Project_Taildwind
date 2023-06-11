@@ -52,16 +52,16 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
         setModalData({ beforeData, afterData });
       } else if (modulName === "user_management") {
         const sortedData = response.data.data.sort((a, b) =>
-          a.p_usr_action.localeCompare(b.p_usr_action)
+          a.p_log_action_mode.localeCompare(b.p_log_action_mode)
         );
 
         let beforeData = null;
         let afterData = null;
 
         for (let i = 0; i < sortedData.length; i++) {
-          if (sortedData[i].p_usr_action === "BEFORE") {
+          if (sortedData[i].p_log_action_mode === "Before") {
             beforeData = sortedData[i];
-          } else if (sortedData[i].p_usr_action === "AFTER") {
+          } else if (sortedData[i].p_log_action_mode === "After") {
             afterData = sortedData[i];
           }
         }
@@ -130,7 +130,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
           </div>
           <div className="modal-body">
             {modulName === "branch_mgmt" && (
-              <table className="min-w-max w-full table-auto">
+              <table className="min-w-max w-full table-auto table-bordered">
                 <thead>
                   <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                     <th className="py-3 px-6 text-left">Field Name</th>
@@ -163,7 +163,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
             )}
 
             {modulName === "user_management" && (
-              <table className="min-w-max w-full table-auto">
+              <table className="min-w-max w-full table-auto table-bordered">
                 <thead>
                   <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                     <th className="py-3 px-6 text-left">Field Name</th>
