@@ -34,7 +34,7 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
       console.log("API Response:", response.data.data);
       setModalData(response.data.data);
     } catch (error) {
-      console.error(error);
+      alert(error);
     }
   };
 
@@ -57,10 +57,18 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
 
     return (
       <>
-        <td className={`py-3 px-6 text-left ${hasDifference ? "text-red-500" : ""}`}>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference ? "text-red-500" : ""
+          }`}
+        >
           {beforeRenderValue}
         </td>
-        <td className={`py-3 px-6 text-left ${hasDifference ? "text-red-500" : ""}`}>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference ? "text-red-500" : ""
+          }`}
+        >
           {afterRenderValue}
         </td>
       </>
@@ -92,42 +100,37 @@ const ModalTrail = ({ isOpen, onClose, modulName }) => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="py-3 px-6 text-left">User ID</td>
-                  {renderTableCell("p_usr_userid")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">User Name</td>
-                  {renderTableCell("p_usr_name")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">User Email</td>
-                  {renderTableCell("p_usr_email")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">NIP</td>
-                  {renderTableCell("p_usr_nip")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">Access Level</td>
-                  {renderTableCell("p_usr_access_level")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">User Effective Date</td>
-                  {renderTableCell("p_usr_efective_date")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">Branch</td>
-                  {renderTableCell("p_usr_branch")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">User Supervisor</td>
-                  {renderTableCell("p_usr_supervisor")}
-                </tr>
-                <tr>
-                  <td className="py-3 px-6 text-left">Status</td>
-                  {renderTableCell("p_usr_status")}
-                </tr>
+                {(() => {
+                  const tableRows = [];
+                  const fieldNames = [
+                    { fieldName: "p_usr_userid", label: "User ID" },
+                    { fieldName: "p_usr_name", label: "User Name" },
+                    { fieldName: "p_usr_email", label: "User Email" },
+                    { fieldName: "p_usr_nip", label: "NIP" },
+                    { fieldName: "p_usr_access_level", label: "Access Level" },
+                    {
+                      fieldName: "p_usr_efective_date",
+                      label: "User Effective Date",
+                    },
+                    { fieldName: "p_usr_branch", label: "Branch" },
+                    { fieldName: "p_usr_supervisor", label: "User Supervisor" },
+                    { fieldName: "p_usr_status", label: "Status" },
+                  ];
+
+                  for (let i = 0; i < fieldNames.length; i++) {
+                    const { fieldName, label } = fieldNames[i];
+                    const tableCells = renderTableCell(fieldName, label);
+                    const tableRow = (
+                      <tr key={fieldName}>
+                        <td className="py-3 px-6 text-left">{label}</td>
+                        {tableCells}
+                      </tr>
+                    );
+                    tableRows.push(tableRow);
+                  }
+
+                  return tableRows;
+                })()}
               </tbody>
             </table>
           </div>
