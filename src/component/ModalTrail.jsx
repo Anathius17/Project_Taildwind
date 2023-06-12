@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
+const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
   const [modalData, setModalData] = useState(null);
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
   console.log(modulName);
   console.log(b_log_id);
+  console.log(lgc_name);
 
   useEffect(() => {
     fetchData();
-  }, [modulName, b_log_id]);
+  }, [modulName, b_log_id, lgc_name]);
 
   const fetchData = async () => {
     try {
@@ -42,7 +43,10 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
         let afterData = null;
 
         for (let i = 0; i < sortedData.length; i++) {
-          if (sortedData[i].p_lbrc_action === "BEFORE") {
+          if (
+            sortedData[i].p_lbrc_action === "BEFORE" ||
+            sortedData[i].p_lbrc_action === "DELETE"
+          ) {
             beforeData = sortedData[i];
           } else if (sortedData[i].p_lbrc_action === "AFTER") {
             afterData = sortedData[i];
@@ -100,6 +104,26 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
         }
 
         setModalData({ beforeData, afterData });
+      } else if (modulName === "api_management") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.api_log_action.localeCompare(b.api_log_action)
+        );
+
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (
+            sortedData[i].api_log_action === "before" ||
+            sortedData[i].api_log_action === "delete"
+          ) {
+            beforeData = sortedData[i];
+          } else if (sortedData[i].api_log_action === "after") {
+            afterData = sortedData[i];
+          }
+        }
+
+        setModalData({ beforeData, afterData });
       }
     } catch (error) {
       console.log(error);
@@ -114,7 +138,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
     // Perbarui bagian ini untuk menangani tampilan status dengan benar
     let beforeRenderValue = beforeValue;
     let afterRenderValue = afterValue;
-    if (fieldName === "p_usr_status") {
+    if (fieldName === "p_usr_status" || fieldName === "api_status") {
       beforeRenderValue = beforeValue ? "true" : "false";
       afterRenderValue = afterValue ? "true" : "false";
     }
@@ -123,14 +147,18 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
       <>
         <td
           className={`py-3 px-6 text-left ${
-            hasDifference ? "text-red-500" : ""
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
           }`}
         >
           {beforeRenderValue}
         </td>
         <td
           className={`py-3 px-6 text-left ${
-            hasDifference ? "text-red-500" : ""
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
           }`}
         >
           {afterRenderValue}
@@ -142,7 +170,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
   if (!isOpen) return null;
 
   // Ubah format modulName menjadi User Access
-  const formattedModulName = modulName
+  const formattedModulName = lgc_name
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
@@ -320,6 +348,40 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id }) => {
                           <td className="py-3 px-6 text-left">{label}</td>
                           <td className="py-3 px-6 text-left">{beforeValue}</td>
                           <td className="py-3 px-6 text-left">{afterValue}</td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            )}
+
+            {modulName === "api_management" && (
+              <table className="min-w-max w-full table-auto table-bordered">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-6 text-left">Field Name</th>
+                    <th className="py-3 px-6 text-left">Before</th>
+                    <th className="py-3 px-6 text-left">After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const fieldNames = [
+                      { fieldName: "api_code", label: "Code" },
+                      { fieldName: "api_name", label: "Name" },
+                      { fieldName: "api_desc", label: "Description" },
+                      { fieldName: "api_status", label: "Status" },
+                      { fieldName: "api_action_by", label: "Action By" },
+                      { fieldName: "api_log_date", label: "Log Date" },
+                    ];
+
+                    return fieldNames.map(({ fieldName, label }) => {
+                      const tableCells = renderTableCell(fieldName);
+                      return (
+                        <tr key={fieldName}>
+                          <td className="py-3 px-6 text-left">{label}</td>
+                          {tableCells}
                         </tr>
                       );
                     });
