@@ -183,6 +183,7 @@ const AuditTrail = () => {
       });
 
       setLogList(logList);
+      setCurrentPage(1); // Tambahkan ini untuk mengatur tampilan kembali ke halaman 1
     } catch (error) {
       alert(error);
     }
