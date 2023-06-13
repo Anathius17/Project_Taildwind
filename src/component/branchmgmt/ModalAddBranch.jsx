@@ -162,7 +162,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -203,6 +204,29 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                         onChange={(e) => setNameBranch(e.target.value)}
                         required
                       />
+                    </div>
+                  </div>
+                  <div className=" row mb-2">
+                    <div className="col-4">
+                      <label class="form-label">
+                        Group <span className="text-danger">*</span>
+                      </label>
+                    </div>
+
+                    <div className="col-8">
+                      <select
+                        className="form-control"
+                        // value={usersName || ""}
+                        // onChange={(e) => setUsersName(e.target.value)}
+                        required
+                      >
+                        <option value="">Select One</option>
+                        {/* {users.map((item, i) => (
+                  <option value={item.p_userid} key={i}>
+                    {item.p_username}
+                  </option>
+                ))} */}
+                      </select>
                     </div>
                   </div>
                   <div className=" row mb-2">
@@ -269,7 +293,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Save}>
