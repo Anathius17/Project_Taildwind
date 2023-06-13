@@ -183,6 +183,7 @@ const AuditTrail = () => {
       });
 
       setLogList(logList);
+      setCurrentPage(1); // Tambahkan ini untuk mengatur tampilan kembali ke halaman 1
     } catch (error) {
       alert(error);
     }
@@ -316,10 +317,10 @@ const AuditTrail = () => {
         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
           <div className="flex justify-between mb-3">
             <button
-              className="btn btn-primary text-xs"
+              className="btn btn-primary w-fit text-sm"
               onClick={handleExportCSV}
             >
-              Export to CSV
+              Excel
             </button>
             <button className="btn btn-success btn-sm" onClick={handleSearch}>
               <svg fill="currentColor" viewBox="0 0 16 16" className="w-6 h-6">
@@ -345,7 +346,7 @@ const AuditTrail = () => {
             <div className="page-iittem">
               <input
                 type="text"
-                placeholder="Search by Name"
+                placeholder="Search by Date"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="form-control"
