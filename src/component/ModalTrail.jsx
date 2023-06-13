@@ -63,9 +63,15 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
         let afterData = null;
 
         for (let i = 0; i < sortedData.length; i++) {
-          if (sortedData[i].p_log_action_mode === "Before" || sortedData[i].p_log_action_mode === "Delete" ) {
+          if (
+            sortedData[i].p_log_action_mode === "Before" ||
+            sortedData[i].p_log_action_mode === "Delete"
+          ) {
             beforeData = sortedData[i];
-          } else if (sortedData[i].p_log_action_mode === "After" || sortedData[i].p_log_action_mode === "New" ) {
+          } else if (
+            sortedData[i].p_log_action_mode === "After" ||
+            sortedData[i].p_log_action_mode === "New"
+          ) {
             afterData = sortedData[i];
           }
         }
@@ -139,8 +145,14 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
     let beforeRenderValue = beforeValue;
     let afterRenderValue = afterValue;
     if (fieldName === "p_usr_status" || fieldName === "api_status") {
-      beforeRenderValue = beforeValue ? "true" : "false";
-      afterRenderValue = afterValue ? "true" : "false";
+      beforeRenderValue =
+        beforeValue !== undefined && beforeValue !== ""
+          ? String(beforeValue)
+          : null;
+      afterRenderValue =
+        afterValue !== undefined && afterValue !== ""
+          ? String(afterValue)
+          : null;
     }
 
     return (
