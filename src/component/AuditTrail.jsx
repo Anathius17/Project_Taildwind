@@ -346,7 +346,7 @@ const AuditTrail = () => {
             <div className="page-iittem">
               <input
                 type="text"
-                placeholder="Search by Name"
+                placeholder="Search by Date"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="form-control"

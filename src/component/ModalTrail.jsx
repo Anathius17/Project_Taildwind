@@ -178,7 +178,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full">
-        <div className="min-w-full">
+        <div className="max-w-full">
           <div className="modal-header">
             <h5 className="modal-title">Audit Trail - {formattedModulName}</h5>
             <button
