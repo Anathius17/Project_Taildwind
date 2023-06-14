@@ -420,6 +420,7 @@ const Login = (props) => {
     setInput("");
     setExpired(false);
   };
+  console.log(captcha);
 
   //? ---batas bagian captcha validation
 
