@@ -5,7 +5,7 @@ import { getToken } from "../../API/api";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalAddBranch = ({ isOpen, onClose, reload }) => {
+const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
   const [code, setCodeBranch] = useState("");
   const [name, setNameBranch] = useState("");
   const [address, setAddressBranch] = useState("");
@@ -108,14 +108,6 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
   const insertobjectdata = (val) => {
     InsertBranchNew(val);
   };
-
-  const groupOptions = [
-    "Branch",
-    "Cash Office",
-    "Payment Point",
-    "Sub Branch",
-    "Syariah Branch",
-  ];
 
   const InsertBranchNew = (val) => {
     try {
