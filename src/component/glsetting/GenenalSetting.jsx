@@ -179,7 +179,7 @@ const GeneralSetting = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full ">
+            <table className="min-w-max w-full table-bordered">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-center">Code</th>

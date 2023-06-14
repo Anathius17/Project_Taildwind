@@ -5,9 +5,8 @@ import axios from "axios";
 import { getToken } from "../API/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
-import { BiReset } from "react-icons/bi";
 import md5 from "js-md5";
+import { browserName, osName, browserVersion } from "react-device-detect";
 const Modal = ({
   isOpen,
   onClose,
@@ -22,13 +21,18 @@ const Modal = ({
   const [isChecked, setIsChecked] = useState(false);
   const [status, setStatus] = useState("");
   const [password, setPassword] = useState("");
+  console.log(password);
   const pass = md5(password);
   const [passwordMd5, setPasswordMd5] = useState("");
-  const passwordDefult = "5fec4ba8376f207d1ff2f0cac0882b01";
+  console.log(pass);
+  console.log(typeof pass);
+
+  console.log(passwordMd5);
+  console.log(typeof passwordMd5);
 
   useEffect(() => {
     setUser(currentUser);
-  }, [onClose]);
+  }, [currentUser]);
 
   useEffect(() => {
     reload();
@@ -37,15 +41,10 @@ const Modal = ({
   useEffect(() => {
     if (pass === "d41d8cd98f00b204e9800998ecf8427e") {
       setPasswordMd5("");
-    }
-    if (pass !== "d41d8cd98f00b204e9800998ecf8427e") {
+    } else {
       setPasswordMd5(pass);
     }
-  }, [pass]);
-
-  console.log(password);
-  console.log(passwordMd5);
-  console.log(pass);
+  }, [password]);
 
   useEffect(() => {
     if (password === "" || password === null) {
@@ -119,12 +118,6 @@ const Modal = ({
 
   console.log(users.usruserid);
 
-  // useEffect(() => {
-  //   DropDown();
-  //   DropDownSv();
-  //   DropDownRl();
-  // }, [users]);
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
@@ -134,28 +127,70 @@ const Modal = ({
     }));
   };
 
-  const dataEditUser = {
-    p_usrid: users.usruserid,
-    p_name: users.usrname,
-    p_nip: users.usrnip,
-    p_email: users.usremail,
-    p_notlp: users.usrnotlp,
-    p_branchcode: users.usrbranch,
-    p_spv: users.usrsupervisor,
-    p_position: "area",
-    p_acclevel: users.usraccesslevel,
-    p_efectivedate: startDate,
-    p_status: status,
-    p_usr: "bani",
-    p_defaultpwd: passwordMd5,
-    p_logid: "13",
+  // insert log activity
+  const [ip, setIP] = useState("");
+  const [logid, setlogid] = useState("");
+  const getData = async () => {
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    console.log(res.data);
+    setIP(res.data.ip);
+  };
+  useEffect(() => {
+    getData();
+  }, []);
+
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
+  const dataLogUserTracking = {
+    plcd: "user_management",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Update Branch Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
+
+  const Updateobjectdata = (val) => {
+    EditUser(val);
   };
 
   const Submit = () => {
-    EditUser();
-    reload();
+    postDataLogUserTracking();
   };
-  const EditUser = async () => {
+
+  const postDataLogUserTracking = async () => {
+    let log = "";
+    try {
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
+      await Updateobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
+    }
+  };
+
+  const EditUser = async (val) => {
+    const tampungpassword = passwordMd5;
     if (!users.usrname || !users.usrnip) {
       Swal.fire("Mohon lengkapi semua field", "", "error");
       return;
@@ -163,7 +198,22 @@ const Modal = ({
     try {
       await axios.post(
         "http://116.206.196.65:30983/skycore/User/postJDataEditRecord",
-        dataEditUser,
+        {
+          p_usrid: users.usruserid,
+          p_name: users.usrname,
+          p_nip: users.usrnip,
+          p_email: users.usremail,
+          p_notlp: users.usrnotlp,
+          p_branchcode: users.usrbranch,
+          p_spv: users.usrsupervisor,
+          p_position: "area",
+          p_acclevel: users.usraccesslevel,
+          p_efectivedate: startDate,
+          p_status: status,
+          p_usr: "bani",
+          p_defaultpwd: tampungpassword,
+          p_logid: val,
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -173,6 +223,8 @@ const Modal = ({
       );
 
       Swal.fire("Save Berhasil", "", "success");
+
+      alert(tampungpassword);
 
       reload();
       onClose();
@@ -377,7 +429,7 @@ const Modal = ({
                     </div>
                     <div className="col-9">
                       <input
-                        class="form-check-input mt-0"
+                        className="form-check-input mt-0 bg-primary"
                         type="checkbox"
                         style={checkBoxStyle}
                         checked={isChecked}
@@ -399,7 +451,6 @@ const Modal = ({
                         // onChange={handleInputChange}
                         onChange={handleDateChange}
                         dateFormat="yyyy/MM/dd"
-
                         // onChange={(date) => setStartDate(date)}
                       />
                     </div>
@@ -411,19 +462,12 @@ const Modal = ({
                         Password
                       </label>
                     </div>
-                    <div className="col-9 input-group">
+                    <div className="col-9 ">
                       <input
                         type="password"
                         className="form-control"
                         onChange={(e) => setPassword(e.target.value)}
                       />
-
-                      <button
-                        className="rounded-none bg-blue-500 text-white py-2 px-3 "
-                        type="button"
-                        onClick={() => setPasswordMd5(passwordDefult)}>
-                        <BiReset />
-                      </button>
                     </div>
                   </div>
                 </div>

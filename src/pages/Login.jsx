@@ -44,6 +44,9 @@ const Login = (props) => {
   const [userDataCekLogin, setUserLoginDataCek] = useState("");
   const [userFaillLogin, setuserFaillLogin] = useState();
 
+  const today = new Date();
+  console.log(today);
+
   const [ip, setIP] = useState("");
   const getData = async () => {
     const res = await axios.get("https://api.ipify.org/?format=json");
@@ -125,7 +128,7 @@ const Login = (props) => {
       setUserIsLogin(userLogin[0]);
       setUserDateTampungan(UserDate[0]);
       setUslPassword(cekpassword[0]);
-      alert("Berhasil");
+      // alert("Berhasil");
     } catch (errorUser) {
       alert(
         "Sorry, we have trouble getting data, please contact administrator"
@@ -244,6 +247,32 @@ const Login = (props) => {
     }
   };
 
+  // postJDataUserIsLogin;
+
+  const dataUserLogiin = {
+    p_usr: username,
+    p_ipaddress: "10.101.123.234",
+  };
+
+  const postJDataUserIsLogin = async () => {
+    try {
+      const userIsLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserIsLogin",
+        JSON.stringify(dataUserLogiin),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+    }
+  };
+
   // !  atur secara dinamis
   const dataLogUserTracking = {
     plcd: "user_access",
@@ -258,6 +287,7 @@ const Login = (props) => {
     plcli: ip,
   };
 
+  const [dataTracking, setDataTracking] = useState();
   const postDataLogUserTracking = async () => {
     try {
       const frisLogin = await axios.post(
@@ -304,6 +334,8 @@ const Login = (props) => {
     setIsLoggedIn(true);
   };
 
+  console.log(userDateTampungan);
+
   // if (dataCheckData.length > 0) {
 
   useEffect(() => {
@@ -313,12 +345,13 @@ const Login = (props) => {
         console.log(3);
         if (userIsLogin === 0) {
           console.log(4);
-          if (userDateTampungan !== "") {
+          if (new Date(userDateTampungan) < new Date()) {
             console.log(5);
             if (hashedPassword === uslPassword) {
               console.log(6);
               resetFailLogin();
               getDataUserRoleDetail();
+              postJDataUserIsLogin();
               generalListMenuAPI();
               getIsFristLogin();
             } else if (hashedPassword !== uslPassword) {
@@ -327,9 +360,9 @@ const Login = (props) => {
               faillLogin();
               // resetFailLogin();
             }
-          } else if (userDateTampungan === "") {
+          } else {
             postDataLogUserTracking();
-            alert("Sorry, the username has not been activated or is blocked");
+            alert("Sorry, tanggal user belum aktif");
           }
         } else if (userIsLogin === 1) {
           //hit API postDataLogUserTracking
@@ -341,7 +374,7 @@ const Login = (props) => {
         alert("Sorry, the username has not been activated or is blocked");
       }
     } else if (username !== usernameCek) {
-      alert("Please enter a username yang benar atau hilang gigi lu");
+      alert("Please enter a username yang benar ");
     }
   }, [dataCheckData]);
 
@@ -393,7 +426,6 @@ const Login = (props) => {
     const timer = setTimeout(() => {
       setCaptcha(generateCaptcha());
       setInput("");
-      //dalam 3 detik expired akan di set menjadi true
       setExpired(true);
     }, 30000);
     return () => clearTimeout(timer);
@@ -405,11 +437,8 @@ const Login = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    //alert("INPUT " + input);
-    //alert("CAPTCHA " + captcha);
     if (input === captcha) {
-      alert("CAPTCHA validated successfully!");
+      // alert("CAPTCHA validated successfully!");
       getTokenApi();
     } else {
       alert("CAPTCHA validation failed. Please try again.");

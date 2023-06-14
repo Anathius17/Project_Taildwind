@@ -1,5 +1,6 @@
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import DasboardDemo from "./pages/DashboardFile/DashboardMenuSide";
 
 // ! untuk testing
 
@@ -34,6 +35,7 @@ function App() {
   const [menuTest, setMenuTest] = useState();
 
   console.log(menuTest);
+
   const handleRoleDetail = (data) => {
     setDataRoleUserDetail(data);
   };
@@ -178,7 +180,7 @@ function App() {
         {
           id: "14",
           mn_name: "Api Management",
-          mn_link: "/apimanagement",
+          mn_link: "Apimanagement",
           mn_parentid: "3",
           mn_acl: "lvl_prm_api",
           mn_order: "3",
@@ -530,9 +532,12 @@ function App() {
         />
         <Route
           path="/dashboard/*"
-          element={<Dashboard listmenu={users} levelmenu={menuLevel} />}
+          element={
+            <Dashboard listmenu={users} levelmenu={menuLevel} userid={admin} />
+          }
         />
         <Route path="*" element={<Navigate to="/dashboard/" replace />} />
+        <Route path="/Demo" element={<DasboardDemo />} />
       </Routes>
     </Router>
   );

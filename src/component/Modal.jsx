@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   // const [user, setUser] = useState(currentUser);
@@ -42,6 +43,9 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
     setNip("");
     setEmail("");
     setNoTelepon("");
+    setIsValidEmail(true);
+    setIsChecked(false);
+    setStartDate(null);
   }, [onClose]);
 
   useEffect(() => {
@@ -90,15 +94,18 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
     ) {
       Swal.fire({
         icon: "error",
-        title: "Oops... Data Tidak Boleh Kosong Bos mau Gigi lu hilang 3?",
-        text: "Ada yang salah dari diri anda Coba periksa ke dokter deh !!!",
+        title: "Oops... Data Tidak Boleh Kosong",
+        text: "",
         footer: '<a href="">Why do I have this issue?</a>',
       });
       return;
     }
 
     postDataLogUserTracking();
-    InsertUserNew();
+  };
+
+  const Updateobjectdata = (val) => {
+    InsertUserNew(val);
   };
   //! --------for API Create USer--------
 
@@ -121,65 +128,117 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
     p_logid: "12",
   };
 
-  const InsertUserNew = async () => {
+  const InsertUserNew = async (val) => {
     try {
-      const userNew = await axios.post(
-        "http://116.206.196.65:30983/skycore/User/postJDataInsertRecord",
-        JSON.stringify(insertUser),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      const userNew = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/User/postJDataInsertRecord",
+          {
+            p_usrid: userId,
+            p_name: name,
+            p_nip: nip,
+            p_email: email,
+            p_notlp: noTelepon,
+            p_branchcode: branchName,
+            p_spv: superVisiorName,
+            p_position: "SUPPORT",
+            p_acclevel: numRole,
+            p_efectivedate: tampung,
+            p_status: status,
+            p_usr: "kijang1",
+            p_defaultpwd: "5fec4ba8376f207d1ff2f0cac0882b01",
+            p_logid: val,
           },
-        }
-      );
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          // console.log(response.data.success);
+          // const cek = typeof response.data.success;
+          // console.log(cek);
+          if (response.data.success === true) {
+            Swal.fire("Save Berhasil", "", "success");
+            reload();
+            onClose();
+          } else {
+            Swal.fire(response.data.data.message, "", "error");
+            // getBranchList();
+            reload();
+            onClose();
+          }
+        });
 
-      console.log(userNew);
-      const cekData = userNew.data.data.map((e) => {
-        return e.message;
-      });
+      // console.log(userNew);
+      // const cekData = userNew.data.data.map((e) => {
+      //   return e.message;
+      // });
 
-      Swal.fire("Save Berhasil", "", "success");
-      reload();
-      onClose();
+      // Swal.fire("Save Berhasil", "", "success");
+      // reload();
+      // onClose();
     } catch (error) {
       console.log(error);
       Swal.fire({
         icon: "error",
-        title: "User Sudah ada GOBLOK!!!!",
+        title: "User Sudah ada",
         text: "",
         footer: '<a href="">Why do I have this issue?</a>',
       });
     }
   };
 
+  const [ip, setIP] = useState("");
+  const getData = async () => {
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    console.log(res.data);
+    setIP(res.data.ip);
+  };
+
+  useEffect(() => {
+    //passing getData method to the lifecycle method
+    getData();
+  }, []);
+
+  // get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
+
   const dataLogUserTracking = {
-    plcd: "ua",
-    plusr: userId,
+    plcd: "user_management",
+    plusr: userid,
     plhtt: "OFF",
-    plsvrn: "uat-web-los",
-    plact: "Login Success",
-    plpgur: "/lmsadmin_ocbc/login/v6/nc",
+    plsvrn: window.location.hostname,
+    plact: "Create User Success",
+    plpgur: window.location.href,
     plqry: "-",
-    plbro: "Firefox 72.0",
-    plos: "linux",
-    plcli: "uat-web-los/10.1.1.1",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
   };
 
   const postDataLogUserTracking = async () => {
+    let log = "";
     try {
-      await axios.post(
-        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
-        dataLogUserTracking,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
 
-      // alert("postDataLogUserTracking Berhasil");
+      await Updateobjectdata(log);
     } catch (error) {
       alert("postDataLogUserTracking Tidak Berhasil");
       console.log(error);
@@ -277,6 +336,19 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   const dateObject = new Date(dateString);
   console.log(dateObject);
 
+  const [isValidEmail, setIsValidEmail] = useState(true);
+
+  const handleChangeEmail = (event) => {
+    const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    if (regex.test(event.target.value)) {
+      setEmail(event.target.value);
+      setIsValidEmail(true);
+    } else {
+      setEmail(event.target.value);
+      setIsValidEmail(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -355,26 +427,32 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       />
                     </div>
                   </div>
-                  <div className=" row mb-2">
+                  <div className="row mb-2">
                     <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
+                      <label
+                        htmlFor="exampleInputEmail1"
+                        className="form-label">
                         Email <span className="text-danger">*</span>
                       </label>
                     </div>
                     <div className="col-9">
                       <input
                         type="email"
-                        className="form-control"
+                        className={`form-control ${
+                          isValidEmail ? "" : "is-invalid"
+                        }`}
                         id="recipient-name"
                         aria-describedby="emailHelp"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleChangeEmail}
                         required
                       />
+                      {!isValidEmail && (
+                        <div className="invalid-feedback">
+                          Email is not valid.
+                        </div>
+                      )}
                     </div>
-                    {/* <div id="emailHelp" className="form-text">
-                      We'll never share your email with anyone else.
-                    </div> */}
                   </div>
                   <div className=" row mb-2">
                     <div className="col-3">
@@ -471,7 +549,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                     </div>
                     <div className="col-9">
                       <input
-                        class="form-check-input mt-0"
+                        className="form-check-input mt-0 bg-primary"
                         type="checkbox"
                         style={checkBoxStyle}
                         checked={isChecked}

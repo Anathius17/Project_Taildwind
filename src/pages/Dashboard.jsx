@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 // import "bootstrap/dist/css/bootstrap.min.css";
 import "../assets/css/sb-admin-2.css";
 // import "../vendor/fontawesome-free/css/all.min.css";
@@ -13,7 +14,7 @@ import GeneralSettings from "../component/glsetting/GenenalSetting";
 import BatchScheduler from "../component/system/BatchScheduler";
 import BatchSchedulerApp from "../component/system/BatchSchedulerApproval";
 import BatchSchedulerCk from "../component/system/BatchSchedulerChecker";
-// import BatchScheduler from "../component/system/BatchScheduler";
+import Apimanagement from "../component/apimgmt/ApiManagement";
 import { IconName } from "react-icons/ri";
 import "../assets/css/modal.css";
 import axios from "axios";
@@ -274,6 +275,8 @@ const menuLevel = [
 const Dashboard = (props) => {
   const [activeUsers, setActiveUsers] = useState([]);
 
+  const userId = props.userid;
+  console.log(userId);
   const menuTest = props.listmenu;
   const levelm = props.levelmenu;
 
@@ -309,6 +312,7 @@ const Dashboard = (props) => {
   const sessionData = JSON.parse(localStorage.getItem("sessionData"));
   const listMenu = JSON.parse(localStorage.getItem("ListMenu"));
   const levelMenu = JSON.parse(localStorage.getItem("LevelMenu"));
+  console.log(clickButton);
 
   const filteredUsers = menuTest.filter((user) => {
     const matchingMenuLevel = levelm.find(
@@ -324,11 +328,6 @@ const Dashboard = (props) => {
       setActiveUsers([...activeUsers, user]);
     }
   };
-
-  const demo = (test) => {
-    setclickButton(test);
-  };
-  console.log(clickButton);
 
   const renderChildMenu = (children) => {
     return (
@@ -347,7 +346,7 @@ const Dashboard = (props) => {
                   <button
                     onClick={() => toggleDropdown(child)}
                     className="text-white ml-3">
-                    {child.mn_name}
+                    <span className="text-sm">{child.mn_name}</span>
                   </button>
                   {activeUsers.includes(child) && renderChildMenu(child.child)}
                 </div>
@@ -355,13 +354,43 @@ const Dashboard = (props) => {
                 <button
                   className="text-white ml-3"
                   onClick={() => setclickButton(child.mn_link)}>
-                  {child.mn_name}
+                  <span className="text-sm">{child.mn_name}</span>
                 </button>
               )}
             </li>
           ))}
       </ul>
     );
+  };
+
+  const datalogout = {
+    p_usr: userId,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
+    }
+  };
+
+  const LogOut = () => {
+    postJDataUserResetIsLogin();
+
+    navigate("/");
   };
 
   // <NavLink to={`/dasboard ${child.mn_link}`}>
@@ -380,20 +409,22 @@ const Dashboard = (props) => {
             </div>
           </a>
 
-          <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion ">
+          <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark">
             {filteredUsers.map((user) => (
-              <li className="ml-4" key={user.id}>
+              <li className="ml-2 mt-2" key={user.id}>
                 {user.child && user.child.length > 0 ? (
                   <div>
                     <button
                       onClick={() => toggleDropdown(user)}
-                      className="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      <span className="">{user.mn_name}</span>
+                      className="flex items-center p-1 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <span className="text-base font-semibold">
+                        {user.mn_name}
+                      </span>
                     </button>
                     {activeUsers.includes(user) && renderChildMenu(user.child)}
                   </div>
                 ) : (
-                  <span className="flex items-center p-2 text-white rounded-lg dark:text-white  ">
+                  <span className="flex items-center p-1 text-white rounded-lg dark:text-white text-base font-semibold ">
                     {user.mn_name}
                   </span>
                 )}
@@ -445,7 +476,7 @@ const Dashboard = (props) => {
 
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item dropdown no-arrow flex">
-                  <a href="/" className="log-out flex">
+                  <button onClick={LogOut} className="log-out flex">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -458,11 +489,10 @@ const Dashboard = (props) => {
                       />
                     </svg>
                     <span>Log Out</span>
-                  </a>
+                  </button>
                 </li>
               </ul>
             </nav>
-
             {clickButton === "user" ? (
               <Demo />
             ) : clickButton === "RoleManagement" ? (
@@ -479,6 +509,8 @@ const Dashboard = (props) => {
               <BatchSchedulerApp />
             ) : clickButton === "BatchScheduleChecker" ? (
               <BatchSchedulerCk />
+            ) : clickButton === "Apimanagement" ? (
+              <Apimanagement />
             ) : (
               <div>
                 <h1>Dashboard</h1>
@@ -489,13 +521,11 @@ const Dashboard = (props) => {
               <Route exact path={"/user"} element={<Demo />}></Route>
               <Route path={"/RoleManagement"} element={<Rule />}></Route>
             </Routes> */}
-
             {/* <Routes>
               {users.map((link, pages) => (
                 <Routes exact path={link.mn_link} element={link.element} />
               ))}
             </Routes> */}
-
             {/* <Routes>
               {menuTest.map(
                 (menu) =>
@@ -505,7 +535,6 @@ const Dashboard = (props) => {
                   ))
               )}
             </Routes> */}
-
             {/* <Routes>
               {menuTest.map(
                 (menu) =>
