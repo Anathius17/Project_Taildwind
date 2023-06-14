@@ -5,7 +5,13 @@ import axios from "axios";
 import { getToken } from "../../API/api";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
+const ModalBranch = ({
+  isOpen,
+  onClose,
+  currentBranch,
+  reload,
+  groupOptions,
+}) => {
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
 
@@ -104,6 +110,7 @@ const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
     if (
       !branch.lbrc_code ||
       !branch.lbrc_name ||
+      !branch.lbrc_group ||
       !branch.lbrc_address ||
       !branch.lbrc_city ||
       !branch.lbrc_phone_num
@@ -118,6 +125,7 @@ const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
           {
             code: branch.lbrc_code,
             name: branch.lbrc_name,
+            group: branch.lbrc_group,
             address: branch.lbrc_address,
             city: branch.lbrc_city,
             phonenum: branch.lbrc_phone_num,
@@ -159,7 +167,8 @@ const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -201,6 +210,30 @@ const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
                         onChange={handleInputChange}
                         required
                       />
+                    </div>
+                  </div>
+                  <div className=" row mb-1">
+                    <div className="col-4">
+                      <label for="exampleInputEmail1" class="form-label">
+                        Branch Group <span className="text-danger">*</span>
+                      </label>
+                    </div>
+                    <div className="col-8">
+                      <select
+                        type="text"
+                        className="form-control"
+                        id="recipient-name"
+                        name="lbrc_group"
+                        value={branch.lbrc_group}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select One</option>
+                        {groupOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className=" row mb-1">
@@ -266,7 +299,8 @@ const ModalBranch = ({ isOpen, onClose, currentBranch, reload }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Submit}>

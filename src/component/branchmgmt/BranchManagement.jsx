@@ -459,7 +459,12 @@ const BranchMenagement = () => {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} reload={getBranchList}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        reload={getBranchList}
+        groupOptions={groupOptions}
+      >
         {/* <button onClick={closeModal}>Tutup Modal</button> */}
       </Modal>
 
