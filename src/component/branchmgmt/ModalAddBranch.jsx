@@ -11,10 +11,12 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
   const [address, setAddressBranch] = useState("");
   const [city, setCityBranch] = useState("");
   const [phonenum, setNoTelepon] = useState("");
+  const [group, setGroupBranch] = useState("");
 
   useEffect(() => {
     setCodeBranch("");
     setNameBranch("");
+    setGroupBranch("");
     setAddressBranch("");
     setCityBranch("");
     setNoTelepon("");
@@ -91,7 +93,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
   };
 
   const Save = async (e) => {
-    if (!code || !name || !address || !city || !phonenum) {
+    if (!code || !group || !name || !address || !city || !phonenum) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -107,6 +109,14 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
     InsertBranchNew(val);
   };
 
+  const groupOptions = [
+    "Branch",
+    "Cash Office",
+    "Payment Point",
+    "Sub Branch",
+    "Syariah Branch",
+  ];
+
   const InsertBranchNew = (val) => {
     try {
       const branchNew = axios
@@ -116,6 +126,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
           {
             code: code,
             name: name,
+            group: group,
             address: address,
             city: city,
             phonenum: phonenum,
@@ -206,26 +217,26 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                       />
                     </div>
                   </div>
-                  <div className=" row mb-2">
+                  <div className="row mb-2">
                     <div className="col-4">
-                      <label class="form-label">
-                        Group <span className="text-danger">*</span>
+                      <label className="form-label">
+                        Branch Group <span className="text-danger">*</span>
                       </label>
                     </div>
 
                     <div className="col-8">
                       <select
                         className="form-control"
-                        // value={usersName || ""}
-                        // onChange={(e) => setUsersName(e.target.value)}
+                        value={group || ""}
+                        onChange={(e) => setGroupBranch(e.target.value)}
                         required
                       >
                         <option value="">Select One</option>
-                        {/* {users.map((item, i) => (
-                  <option value={item.p_userid} key={i}>
-                    {item.p_username}
-                  </option>
-                ))} */}
+                        {groupOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>

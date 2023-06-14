@@ -11,16 +11,16 @@ import { browserName, osName, browserVersion } from "react-device-detect";
 import Captcha from "react-captcha-code";
 
 // ? membuat isi dalam captcha
-const generateCaptcha = () => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let captcha = "";
-  for (let i = 0; i < 6; i++) {
-    captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
+// const generateCaptcha = () => {
+//   const characters =
+//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//   let captcha = "";
+//   for (let i = 0; i < 6; i++) {
+//     captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+//   }
 
-  return captcha;
-};
+//   return captcha;
+// };
 
 const Login = (props) => {
   // ! pada kodingan dibawah kita memasukan nilai ke variabel captcha pada render awal
@@ -415,8 +415,8 @@ const Login = (props) => {
   };
 
   const handleRefresh = () => {
-    const newCaptcha = generateCaptcha();
-    setCaptcha(newCaptcha);
+    // const newCaptcha = generateCaptcha();
+    setCaptcha(Captcha);
     setInput("");
     setExpired(false);
   };

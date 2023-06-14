@@ -331,6 +331,7 @@ const BranchMenagement = () => {
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-center">Branch Code</th>
+                  <th className="py-3 px-6 text-center">Branch Code</th>
                   <th className="py-3 px-6 text-center">Branch Name</th>
                   <th className="py-3 px-6 text-center">Branch Address</th>
                   <th className="py-3 px-6 text-center">Branch City</th>
@@ -345,6 +346,9 @@ const BranchMenagement = () => {
                     className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {brc.lbrc_code}
+                    </td>
+                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      {brc.lbrc_group}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
                       {brc.lbrc_name}
