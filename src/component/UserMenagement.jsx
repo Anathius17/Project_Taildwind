@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getToken } from "../API/api";
 import Modal from "./Modal";
 import ModalEdit from "./ModalEdit";
+import ModalChecker from "./ModalCheckedUserM";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
@@ -54,6 +55,8 @@ const UserMenagement = () => {
       alert(errorUser);
     }
   };
+
+  // console.log
 
   // insert log activity
   const [ip, setIP] = useState("");
@@ -136,10 +139,7 @@ const UserMenagement = () => {
   const [userID, setUserId] = useState("");
 
   //! --------for API delete--------
-  const hitDelete = {
-    usr: userID,
-    logid: "11",
-  };
+
   const DeleteUser = async (val) => {
     try {
       const userDelete = await axios.post(
@@ -214,6 +214,8 @@ const UserMenagement = () => {
   //  localStorage.setItem("tokenData", JSON.stringify(token));
   // sessionStorage.setItem("userDetailParam", "value");
 
+  console.log(detaiUserParam);
+
   useEffect(() => {
     if (detaiUserParam !== "") {
       sessionStorage.setItem("userDetailParam", detaiUserParam);
@@ -230,6 +232,14 @@ const UserMenagement = () => {
   const editUser = (userid) => {
     setDetaiUserParam(userid);
     setIsModalOpenEdit(true);
+  };
+
+  const [statusSend, setStatusSend] = useState("");
+  console.log(statusSend);
+  const checkerUser = (userid, status) => {
+    setDetaiUserParam(userid);
+    setStatusSend(status);
+    setIsModalCheked(true);
   };
 
   const [userEdit, setUserEdit] = useState();
@@ -271,14 +281,14 @@ const UserMenagement = () => {
 
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
 
-  const openModalEdit = () => {
-    setIsModalOpenEdit(true);
-  };
-
   const closeModalEdit = () => {
     setIsModalOpenEdit(false);
-    // window.location.reload();
-    // getUserDetail();
+  };
+
+  const [isModalOpenCheked, setIsModalCheked] = useState(false);
+
+  const closeModalCheked = () => {
+    setIsModalCheked(false);
   };
 
   // ! --- batas user aktif
@@ -481,6 +491,7 @@ const UserMenagement = () => {
                   <th className="py-3 px-6 text-left">Name</th>
                   <th className="py-3 px-6 text-center">Nip</th>
                   <th className="py-3 px-6 text-center">Role</th>
+                  <th className="py-3 px-6 text-center">Last Status</th>
                   <th className="py-3 px-6 text-center">Status</th>
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
@@ -502,12 +513,15 @@ const UserMenagement = () => {
                     <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                       {user.usraccesslevel}
                     </td>
+                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                      {user.usr_approved_status}
+                    </td>
                     <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold ">
                       {user.usrstatusformat}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
-                        className="btn btn-success btn-sm"
+                        className=" btn-success btn-sm"
                         onClick={() => editUser(user.usruserid)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -519,7 +533,7 @@ const UserMenagement = () => {
                         </svg>
                       </button>
                       <button
-                        className="btn btn-danger btn-sm ml-1"
+                        className=" btn-danger btn-sm ml-1"
                         onClick={() => handleDeleteUser(user.usruserid)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -535,20 +549,60 @@ const UserMenagement = () => {
                       </button>
                       {user.usrstatusformat !== "Active" ? (
                         <button
-                          className="btn btn-warning btn-sm ml-1"
+                          className=" btn-warning btn-sm ml-1"
                           onClick={() => handleActiveUser(user.usruserid)}>
                           <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6">
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em">
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              fill="currentColor"
+                              d="M14 0H2C.9 0 0 .9 0 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 12.414L3.293 8.707l1.414-1.414L7 9.586l4.793-4.793 1.414 1.414L7 12.414z"
                             />
+                          </svg>
+                        </button>
+                      ) : (
+                        <></>
+                      )}
+
+                      {user.usr_approved_status === "Created" ||
+                      user.usr_approved_status === "Updated" ? (
+                        <button
+                          className="text-white bg-blue-800 btn-sm ml-1 m-0"
+                          onClick={() =>
+                            checkerUser(
+                              user.usruserid,
+                              user.usr_approved_status
+                            )
+                          }>
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                            height="1em"
+                            width="1em">
+                            <path d="M10 .5a.5.5 0 00-.5-.5h-3a.5.5 0 00-.5.5.5.5 0 01-.5.5.5.5 0 00-.5.5V2a.5.5 0 00.5.5h5A.5.5 0 0011 2v-.5a.5.5 0 00-.5-.5.5.5 0 01-.5-.5z" />
+                            <path d="M4.085 1H3.5A1.5 1.5 0 002 2.5v12A1.5 1.5 0 003.5 16h9a1.5 1.5 0 001.5-1.5v-12A1.5 1.5 0 0012.5 1h-.585c.055.156.085.325.085.5V2a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 014 2v-.5c0-.175.03-.344.085-.5zm6.769 6.854l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 11.708-.708L7.5 9.793l2.646-2.647a.5.5 0 01.708.708z" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <></>
+                      )}
+                      {user.usr_approved_status === "checked" ? (
+                        <button
+                          className="text-white bg-blue-400 btn-sm ml-1 m-0"
+                          onClick={() =>
+                            checkerUser(
+                              user.usruserid,
+                              user.usr_approved_status
+                            )
+                          }>
+                          <svg
+                            viewBox="0 0 512 512"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em">
+                            <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2h144c26.5 0 48 21.5 48 48 0 25.3-19.5 46-44.3 47.9 7.7 8.5 12.3 19.8 12.3 32.1 0 23.4-16.8 42.9-38.9 47.1 4.4 7.2 6.9 15.8 6.9 24.9 0 21.3-13.9 39.4-33.1 45.6.7 3.3 1.1 6.8 1.1 10.4 0 26.5-21.5 48-48 48h-73.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192h64c17.7 0 32 14.3 32 32v224c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
                           </svg>
                         </button>
                       ) : (
@@ -618,6 +672,21 @@ const UserMenagement = () => {
           dropdownSN={superVisior}
           dropdownRole={role}
           reload={getUserList}
+        />
+      ) : (
+        <></>
+      )}
+
+      {userEdit !== undefined ? (
+        <ModalChecker
+          isOpen={isModalOpenCheked}
+          onClose={closeModalCheked}
+          currentUser={userEdit}
+          dropdownBranch={branch}
+          dropdownSN={superVisior}
+          dropdownRole={role}
+          reload={getUserList}
+          sendStatus={statusSend}
         />
       ) : (
         <></>

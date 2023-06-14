@@ -27,6 +27,7 @@ const Modal = ({
   console.log(pass);
   console.log(typeof pass);
 
+  console.log(onClose);
   console.log(passwordMd5);
   console.log(typeof passwordMd5);
 
@@ -41,6 +42,9 @@ const Modal = ({
   useEffect(() => {
     if (pass === "d41d8cd98f00b204e9800998ecf8427e") {
       setPasswordMd5("");
+    }
+    if (pass === "") {
+      setPasswordMd5("5fec4ba8376f207d1ff2f0cac0882b01");
     } else {
       setPasswordMd5(pass);
     }
@@ -421,7 +425,7 @@ const Modal = ({
                       </select>
                     </div>
                   </div>
-                  <div className=" row mb-1">
+                  {/* <div className=" row mb-1">
                     <div className="col-3">
                       <label for="exampleInputEmail1" class="form-label">
                         Status
@@ -436,7 +440,7 @@ const Modal = ({
                         onChange={handleCheckboxChange}
                       />
                     </div>
-                  </div>
+                  </div> */}
                   <div className=" row mb-1">
                     <div className="col-3">
                       <label for="exampleInputEmail1" class="form-label">

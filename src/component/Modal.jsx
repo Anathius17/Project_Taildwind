@@ -541,7 +541,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       </select>
                     </div>
                   </div>
-                  <div className=" row mb-2">
+                  <div className=" row mb-2" style={{ display: "none" }}>
                     <div className="col-3">
                       <label for="exampleInputEmail1" className="form-label">
                         Status
@@ -557,7 +557,22 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       />
                     </div>
                   </div>
-                  {isChecked ? (
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        Effectived Date
+                      </label>
+                    </div>
+                    <div className="col-9">
+                      <DatePicker
+                        className="form-control"
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        dateFormat="yyyy/MM/dd"
+                      />
+                    </div>
+                  </div>
+                  {/* {isChecked ? (
                     <div className=" row mb-2">
                       <div className="col-3">
                         <label for="exampleInputEmail1" class="form-label">
@@ -575,7 +590,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                     </div>
                   ) : (
                     <></>
-                  )}
+                  )} */}
                 </div>
               </div>
             </form>
