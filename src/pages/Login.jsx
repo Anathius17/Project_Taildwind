@@ -392,11 +392,9 @@ const Login = (props) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCaptcha(generateCaptcha());
-      setInput("");
-      //dalam 3 detik expired akan di set menjadi true
-      setExpired(true);
+      handleRefresh();
     }, 30000);
+
     return () => clearTimeout(timer);
   }, [captcha]);
 
@@ -407,27 +405,20 @@ const Login = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    //alert("INPUT " + input);
-    //alert("CAPTCHA " + captcha);
     if (input === captcha) {
       alert("CAPTCHA validated successfully!");
       getTokenApi();
     } else {
       alert("CAPTCHA validation failed. Please try again.");
-      setCaptcha(generateCaptcha());
-
-      setInput("");
+      handleRefresh();
     }
   };
 
   const handleRefresh = () => {
-    setCaptcha("");
+    const newCaptcha = generateCaptcha();
+    setCaptcha(newCaptcha);
     setInput("");
     setExpired(false);
-  };
-
-  const handleInputChange2 = (e) => {
-    setInput(e.target.value);
   };
 
   //? ---batas bagian captcha validation
@@ -492,7 +483,6 @@ const Login = (props) => {
                     className="input100-captha"
                     placeholder="Enter CAPTCHA"
                   />
-
                   <br />
                   {/* <button
                     className="btn btn-primary text-center items-center"
