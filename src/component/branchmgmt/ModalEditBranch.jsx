@@ -41,12 +41,13 @@ const ModalBranch = ({
   // insert log activity
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
+
   useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data.ip);
+      setIP(res.data.ip);
+    };
     getData();
   }, []);
 
