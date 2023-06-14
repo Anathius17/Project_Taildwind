@@ -7,7 +7,7 @@ import Skysite from "../assets/images/LogoSky.png";
 import "../assets/css/Dashboard.css";
 import Demo from "../component/UserMenagement";
 import Rule from "../component/RuleMenagement";
-import Audit from "../component/AuditTrail";
+import Audit from "../component/auditTrail/AuditTrail";
 import BranchMenagement from "../component/branchmgmt/BranchManagement";
 import GeneralSettings from "../component/glsetting/GenenalSetting";
 import BatchScheduler from "../component/system/BatchScheduler";
@@ -344,7 +344,8 @@ const Dashboard = (props) => {
                 <div>
                   <button
                     onClick={() => toggleDropdown(child)}
-                    className="text-white ml-3">
+                    className="text-white ml-3"
+                  >
                     {child.mn_name}
                   </button>
                   {activeUsers.includes(child) && renderChildMenu(child.child)}
@@ -352,7 +353,8 @@ const Dashboard = (props) => {
               ) : (
                 <button
                   className="text-white ml-3"
-                  onClick={() => setclickButton(child.mn_link)}>
+                  onClick={() => setclickButton(child.mn_link)}
+                >
                   {child.mn_name}
                 </button>
               )}
@@ -371,7 +373,8 @@ const Dashboard = (props) => {
         <div className="test-sidebar">
           <a
             className="sidebar-brand d-flex align-items-center justify-content-center"
-            href="index.html">
+            href="index.html"
+          >
             <div className="sidebar-brand-icon rotate-n-15"></div>
             <div className="sidebar-brand-text mx-3 shadow">
               <img src={Sky} alt="" className="logoSky" />
@@ -385,7 +388,8 @@ const Dashboard = (props) => {
                   <div>
                     <button
                       onClick={() => toggleDropdown(user)}
-                      className="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      className="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
                       <span className="">{user.mn_name}</span>
                     </button>
                     {activeUsers.includes(user) && renderChildMenu(user.child)}
@@ -407,12 +411,14 @@ const Dashboard = (props) => {
                 <>
                   <button
                     className="btn mr-3"
-                    onClick={() => setSideBarHide(false)}>
+                    onClick={() => setSideBarHide(false)}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6">
+                      className="w-6 h-6"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
@@ -425,12 +431,14 @@ const Dashboard = (props) => {
                 <>
                   <button
                     className="btn mr-3 "
-                    onClick={() => setSideBarHide(true)}>
+                    onClick={() => setSideBarHide(true)}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6">
+                      className="w-6 h-6"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
@@ -448,7 +456,8 @@ const Dashboard = (props) => {
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6">
+                      className="w-6 h-6"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
