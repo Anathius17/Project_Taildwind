@@ -481,7 +481,7 @@ const Login = (props) => {
                     type="text"
                     value={input}
                     onChange={handleInputChange}
-                    className="input100-captha"
+                    className="input100-captha mx-auto my-auto"
                     placeholder="Enter CAPTCHA"
                   />
                   <br />
@@ -531,8 +531,8 @@ const Login = (props) => {
                       Refresh Captcha
                     </button>
                   ) : (
-                    <div>
-                      <Captcha charNum={6} onChange={setCaptcha} />
+                    <div className="mx-auto my-auto">
+                      <Captcha className="w-40" charNum={6} onChange={setCaptcha} />
                     </div>
                   )}
                 </div>
