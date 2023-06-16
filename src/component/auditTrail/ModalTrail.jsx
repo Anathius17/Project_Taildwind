@@ -183,16 +183,16 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
 
   // Ubah format modulName menjadi User Access
   const formattedModulName = modulName
-  .split("_")
-  .map((word) => {
-    if (word === "mgmt") {
-      return "management";
-    } else {
-      return word;
-    }
-  })
-  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(" ");
+    .split("_")
+    .map((word) => {
+      if (word === "mgmt") {
+        return "management";
+      } else {
+        return word;
+      }
+    })
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
