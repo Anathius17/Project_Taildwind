@@ -192,54 +192,6 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                             Default checkbox
                           </label>
                         </div>
-                        <div class="flex items-center">
-                          <input
-                            type="checkbox"
-                            class="appearance-none border-4 border-sky-500 checked:bg-blue-500 ..."
-                          />
-                          <label
-                            for="checked-checkbox"
-                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                          >
-                            Checked state
-                          </label>
-                        </div>
-                        <div class="flex items-center">
-                          <input
-                            type="checkbox"
-                            class="appearance-none border-4 border-sky-500 checked:bg-blue-500 ..."
-                          />
-                          <label
-                            for="checked-checkbox"
-                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                          >
-                            Checked state
-                          </label>
-                        </div>
-                        <div class="flex items-center">
-                          <input
-                            type="checkbox"
-                            class="appearance-none border-4 border-sky-500 checked:bg-blue-500 ..."
-                          />
-                          <label
-                            for="checked-checkbox"
-                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                          >
-                            Checked state
-                          </label>
-                        </div>
-                        <div class="flex items-center">
-                          <input
-                            type="checkbox"
-                            class="appearance-none border-4 border-sky-500 checked:bg-blue-500 ..."
-                          />
-                          <label
-                            for="checked-checkbox"
-                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                          >
-                            Checked state
-                          </label>
-                        </div>
                       </div>
                     </li>
                   </li>
