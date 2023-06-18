@@ -13,19 +13,20 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
   const [desc, setDescRole] = useState("");
   const [ctgry, setListCategory] = useState("");
   const [ctgrydtl, setListCtgrDtl] = useState("");
-  const [token, setToken] = useState("");
-  const [activeUsers, setActiveUsers] = useState("");
+  const [token, setToken] = useState();
+  const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
 
   //token
-  const getTokenApi = async () => {
-    const token = await getToken();
-    setToken(token);
+  const getTokenApi = () => {
+    getToken().then((e) => {
+      setToken(e);
+    });
   };
 
   const listCategory = async () => {
     try {
-      const response = await axios.post(
+      const listctagory = await axios.post(
         "http://localhost:30983/skycore/role/category/list",
         {
           role_id: "1",
@@ -38,8 +39,9 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
           },
         }
       );
-
-      const cekData = response.data.data.map((e) => e);
+      const cekData = listctagory.data.data.map((e) => {
+        return e;
+      });
 
       setListCategory(cekData);
       console.log("6446");
@@ -50,27 +52,42 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
   };
 
   const listCategoryDetail = async (masterid, id) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:30983/skycore/role/category/detail",
-        {
-          role_id: id,
-          role_master_id: [masterid],
-          modules: "CORE",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    //const listCategoryDetail = async () => {
 
-      console.log("1234");
-      console.log(response.data.data);
-      if (response.data.status === "true") {
-        setListCtgrDtl(response.data.data);
-      }
+    try {
+      const listctagorydetail = await axios
+        .post(
+          "http://localhost:30983/skycore/role/category/detail",
+          {
+            role_id: id,
+            role_master_id: [masterid],
+            modules: "CORE",
+          },
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log("1234");
+          console.log(response.data.data);
+          if (response.data.status === "true") {
+            setListCtgrDtl(response.data.data);
+            //ObjCategoryDetail(response.data.data);
+          }
+        });
+      //   const cekData = listctagorydetail.data.data.map((e) => {
+      //   return e;
+
+      // });
+      //   console.log("1234");
+      //   console.log(cekData);
+      // // setListCtgrDtl(cekData);
+
+      // ObjCategoryDetail();
     } catch (errorUser) {
       console.log(errorUser);
     }
@@ -81,6 +98,7 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
     setidRole("");
     setDescRole("");
     listCategory();
+    //listCategoryDetail();
   }, [onClose]);
 
   const handleCheckboxChange = (id) => {
@@ -90,11 +108,12 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
     } else {
       setIsChecked(false);
     }
+    // ObjectParents(val);
   };
 
   const styletbl = {
     main: {
-      boxShadow: "none",
+      boxshadow: "none",
       border: "solid thin #ddd",
     },
   };
@@ -119,18 +138,10 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
     }, 5000);
   };
 
-  const ObjCategoryDetail = (a) => {
-    let cekdata = $("#category_" + a).find(":checkbox");
-    let length = cekdata.length;
-    let objCtgrDtl = [];
-
-    for (let i = 0; i < length; i++) {
-      let x = $("#category_" + a + "_" + i).is(":checked");
-      if (x === true) {
-        objCtgrDtl.push($("#category_" + a + "_" + i).val());
-      }
-    }
-    setListCtgrDtl(objCtgrDtl);
+  const ObjCategoryDetail = (id) => {
+    console.log("testdtl");
+    console.log(ctgrydtl);
+    //let stsmaster = $('#' + id).is(":checked")
 
     return (
       <tbody id="bodyContent" className="font-light border-b">
