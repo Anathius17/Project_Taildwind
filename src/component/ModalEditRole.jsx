@@ -12,17 +12,22 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
   // const [ctgry, setListCategory] = useState("");
-  const [ctgrydtl, setListCtgrDtl] = useState("");
+  const [ctgrydtl, setListCtgrDtl] = useState([]);
   // const [token, setToken] = useState();
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-  // console.log(sessionData);
-  const token = sessionData;
-  // console.log(users);
 
-  const getUserList = async (id) => {
+  const token = sessionData;
+  useEffect(() => {
+    if (token && token.map !== "") {
+      getListCategoryDetail();
+    }
+  }, [token]);
+
+  const getListCategoryDetail = async (id) => {
     try {
       const body = {
         role_id: "-1",
@@ -51,91 +56,270 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
 
   if (!isOpen) return null;
   return (
-    <div class="fixed inset-0 flex items-center justify-end z-50 bg-white">
-      <div class="absolute bg-white p-6 rounded-lg shadow-lg w-10/12 mr-10">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full w-10/12 modal-xl">
         <div className="modal_content">
           <div className="modal-header">
             <h5 className="modal-title fw-bold">Role Add New</h5>
           </div>
           <div className="modal-body">
             <form>
-              <div className=" row mb-12">
-                <div className="col-3">
-                  <label class="form-label">
-                    Name <span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-9">
-                  <input
-                    type="text"
-                    value={name}
-                    className="form-control"
-                    maxLength={25}
-                    id="recipient-name"
-                    onChange={(x) => setNameRole(x.target.value)}
-                    required
-                  />
-                </div>
+              <div className="mb-3">
+                <label className="form-label">
+                  Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  className="form-control"
+                  maxLength={25}
+                  id="recipient-name"
+                  onChange={(x) => setNameRole(x.target.value)}
+                  required
+                />
               </div>
-              <div className=" row mb-12">
-                <div className="col-3">
-                  <label for="exampleInputAddress" class="form-label">
-                    Description
-                  </label>
-                </div>
-                <div className="col-9">
-                  <textarea
-                    rows={2}
-                    cols={2}
-                    className="form-control"
-                    id="txtname"
-                    name="txtname"
-                    value={desc}
-                    onChange={(x) => setDescRole(x.target.value)}
-                  />
-                </div>
+              <div className="mb-3">
+                <label className="form-label">Description</label>
+                <textarea
+                  rows={2}
+                  cols={2}
+                  className="form-control"
+                  id="txtname"
+                  name="txtname"
+                  value={desc}
+                  onChange={(x) => setDescRole(x.target.value)}
+                />
               </div>
 
-              <div className="row mb-2">
-                <div className="col-3">
-                  <label for="exampleInputAddress" class="form-label">
-                    Status
-                  </label>
-                </div>
-                <div className="col-8">
+              <div className="mb-3">
+                <label className="form-label">Status</label>
+                <div className="form-check form-switch">
                   <input
-                    className="mr-2 mt-[0.3rem] h-3.5 w-10 appearance-none rounded-[0.4375rem] bg-neutral-300 before:pointer-events-none before:absolute before:h-3.5 before:w-3.5 before:rounded-full before:bg-transparent before:content-[''] after:absolute after:z-[2] after:-mt-[0.1875rem] after:h-5 after:w-5 after:rounded-full after:border-none after:bg-neutral-100 after:shadow-[0_0px_3px_0_rgb(0_0_0_/_7%),_0_2px_2px_0_rgb(0_0_0_/_4%)] after:transition-[background-color_0.2s,transform_0.2s] after:content-[''] checked:bg-success checked:after:absolute checked:after:z-[2] checked:after:-mt-[3px] checked:after:ml-[1.0625rem] checked:after:h-5 checked:after:w-5 checked:after:rounded-full checked:after:border-none checked:after:bg-success checked:after:shadow-[0_3px_1px_-2px_rgba(0,0,0,0.2),_0_2px_2px_0_rgba(0,0,0,0.14),_0_1px_5px_0_rgba(0,0,0,0.12)] checked:after:transition-[background-color_0.2s,transform_0.2s] checked:after:content-[''] hover:cursor-pointer focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[3px_-1px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-5 focus:after:w-5 focus:after:rounded-full focus:after:content-[''] checked:focus:border-primary checked:focus:bg-success checked:focus:before:ml-[1.0625rem] checked:focus:before:scale-100 checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:bg-neutral-600 dark:after:bg-neutral-400 dark:checked:bg-success dark:checked:after:bg-success dark:focus:before:shadow-[3px_-1px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca]"
+                    className="form-check-input"
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckDefault"
                     value=""
                   />
+                  <label
+                    className="form-check-label"
+                    htmlFor="flexSwitchCheckDefault"
+                  >
+                    Active
+                  </label>
                 </div>
               </div>
             </form>
-            <div className="flex w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-              <div className="flex justify-start px-4 pt-4">
-                <ul className="space-y-2 font-medium">
-                  {ctgrydtl.map((item) => {
-                    <li>
-                      <div class="flex flex-col items-center">
-                        <div class="flex items-center mb-4">
-                          <input
-                            type="checkbox"
-                            class="appearance-none border-4 border-sky-500 checked:bg-blue-500 ..."
-                          />
-                          <label
-                            for="default-checkbox"
-                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                          >
-                            Default checkbox
-                          </label>
-                        </div>
-                      </div>
-                    </li>;
-                  })}
-                </ul>
-              </div>
+            <div className="main">
+            <table className="w-full overflow-auto">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ctgrydtl.map((item) => (
+                    <React.Fragment key={item.rlm_id}>
+                      <tr>
+                        <td>
+                          <div className="form-check">
+                            <input
+                              type="checkbox"
+                              id={item.rlm_id}
+                              name="chkCategory"
+                              value={item.rlm_id}
+                              className="form-check-input"
+                              checked={item.is_checked}
+                              onChange={() => {
+                                const updatedCtgrydtl = ctgrydtl.map(
+                                  (ctgry) => {
+                                    if (ctgry.rlm_id === item.rlm_id) {
+                                      return {
+                                        ...ctgry,
+                                        is_checked: !ctgry.is_checked,
+                                      };
+                                    }
+                                    return ctgry;
+                                  }
+                                );
+                                setListCtgrDtl(updatedCtgrydtl);
+                                if (
+                                  !selectedCategory ||
+                                  selectedCategory.rlm_id !== item.rlm_id
+                                ) {
+                                  setSelectedCategory(item);
+                                } else {
+                                  setSelectedCategory(null);
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor={item.rlm_id}
+                              className="form-check-label"
+                            >
+                              {item.rlm_name}
+                            </label>
+                          </div>
+                        </td>
+                        <td>
+                          {selectedCategory &&
+                            selectedCategory.rlm_id === item.rlm_id && (
+                              <ul>
+                                {item.detail.map((detailItem) => (
+                                  <li key={detailItem.rlm_id}>
+                                    <div className="form-check">
+                                      <input
+                                        type="checkbox"
+                                        id={detailItem.rlm_id}
+                                        name="chkCategoryParent"
+                                        value={detailItem.rlm_id}
+                                        className="form-check-input"
+                                        checked={detailItem.is_checked}
+                                        onChange={() => {
+                                          const updatedCtgrydtl = ctgrydtl.map(
+                                            (ctgry) => {
+                                              if (
+                                                ctgry.rlm_id === item.rlm_id
+                                              ) {
+                                                const updatedDetail =
+                                                  ctgry.detail.map((detail) => {
+                                                    if (
+                                                      detail.rlm_id ===
+                                                      detailItem.rlm_id
+                                                    ) {
+                                                      const updatedChild =
+                                                        detail.child.map(
+                                                          (child) => {
+                                                            if (
+                                                              child.rlm_parentid ===
+                                                              detailItem.rlm_id
+                                                            ) {
+                                                              return {
+                                                                ...child,
+                                                                is_checked:
+                                                                  !detailItem.is_checked,
+                                                              };
+                                                            }
+                                                            return child;
+                                                          }
+                                                        );
+                                                      return {
+                                                        ...detail,
+                                                        is_checked:
+                                                          !detailItem.is_checked,
+                                                        child: updatedChild,
+                                                      };
+                                                    }
+                                                    return detail;
+                                                  });
+                                                return {
+                                                  ...ctgry,
+                                                  detail: updatedDetail,
+                                                };
+                                              }
+                                              return ctgry;
+                                            }
+                                          );
+                                          setListCtgrDtl(updatedCtgrydtl);
+                                        }}
+                                      />
+                                      <label
+                                        htmlFor={detailItem.rlm_id}
+                                        className="form-check-label"
+                                      >
+                                        {detailItem.rlm_name}
+                                      </label>
+                                    </div>
+
+                                    {detailItem.child &&
+                                      detailItem.child.length > 0 && (
+                                        <ul>
+                                          {detailItem.child.map((childItem) => (
+                                            <li key={childItem.rlm_id}>
+                                              <div className="form-check">
+                                                <input
+                                                  type="checkbox"
+                                                  id={childItem.rlm_id}
+                                                  name="chkCategoryChild"
+                                                  value={childItem.rlm_id}
+                                                  className="form-check-input"
+                                                  checked={childItem.is_checked}
+                                                  onChange={() => {
+                                                    const updatedCtgrydtl =
+                                                      ctgrydtl.map((ctgry) => {
+                                                        if (
+                                                          ctgry.rlm_id ===
+                                                          item.rlm_id
+                                                        ) {
+                                                          const updatedDetail =
+                                                            ctgry.detail.map(
+                                                              (detail) => {
+                                                                if (
+                                                                  detail.rlm_id ===
+                                                                  detailItem.rlm_id
+                                                                ) {
+                                                                  const updatedChild =
+                                                                    detail.child.map(
+                                                                      (
+                                                                        child
+                                                                      ) => {
+                                                                        if (
+                                                                          child.rlm_id ===
+                                                                          childItem.rlm_id
+                                                                        ) {
+                                                                          return {
+                                                                            ...child,
+                                                                            is_checked:
+                                                                              !child.is_checked,
+                                                                          };
+                                                                        }
+                                                                        return child;
+                                                                      }
+                                                                    );
+                                                                  return {
+                                                                    ...detail,
+                                                                    child:
+                                                                      updatedChild,
+                                                                  };
+                                                                }
+                                                                return detail;
+                                                              }
+                                                            );
+                                                          return {
+                                                            ...ctgry,
+                                                            detail:
+                                                              updatedDetail,
+                                                          };
+                                                        }
+                                                        return ctgry;
+                                                      });
+                                                    setListCtgrDtl(
+                                                      updatedCtgrydtl
+                                                    );
+                                                  }}
+                                                />
+                                                <label
+                                                  htmlFor={childItem.rlm_id}
+                                                  className="form-check-label"
+                                                >
+                                                  {childItem.rlm_name}
+                                                </label>
+                                              </div>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      )}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
           <div className="modal-footer">
@@ -147,11 +331,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
             >
               Close
             </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              //   onClick={InsertUserNew}
-            >
+            <button type="button" className="btn btn-primary">
               Save
             </button>
           </div>
