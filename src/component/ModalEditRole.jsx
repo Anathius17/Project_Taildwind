@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../API/api";
 import $ from "jquery";
+import Swal from "sweetalert2";
 import "../assets/css/modal.css";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -11,6 +13,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [roleid, setidRole] = useState("");
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
+  const [stats, setStatsRole] = useState("");
   // const [ctgry, setListCategory] = useState("");
   const [ctgrydtl, setListCtgrDtl] = useState([]);
   // const [token, setToken] = useState();
@@ -19,6 +22,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const userid = JSON.parse(localStorage.getItem("userid"));
+  console.log(userid);
 
   const token = sessionData;
   useEffect(() => {
@@ -27,7 +32,80 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
     }
   }, [token]);
 
-  const getListCategoryDetail = async (id) => {
+  const [ip, setIP] = useState("");
+  const [logid, setlogid] = useState("");
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data);
+      setIP(res.data.ip);
+    };
+    //passing getData method to the lifecycle method
+    getData();
+  }, []);
+  const dataLogUserTracking = {
+    plcd: "role_management",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Add Role Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
+
+  const postDataLogUserTracking = async () => {
+    let log = "";
+    try {
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          setlogid(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
+      await insertobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
+    }
+  };
+
+  const Save = async (e) => {
+    if (!name || !desc || !stats) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops... Data Tidak Boleh Kosong. Please check again?",
+        text: "",
+        footer: '<a href="">Why do I have this issue?</a>',
+      });
+      return;
+    }
+    postDataLogUserTracking();
+
+    const checkedRoles = ctgrydtl.filter((item) => item.is_checked);
+    const checkedRoleIds = checkedRoles.map((item) => item.rlm_id);
+    console.log("Checked Role IDs:", checkedRoleIds);
+  };
+
+  const insertobjectdata = (val) => {
+    InsertRoleNew(val);
+  };
+
+  const getListCategoryDetail = async (val) => {
     try {
       const body = {
         role_id: "-1",
@@ -51,6 +129,51 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
       setListCtgrDtl(cekData);
     } catch (errorusers) {
       console.log(errorusers);
+    }
+  };
+
+  const InsertRoleNew = (val) => {
+    try {
+      const checkedRoles = ctgrydtl.filter((item) => item.is_checked);
+      const checkedRoleIds = checkedRoles.map((item) => item.rlm_id);
+
+      const roleNew = axios
+        .post(
+          "http://116.206.196.65:30983/skycore/role/create",
+          {
+            role_name: name,
+            role_description: desc,
+            role_status: stats,
+            role_created_by: "bani",
+            role_log_id: val,
+            role_master_id: checkedRoleIds,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
+            Swal.fire("Save Successfully ", "", "success");
+            // reload();
+            onClose();
+          } else {
+            Swal.fire(response.data.message, "", "error");
+            // reload();
+            onClose();
+          }
+        });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: error,
+        text: "",
+        footer: '<a href="">Why do I have this issue?</a>',
+      });
     }
   };
 
@@ -91,27 +214,26 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                 />
               </div>
 
-              <div className="mb-3">
-                <label className="form-label">Status</label>
-                <div className="form-check form-switch">
+              <div className="row mb-2">
+                <div className="col-3">
+                  <label htmlFor="exampleInputAddress" className="form-label">
+                    Status
+                  </label>
+                </div>
+                <div className="col-8">
                   <input
-                    className="form-check-input"
+                    className="mr-2 mt-[0.3rem] h-3.5 w-10 appearance-none rounded-[0.4375rem] bg-neutral-300 before:pointer-events-none before:absolute before:h-3.5 before:w-3.5 before:rounded-full before:bg-transparent before:content-[''] after:absolute after:z-[2] after:-mt-[0.1875rem] after:h-5 after:w-5 after:rounded-full after:border-none after:bg-neutral-100 after:shadow-[0_0px_3px_0_rgb(0_0_0_/_7%),_0_2px_2px_0_rgb(0_0_0_/_4%)] after:transition-[background-color_0.2s,transform_0.2s] after:content-[''] checked:bg-success checked:after:absolute checked:after:z-[2] checked:after:-mt-[3px] checked:after:ml-[1.0625rem] checked:after:h-5 checked:after:w-5 checked:after:rounded-full checked:after:border-none checked:after:bg-success checked:after:shadow-[0_3px_1px_-2px_rgba(0,0,0,0.2),_0_2px_2px_0_rgba(0,0,0,0.14),_0_1px_5px_0_rgba(0,0,0,0.12)] checked:after:transition-[background-color_0.2s,transform_0.2s] checked:after:content-[''] hover:cursor-pointer focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[3px_-1px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-5 focus:after:w-5 focus:after:rounded-full focus:after:content-[''] checked:focus:border-primary checked:focus:bg-success checked:focus:before:ml-[1.0625rem] checked:focus:before:scale-100 checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:bg-neutral-600 dark:after:bg-neutral-400 dark:checked:bg-success dark:checked:after:bg-success dark:focus:before:shadow-[3px_-1px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca]"
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckDefault"
-                    value=""
+                    checked={stats} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
+                    onChange={(e) => setStatsRole(e.target.checked)} // Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
                   />
-                  <label
-                    className="form-check-label"
-                    htmlFor="flexSwitchCheckDefault"
-                  >
-                    Active
-                  </label>
                 </div>
               </div>
             </form>
             <div className="main">
-            <table className="w-full overflow-auto">
+              <table className="w-full overflow-auto">
                 <thead>
                   <tr>
                     <th>Category</th>
@@ -331,7 +453,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
             >
               Close
             </button>
-            <button type="button" className="btn btn-primary">
+            <button type="button" className="btn btn-primary" onClick={Save}>
               Save
             </button>
           </div>
