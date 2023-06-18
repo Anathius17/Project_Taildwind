@@ -50,17 +50,13 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
     }
   };
 
-  const listCategoryDetail = async (masterid, id) => {
-    //const listCategoryDetail = async () => {
-
+  const listCategoryDetail = async (id) => {
     try {
       const listctagorydetail = await axios
         .post(
-          "http://localhost:30983/skycore/role/category/detail",
+          "http://localhost:30983/skycore/role/category/detail/v2",
           {
             role_id: id,
-            role_master_id: [masterid],
-            modules: "CORE",
           },
 
           {
