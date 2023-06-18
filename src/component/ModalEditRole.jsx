@@ -11,26 +11,26 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [roleid, setidRole] = useState("");
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
-  const [ctgry, setListCategory] = useState("");
+  // const [ctgry, setListCategory] = useState("");
   const [ctgrydtl, setListCtgrDtl] = useState("");
-  const [token, setToken] = useState();
+  // const [token, setToken] = useState();
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
-  //token
-  const getTokenApi = () => {
-    getToken().then((e) => {
-      setToken(e);
-    });
-  };
 
-  const listCategory = async () => {
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  // console.log(sessionData);
+  const token = sessionData;
+  // console.log(users);
+
+  const getUserList = async (id) => {
     try {
-      const listctagory = await axios.post(
-        "http://localhost:30983/skycore/role/category/list",
-        {
-          role_id: "1",
-          modules: "CORE",
-        },
+      const body = {
+        role_id: "-1",
+      };
+
+      const listCategoryDetail = await axios.post(
+        "http://116.206.196.65:30983/skycore/role/category/detail/v2",
+        body,
         {
           headers: {
             "Content-Type": "application/json",
@@ -38,72 +38,15 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
           },
         }
       );
-      const cekData = listctagory.data.data.map((e) => {
+
+      const cekData = listCategoryDetail.data.data.map((e) => {
         return e;
       });
 
-      setListCategory(cekData);
-      console.log("6446");
-      console.log(cekData);
-    } catch (errorUser) {
-      console.log(errorUser);
+      setListCtgrDtl(cekData);
+    } catch (errorusers) {
+      console.log(errorusers);
     }
-  };
-
-  const listCategoryDetail = async (id) => {
-    try {
-      const listctagorydetail = await axios
-        .post(
-          "http://localhost:30983/skycore/role/category/detail/v2",
-          {
-            role_id: id,
-          },
-
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          console.log("1234");
-          console.log(response.data.data);
-          if (response.data.status === "true") {
-            setListCtgrDtl(response.data.data);
-            //ObjCategoryDetail(response.data.data);
-          }
-        });
-      //   const cekData = listctagorydetail.data.data.map((e) => {
-      //   return e;
-
-      // });
-      //   console.log("1234");
-      //   console.log(cekData);
-      // // setListCtgrDtl(cekData);
-
-      // ObjCategoryDetail();
-    } catch (errorUser) {
-      console.log(errorUser);
-    }
-  };
-
-  useEffect(() => {
-    getTokenApi();
-    setidRole("");
-    setDescRole("");
-    listCategory();
-    //listCategoryDetail();
-  }, [onClose]);
-
-  const handleCheckboxChange = (id) => {
-    let xx = parseInt($("#btnCategory_" + id).val());
-    if (xx === id) {
-      setIsChecked(!isChecked);
-    } else {
-      setIsChecked(false);
-    }
-    // ObjectParents(val);
   };
 
   if (!isOpen) return null;
@@ -173,7 +116,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
             <div className="flex w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
               <div className="flex justify-start px-4 pt-4">
                 <ul className="space-y-2 font-medium">
-                  <li>
+                  {ctgrydtl.map((item) => {
                     <li>
                       <div class="flex flex-col items-center">
                         <div class="flex items-center mb-4">
@@ -189,16 +132,9 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                           </label>
                         </div>
                       </div>
-                    </li>
-                  </li>
-                  <li>
-                    <div class="flex items-center"></div>
-                  </li>
+                    </li>;
+                  })}
                 </ul>
-              </div>
-
-              <div className="flex justify-start px-4 pt-4">
-                {/* {isChecked ? <h1>Hallo Grasia</h1> : <></>} */}
               </div>
             </div>
           </div>
