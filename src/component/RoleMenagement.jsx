@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import ModalEdit from "./ModalEditRole";
+import ModalEdit from "./ModalEditRole";
 import ModalAdd from "./ModalAddRole";
 import Swal from "sweetalert2";
 
@@ -95,12 +95,11 @@ const RoleMenagement = () => {
   const [roleEdit, setRoleEdit] = useState();
 
   const getRoleDetail = async () => {
-    console.log(detaiRoleParam);
     try {
       const listRoleDetail = await axios.post(
         "http://116.206.196.65:30983/skycore/role/detail",
         {
-          role_id: "1",
+          role_id: detaiRoleParam, // Menggunakan id yang terpilih dari state
         },
         {
           headers: {
@@ -109,19 +108,19 @@ const RoleMenagement = () => {
           },
         }
       );
-
+  
       const cekData = listRoleDetail.data.data.map((e) => {
         console.log(e);
         return e;
       });
-
-      //console.log(cekData[0]);
+  
       console.log(listRoleDetail.data.status);
       setRoleEdit(cekData[0]);
     } catch (errorUser) {
       console.log(errorUser);
     }
   };
+  
 
   // ? Menghapus pengguna
   const [id, setDeleteRole] = useState("");

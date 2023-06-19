@@ -10,7 +10,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isStatusChecked, setIsStatusChecked] = useState(false);
   const [isStatus, setIsStatus] = useState(false);
-  const [roleid, setidRole] = useState(currentRole);
+  const [roleid, setroleid] = useState(currentRole);
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
   const [stats, setStatsRole] = useState("");
@@ -31,6 +31,20 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
       getListCategoryDetail();
     }
   }, [token]);
+
+  useEffect(() => {
+
+    setroleid(currentRole);
+  }, [currentRole]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    setroleid((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
@@ -100,7 +114,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   const insertobjectdata = (val) => {
-    InsertRoleNew(val);
+    UpdateRoleNew(val);
   };
 
   const getListCategoryDetail = async () => {
@@ -147,18 +161,30 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     }
   };
 
-  const InsertRoleNew = (val) => {
+  const UpdateRoleNew = async (val) => {
+    if (
+      !roleid.rl_id ||
+      !roleid.rl_name ||
+      !roleid.rl_description||
+      !roleid.rl_status ||
+      !roleid.val
+    ) {
+      Swal.fire("Please completed all fields", "", "error");
+      return;
+    }
     try {
-      const roleNew = axios
+      await axios
         .post(
-          "http://116.206.196.65::30983/skycore/role/update",
+          "http://116.206.196.65:30983/skycore/Branch/update",
           {
-            role_id: name,
-            role_description: desc,
-            role_status: stats,
-            role_created_by: userid,
-            role_log_id: val,
-            role_master_id: checkedRoleIds,
+            role_id: roleid.rl_id,
+            action_by: userid,
+            log_id: roleid.val,
+            role_name: roleid.rl_name,
+            role_description: roleid.rl_description,
+            role_status: roleid.rl_status ,
+            update_log_id: val,
+            update_role_master_id: roleid.role_master_id,
           },
           {
             headers: {
@@ -170,22 +196,17 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
         .then((response) => {
           console.log(response.data.status);
           if (response.data.status === "true") {
-            Swal.fire("Save Successfully ", "", "success");
-            reload();
-            onClose();
+            Swal.fire("Update Successfully ", "", "success");
           } else {
             Swal.fire(response.data.message, "", "error");
-            reload();
-            onClose();
           }
         });
+      //Swal.fire("Save Berhasil", "", "success");
+
+      reload();
+      onClose();
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: error,
-        text: "",
-        footer: '<a href="">Why do I have this issue?</a>',
-      });
+      console.log(error);
     }
   };
 
@@ -265,11 +286,12 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                 </label>
                 <input
                   type="text"
-                  value={name}
+                  value={roleid.rl_name}
                   className="form-control"
                   maxLength={25}
                   id="recipient-name"
-                  onChange={(x) => setNameRole(x.target.value)}
+                  name="rl_name"
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -280,9 +302,9 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   cols={2}
                   className="form-control"
                   id="txtname"
-                  name="txtname"
-                  value={desc}
-                  onChange={(x) => setDescRole(x.target.value)}
+                  name="rl_description"
+                  value={roleid.rl_description}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -298,8 +320,9 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckDefault"
-                    checked={stats} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
-                    onChange={(e) => setStatsRole(e.target.checked)} // Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
+                    name="rl_status"
+                    checked={roleid.rl_status} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
+                    onChange={handleInputChange}// Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
                   />
                 </div>
               </div>
