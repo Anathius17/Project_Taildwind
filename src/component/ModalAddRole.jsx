@@ -2,68 +2,67 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../API/api";
 import $ from "jquery";
+import Swal from "sweetalert2";
 import "../assets/css/modal.css";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalAddRole = ({ isOpen, onClose, reload }) => {
+const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isStatusChecked, setIsStatusChecked] = useState(false);
   const [isStatus, setIsStatus] = useState(false);
   const [roleid, setidRole] = useState("");
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
-  const [ctgry, setListCategory] = useState("");
-  const [ctgrydtl, setListCtgrDtl] = useState("");
-  const [token, setToken] = useState();
+  const [stats, setStatsRole] = useState("");
+  // const [ctgry, setListCategory] = useState("");
+  const [ctgrydtl, setListCtgrDtl] = useState([]);
+  // const [token, setToken] = useState();
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
+  const [checkedRoleIds, setCheckedRoleIds] = useState([]);
 
-  //token
-  const getTokenApi = () => {
-    getToken().then((e) => {
-      setToken(e);
-    });
-  };
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const userid = JSON.parse(localStorage.getItem("userid"));
+  console.log(userid);
 
-  const listCategory = async () => {
-    try {
-      const listctagory = await axios.post(
-        "http://localhost:30983/skycore/role/category/list",
-        {
-          role_id: "1",
-          modules: "CORE",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const cekData = listctagory.data.data.map((e) => {
-        return e;
-      });
-
-      setListCategory(cekData);
-      console.log("6446");
-      console.log(cekData);
-    } catch (errorUser) {
-      console.log(errorUser);
+  const token = sessionData;
+  useEffect(() => {
+    if (token && token.map !== "") {
+      getListCategoryDetail();
     }
+  }, [token]);
+
+  const [ip, setIP] = useState("");
+  const [logid, setlogid] = useState("");
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data);
+      setIP(res.data.ip);
+    };
+    //passing getData method to the lifecycle method
+    getData();
+  }, []);
+  const dataLogUserTracking = {
+    plcd: "role_management",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Add Role Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
   };
 
-  const listCategoryDetail = async (masterid, id) => {
-    //const listCategoryDetail = async () => {
-
+  const postDataLogUserTracking = async () => {
+    let log = "";
     try {
-      const listctagorydetail = await axios
+      await axios
         .post(
-          "http://localhost:30983/skycore/role/category/detail",
-          {
-            role_id: id,
-            role_master_id: [masterid],
-            modules: "CORE",
-          },
-
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
           {
             headers: {
               "Content-Type": "application/json",
@@ -72,221 +71,224 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
           }
         )
         .then((response) => {
-          console.log("1234");
-          console.log(response.data.data);
+          console.log(response.data.data[0].resultprocess);
+          setlogid(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
+      await insertobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
+    }
+  };
+
+  const Save = async (e) => {
+    if (!name || !desc || !stats || !checkedRoleIds) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops... Data Tidak Boleh Kosong. Please check again?",
+        text: "",
+        footer: '<a href="">Why do I have this issue?</a>',
+      });
+      return;
+    }
+    postDataLogUserTracking();
+
+    console.log("Checked Role IDs:", checkedRoleIds);
+  };
+
+  const insertobjectdata = (val) => {
+    InsertRoleNew(val);
+  };
+
+  const getListCategoryDetail = async () => {
+    try {
+      const body = {
+        role_id: "-1",
+      };
+
+      const listCategoryDetail = await axios.post(
+        "http://116.206.196.65:30983/skycore/role/category/detail/v2",
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const updatedListCategoryDetail = listCategoryDetail.data.data.map(
+        (item) => {
+          const updatedDetail = item.detail.map((detailItem) => {
+            const updatedChild = detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: false,
+            }));
+            return {
+              ...detailItem,
+              is_checked: false,
+              child: updatedChild,
+            };
+          });
+          return {
+            ...item,
+            is_checked: false,
+            detail: updatedDetail,
+          };
+        }
+      );
+
+      setListCtgrDtl(updatedListCategoryDetail);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const InsertRoleNew = (val) => {
+    try {
+      const roleNew = axios
+        .post(
+          "http://116.206.196.65:30983/skycore/role/create",
+          {
+            role_name: name,
+            role_description: desc,
+            role_status: stats,
+            role_created_by: userid,
+            role_log_id: val,
+            role_master_id: checkedRoleIds,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
           if (response.data.status === "true") {
-            setListCtgrDtl(response.data.data);
-            //ObjCategoryDetail(response.data.data);
+            Swal.fire("Save Successfully ", "", "success");
+            reload();
+            onClose();
+          } else {
+            Swal.fire(response.data.message, "", "error");
+            reload();
+            onClose();
           }
         });
-      //   const cekData = listctagorydetail.data.data.map((e) => {
-      //   return e;
-
-      // });
-      //   console.log("1234");
-      //   console.log(cekData);
-      // // setListCtgrDtl(cekData);
-
-      // ObjCategoryDetail();
-    } catch (errorUser) {
-      console.log(errorUser);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: error,
+        text: "",
+        footer: '<a href="">Why do I have this issue?</a>',
+      });
     }
+  };
+
+  const handleCheckboxChange = (item) => {
+    const updatedCtgrydtl = ctgrydtl.map((ctgry) => {
+      if (ctgry.rlm_id === item.rlm_id) {
+        return {
+          ...ctgry,
+          is_checked: !ctgry.is_checked,
+        };
+      }
+      const updatedDetail = ctgry.detail.map((detailItem) => {
+        if (detailItem.rlm_id === item.rlm_id) {
+          return {
+            ...detailItem,
+            is_checked: !detailItem.is_checked,
+          };
+        }
+        const updatedChild = detailItem.child.map((childItem) => {
+          if (childItem.rlm_id === item.rlm_id) {
+            return {
+              ...childItem,
+              is_checked: !childItem.is_checked,
+            };
+          }
+          return childItem;
+        });
+        return {
+          ...detailItem,
+          child: updatedChild,
+        };
+      });
+      return {
+        ...ctgry,
+        detail: updatedDetail,
+      };
+    });
+
+    const checkedRoleIds = updatedCtgrydtl.reduce((acc, ctgry) => {
+      if (ctgry.is_checked) {
+        acc.push(ctgry.rlm_id);
+      }
+      ctgry.detail.forEach((detailItem) => {
+        if (detailItem.is_checked) {
+          acc.push(detailItem.rlm_id);
+        }
+        detailItem.child.forEach((childItem) => {
+          if (childItem.is_checked) {
+            acc.push(childItem.rlm_id);
+          }
+        });
+      });
+      return acc;
+    }, []);
+
+    setListCtgrDtl(updatedCtgrydtl);
+    setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
   };
 
   useEffect(() => {
-    getTokenApi();
-    setidRole("");
-    setDescRole("");
-    listCategory();
-    //listCategoryDetail();
-  }, [onClose]);
+    getListCategoryDetail();
+  }, []);
 
-  const handleCheckboxChange = (id) => {
-    let xx = parseInt($("#btnCategory_" + id).val());
-    if (xx === id) {
-      setIsChecked(!isChecked);
-    } else {
-      setIsChecked(false);
-    }
-    // ObjectParents(val);
-  };
-
-  const styletbl = {
-    main: {
-      boxshadow: "none",
-      border: "solid thin #ddd",
-    },
-  };
-
-  const findChild = (a, id) => {
-    console.log("test");
-    console.log(a);
-    console.log(id);
-
-    let stsmaster = $("#" + a).is(":checked");
-    if (stsmaster === true) {
-      $("#" + a).prop("checked", true);
-    } else {
-      $("#" + a).prop("checked", false);
-    }
-
-    listCategoryDetail(a, id);
-    setTimeout(() => {
-      console.log("delay");
-      setIsStatus(true);
-      ObjCategoryDetail(a);
-    }, 5000);
-  };
-
-  const ObjCategoryDetail = (id) => {
-    console.log("testdtl");
-    console.log(ctgrydtl);
-    //let stsmaster = $('#' + id).is(":checked")
-
-    return (
-      <tbody id="bodyContent" className="font-light border-b">
-        {ctgrydtl.map((item, p) => {
-          if (ctgrydtl[p].rlm_is_action === true) {
-            return (
-              <tr key={p}>
-                <td
-                  style={{ width: "30%" }}
-                  className="py-0 px-2 text-left"
-                ></td>
-                <td style={{ width: "40%" }} className="py-0 px-2 text-left">
-                  {ctgrydtl[p].rlm_name}
-                </td>
-                <td style={{ width: "10%" }} className="py-0 px-2 text-center">
-                  <input
-                    type="checkbox"
-                    name="txtMasterId"
-                    id="category"
-                    value={ctgrydtl[p].rlm_id}
-                    disabled=""
-                  />
-                </td>
-                <td style={{ width: "20%" }} className="py-0 px-2 text-left">
-                  {ctgrydtl[p].rlm_name}
-                </td>
-              </tr>
-            );
-          } else {
-            return (
-              <tr key={p}>
-                <td style={{ width: "30%" }} className="py-0 px-2 text-left">
-                  {ctgrydtl[p].rlm_name}
-                </td>
-                <td style={{ width: "40%" }} className="py-0 px-2 text-left">
-                  {ctgrydtl[p].rlm_name}
-                </td>
-                <td style={{ width: "10%" }} className="py-0 px-2"></td>
-                <td style={{ width: "20%" }} className="py-0 px-2"></td>
-              </tr>
-            );
-          }
-        })}
-      </tbody>
-    );
-  };
-
-  const ObjectParents = (val) => {
-    // console.log("asas");
-    // console.log(val);
-
-    return (
-      <div>
-        {ctgry.map((item, x) => {
-          let objMenu = ctgry;
-
-          if (ctgry[x].rlm_parentid === 2) {
-            // if (objMenu[i].rlm_id == ctgry[x].rlm_parentid)
-            // {
-            return (
-              <ul className="flex justify-start px-10 pt-2">
-                <li>
-                  <div class="flex items-center">
-                    <input
-                      type="checkbox"
-                      //checked={isChecked1}
-                      //onChange={handleCheckboxChange1}
-                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      for="checked-checkbox"
-                      class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      {ctgry[x].rlm_name}
-                    </label>
-                  </div>
-                </li>
-              </ul>
-            );
-            //}
-          } else {
-            <></>;
-          }
-        })}
-      </div>
-    );
-  };
-  console.log(ctgrydtl);
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
-        <div className="modal-content" style={{ width: "1000px" }}>
+      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full w-10/12 modal-xl">
+        <div className="modal_content">
           <div className="modal-header">
-            <h5 className="modal-title fw-bold">Role Management | Add New</h5>
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-              onClick={onClose}
-            ></button>
+            <h5 className="modal-title fw-bold">Role Add New</h5>
           </div>
           <div className="modal-body">
             <form>
-              <div className=" row mb-12">
-                <div className="col-3">
-                  <label class="form-label">
-                    Name <span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-9">
-                  <input
-                    type="text"
-                    value={name}
-                    className="form-control"
-                    maxLength={25}
-                    id="recipient-name"
-                    onChange={(x) => setNameRole(x.target.value)}
-                    required
-                  />
-                </div>
+              <div className="mb-3">
+                <label className="form-label">
+                  Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  className="form-control"
+                  maxLength={25}
+                  id="recipient-name"
+                  onChange={(x) => setNameRole(x.target.value)}
+                  required
+                />
               </div>
-              <div className=" row mb-12">
-                <div className="col-3">
-                  <label for="exampleInputAddress" class="form-label">
-                    Description
-                  </label>
-                </div>
-                <div className="col-9">
-                  <textarea
-                    rows={2}
-                    cols={2}
-                    className="form-control"
-                    id="txtname"
-                    name="txtname"
-                    value={desc}
-                    onChange={(x) => setDescRole(x.target.value)}
-                  />
-                </div>
+              <div className="mb-3">
+                <label className="form-label">Description</label>
+                <textarea
+                  rows={2}
+                  cols={2}
+                  className="form-control"
+                  id="txtname"
+                  name="txtname"
+                  value={desc}
+                  onChange={(x) => setDescRole(x.target.value)}
+                />
               </div>
 
               <div className="row mb-2">
                 <div className="col-3">
-                  <label for="exampleInputAddress" class="form-label">
+                  <label htmlFor="exampleInputAddress" className="form-label">
                     Status
                   </label>
                 </div>
@@ -296,171 +298,107 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckDefault"
-                    value=""
+                    checked={stats} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
+                    onChange={(e) => setStatsRole(e.target.checked)} // Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
                   />
                 </div>
               </div>
             </form>
-
-            <div className="main" style={styletbl.main}>
-              <div className="row mb-4">
-                <div className="col-md-4">
-                  <fieldset
-                    className="scheduler-border"
-                    style={{ padding: "0px" }}
-                  >
-                    <ul className="space-y-2 font-medium">
-                      {ctgry.map((item, i) => {
-                        if (ctgry[i].rlm_parentid === 0) {
-                          return (
-                            <li>
-                              {/* <div class="flex items-center"> */}
-                              <button
-                                id={"btnCategory_" + ctgry[i].rlm_id}
-                                name={"btnCategory_" + ctgry[i].rlm_id}
-                                value={ctgry[i].rlm_id}
-                                onClick={() =>
-                                  handleCheckboxChange(ctgry[i].rlm_id)
-                                }
-                                style={
-                                  isChecked
-                                    ? { transform: "rotate(80deg)" }
-                                    : { transform: "rotate(0deg)" }
-                                }
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                  className="w-5 h-5"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </button>
-
-                              <input
-                                type="checkbox"
-                                id={ctgry[i].rlm_id}
-                                name="chkCategory"
-                                value={ctgry[i].rlm_id}
-                                //checked={isStatusChecked}
-                                onChange={(event) =>
-                                  findChild(event.target.value, "-1")
-                                }
-                                className="child-idc"
-                              />
-                              <label
-                                for="checked-checkbox"
-                                class=" ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >
-                                {ctgry[i].rlm_name}
-                              </label>
-
-                              {isChecked ? (
-                                // CALL OBJECT PARENT
-                                // <div>
-                                //     <ObjectParents />
-                                // </div>
-                                <div>
-                                  {ctgry.map((item, x) => {
-                                    console.log("asas");
-                                    if (ctgry[x].rlm_parentid !== 0) {
-                                      if (
-                                        ctgry[i].rlm_id ===
-                                        ctgry[x].rlm_parentid
-                                      ) {
-                                        return (
-                                          <ul className="flex justify-start px-10 pt-2">
-                                            <li>
-                                              <div class="flex items-center">
-                                                <input
-                                                  type="checkbox"
-                                                  id={ctgry[x].rlm_id}
-                                                  name="chkCategory"
-                                                  value={ctgry[x].rlm_id}
-                                                  //checked={isChecked1}
-                                                  onChange={(event) =>
-                                                    findChild(
-                                                      event.target.value,
-                                                      "-1"
-                                                    )
-                                                  }
-                                                  className="child-idc"
-                                                />
-                                                <label
-                                                  for="checked-checkbox"
-                                                  class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                                >
-                                                  {ctgry[x].rlm_name}
-                                                </label>
-                                              </div>
-                                            </li>
-                                          </ul>
-                                        );
-                                      }
-                                    } else {
-                                      <></>;
-                                    }
-                                  })}
-                                </div>
-                              ) : (
-                                <></>
-                              )}
-
-                              {/* </div> */}
-                            </li>
-                          );
-                        }
-                      })}
-                    </ul>
-                  </fieldset>
-                </div>
-                <div className="col-md-8">
-                  <fieldset
-                    className="scheduler-border"
-                    style={{ padding: "10px" }}
-                  >
-                    <div id="getContentByCategory">
-                      <table
-                        className="table-bordered table-striped"
-                        id="tblContent"
-                        style={{ textAlign: "right" }}
-                      >
-                        <thead>
+            <div className="main">
+              <table className="w-full overflow-auto table-bordered">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Details</th>
+                    <th>Child</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ctgrydtl.map((item) => (
+                    <React.Fragment key={item.rlm_id}>
+                      <tr>
+                        <td>
+                          <div className="form-check">
+                            <input
+                              type="checkbox"
+                              id={item.rlm_id}
+                              name="chkCategory"
+                              value={item.rlm_id}
+                              className="form-check-input"
+                              checked={item.is_checked}
+                              onChange={() => handleCheckboxChange(item)}
+                            />
+                            <label
+                              htmlFor={item.rlm_id}
+                              className="form-check-label"
+                            >
+                              {item.rlm_name}
+                            </label>
+                          </div>
+                        </td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      {item.detail.map((detailItem) => (
+                        <React.Fragment key={detailItem.rlm_id}>
                           <tr>
-                            <th className="py-0 px-4">Category</th>
-                            <th className="py-0 px-4">Permission</th>
-                            <th className="py-0 px-4 text-center">Status</th>
-                            <th className="py-0 px-4">Description</th>
+                            <td></td>
+                            <td>
+                              <div className="form-check">
+                                <input
+                                  type="checkbox"
+                                  id={detailItem.rlm_id}
+                                  name="chkCategoryParent"
+                                  value={detailItem.rlm_id}
+                                  className="form-check-input"
+                                  checked={detailItem.is_checked}
+                                  onChange={() =>
+                                    handleCheckboxChange(detailItem)
+                                  }
+                                />
+                                <label
+                                  htmlFor={detailItem.rlm_id}
+                                  className="form-check-label"
+                                >
+                                  {detailItem.rlm_name}
+                                </label>
+                              </div>
+                            </td>
+                            <td></td>
                           </tr>
-                        </thead>
-
-                        {isStatus ? (
-                          <ObjCategoryDetail />
-                        ) : (
-                          // <tbody id="bodyContent" className="font-light border-b">
-                          // {ctgrydtl.map((dtl) => {
-                          //     console.log(dtl);
-                          //     console.log("aaaaa");
-                          //     <tr>
-                          //         <td className="text-left font-semibold">{dtl.rlm_name}</td>
-                          //         <td className="text-left font-semibold">{dtl.rlm_name}</td>
-                          //         <td className="text-left font-semibold">{dtl.rlm_name}</td>
-                          //         <td className="text-left font-semibold">{dtl.rlm_name}</td>
-                          //     </tr>
-                          // })}
-                          //  </tbody>
-                          <></>
-                        )}
-                      </table>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
+                          {detailItem.child.map((childItem) => (
+                            <tr key={childItem.rlm_id}>
+                              <td></td>
+                              <td></td>
+                              <td>
+                                <div className="form-check">
+                                  <input
+                                    type="checkbox"
+                                    id={childItem.rlm_id}
+                                    name="chkCategoryChild"
+                                    value={childItem.rlm_id}
+                                    className="form-check-input"
+                                    checked={childItem.is_checked}
+                                    onChange={() =>
+                                      handleCheckboxChange(childItem)
+                                    }
+                                  />
+                                  <label
+                                    htmlFor={childItem.rlm_id}
+                                    className="form-check-label"
+                                  >
+                                    {childItem.rlm_name}
+                                  </label>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
           <div className="modal-footer">
@@ -472,12 +410,8 @@ const ModalAddRole = ({ isOpen, onClose, reload }) => {
             >
               Close
             </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              //   onClick={InsertUserNew}
-            >
-              Save Changes
+            <button type="button" className="btn btn-primary" onClick={Save}>
+              Save
             </button>
           </div>
         </div>

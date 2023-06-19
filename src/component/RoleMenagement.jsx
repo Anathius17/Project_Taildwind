@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 // import ModalEdit from "./ModalEditRole";
-import ModalAdd from "./ModalEditRole";
+import ModalAdd from "./ModalAddRole";
 import Swal from "sweetalert2";
 
 const RoleMenagement = () => {
@@ -422,7 +422,7 @@ const RoleMenagement = () => {
         {/* <button onClick={closeModal}>Tutup Modal</button> */}
       </ModalAdd>
 
-      {/* {roleEdit !== undefined ? (
+      {roleEdit !== undefined ? (
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
@@ -431,7 +431,7 @@ const RoleMenagement = () => {
         />
       ) : (
         <></>
-      )} */}
+      )}
     </div>
   );
 };

@@ -6,11 +6,11 @@ import Swal from "sweetalert2";
 import "../assets/css/modal.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
+const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isStatusChecked, setIsStatusChecked] = useState(false);
   const [isStatus, setIsStatus] = useState(false);
-  const [roleid, setidRole] = useState("");
+  const [roleid, setidRole] = useState(currentRole);
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
   const [stats, setStatsRole] = useState("");
@@ -151,9 +151,9 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
     try {
       const roleNew = axios
         .post(
-          "http://116.206.196.65:30983/skycore/role/create",
+          "http://116.206.196.65::30983/skycore/role/update",
           {
-            role_name: name,
+            role_id: name,
             role_description: desc,
             role_status: stats,
             role_created_by: userid,
