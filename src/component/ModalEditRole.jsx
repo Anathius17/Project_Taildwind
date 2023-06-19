@@ -19,7 +19,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   // const [token, setToken] = useState();
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [checkedRoleIds, setCheckedRoleIds] = useState([]);
 
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -85,7 +85,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
   };
 
   const Save = async (e) => {
-    if (!name || !desc || !stats) {
+    if (!name || !desc || !stats || !checkedRoleIds) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -96,8 +96,6 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
     }
     postDataLogUserTracking();
 
-    const checkedRoles = ctgrydtl.filter((item) => item.is_checked);
-    const checkedRoleIds = checkedRoles.map((item) => item.rlm_id);
     console.log("Checked Role IDs:", checkedRoleIds);
   };
 
@@ -151,9 +149,6 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
 
   const InsertRoleNew = (val) => {
     try {
-      const checkedRoles = ctgrydtl.filter((item) => item.is_checked);
-      const checkedRoleIds = checkedRoles.map((item) => item.rlm_id);
-
       const roleNew = axios
         .post(
           "http://116.206.196.65:30983/skycore/role/create",
@@ -161,7 +156,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
             role_name: name,
             role_description: desc,
             role_status: stats,
-            role_created_by: "bani",
+            role_created_by: userid,
             role_log_id: val,
             role_master_id: checkedRoleIds,
           },
@@ -176,11 +171,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
           console.log(response.data.status);
           if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
-            // reload();
+            reload();
             onClose();
           } else {
             Swal.fire(response.data.message, "", "error");
-            // reload();
+            reload();
             onClose();
           }
         });
@@ -228,7 +223,26 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
         detail: updatedDetail,
       };
     });
+
+    const checkedRoleIds = updatedCtgrydtl.reduce((acc, ctgry) => {
+      if (ctgry.is_checked) {
+        acc.push(ctgry.rlm_id);
+      }
+      ctgry.detail.forEach((detailItem) => {
+        if (detailItem.is_checked) {
+          acc.push(detailItem.rlm_id);
+        }
+        detailItem.child.forEach((childItem) => {
+          if (childItem.is_checked) {
+            acc.push(childItem.rlm_id);
+          }
+        });
+      });
+      return acc;
+    }, []);
+
     setListCtgrDtl(updatedCtgrydtl);
+    setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
   };
 
   useEffect(() => {
@@ -291,11 +305,12 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
               </div>
             </form>
             <div className="main">
-              <table className="w-full overflow-auto">
+              <table className="w-full overflow-auto table-bordered">
                 <thead>
                   <tr>
                     <th>Category</th>
                     <th>Details</th>
+                    <th>Child</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -321,64 +336,65 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                             </label>
                           </div>
                         </td>
-                        <td>
-                          {item.detail.length > 0 && (
-                            <ul>
-                              {item.detail.map((detailItem) => (
-                                <li key={detailItem.rlm_id}>
-                                  <div className="form-check">
-                                    <input
-                                      type="checkbox"
-                                      id={detailItem.rlm_id}
-                                      name="chkCategoryParent"
-                                      value={detailItem.rlm_id}
-                                      className="form-check-input"
-                                      checked={detailItem.is_checked}
-                                      onChange={() =>
-                                        handleCheckboxChange(detailItem)
-                                      }
-                                    />
-                                    <label
-                                      htmlFor={detailItem.rlm_id}
-                                      className="form-check-label"
-                                    >
-                                      {detailItem.rlm_name}
-                                    </label>
-                                  </div>
-
-                                  {detailItem.child.length > 0 && (
-                                    <ul>
-                                      {detailItem.child.map((childItem) => (
-                                        <li key={childItem.rlm_id}>
-                                          <div className="form-check">
-                                            <input
-                                              type="checkbox"
-                                              id={childItem.rlm_id}
-                                              name="chkCategoryChild"
-                                              value={childItem.rlm_id}
-                                              className="form-check-input"
-                                              checked={childItem.is_checked}
-                                              onChange={() =>
-                                                handleCheckboxChange(childItem)
-                                              }
-                                            />
-                                            <label
-                                              htmlFor={childItem.rlm_id}
-                                              className="form-check-label"
-                                            >
-                                              {childItem.rlm_name}
-                                            </label>
-                                          </div>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </td>
+                        <td></td>
+                        <td></td>
                       </tr>
+                      {item.detail.map((detailItem) => (
+                        <React.Fragment key={detailItem.rlm_id}>
+                          <tr>
+                            <td></td>
+                            <td>
+                              <div className="form-check">
+                                <input
+                                  type="checkbox"
+                                  id={detailItem.rlm_id}
+                                  name="chkCategoryParent"
+                                  value={detailItem.rlm_id}
+                                  className="form-check-input"
+                                  checked={detailItem.is_checked}
+                                  onChange={() =>
+                                    handleCheckboxChange(detailItem)
+                                  }
+                                />
+                                <label
+                                  htmlFor={detailItem.rlm_id}
+                                  className="form-check-label"
+                                >
+                                  {detailItem.rlm_name}
+                                </label>
+                              </div>
+                            </td>
+                            <td></td>
+                          </tr>
+                          {detailItem.child.map((childItem) => (
+                            <tr key={childItem.rlm_id}>
+                              <td></td>
+                              <td></td>
+                              <td>
+                                <div className="form-check">
+                                  <input
+                                    type="checkbox"
+                                    id={childItem.rlm_id}
+                                    name="chkCategoryChild"
+                                    value={childItem.rlm_id}
+                                    className="form-check-input"
+                                    checked={childItem.is_checked}
+                                    onChange={() =>
+                                      handleCheckboxChange(childItem)
+                                    }
+                                  />
+                                  <label
+                                    htmlFor={childItem.rlm_id}
+                                    className="form-check-label"
+                                  >
+                                    {childItem.rlm_name}
+                                  </label>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ))}
                     </React.Fragment>
                   ))}
                 </tbody>
