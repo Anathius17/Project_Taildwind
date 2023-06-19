@@ -105,7 +105,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
     InsertRoleNew(val);
   };
 
-  const getListCategoryDetail = async (val) => {
+  const getListCategoryDetail = async () => {
     try {
       const body = {
         role_id: "-1",
@@ -122,13 +122,30 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
         }
       );
 
-      const cekData = listCategoryDetail.data.data.map((e) => {
-        return e;
-      });
+      const updatedListCategoryDetail = listCategoryDetail.data.data.map(
+        (item) => {
+          const updatedDetail = item.detail.map((detailItem) => {
+            const updatedChild = detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: false,
+            }));
+            return {
+              ...detailItem,
+              is_checked: false,
+              child: updatedChild,
+            };
+          });
+          return {
+            ...item,
+            is_checked: false,
+            detail: updatedDetail,
+          };
+        }
+      );
 
-      setListCtgrDtl(cekData);
-    } catch (errorusers) {
-      console.log(errorusers);
+      setListCtgrDtl(updatedListCategoryDetail);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -176,6 +193,47 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
       });
     }
   };
+
+  const handleCheckboxChange = (item) => {
+    const updatedCtgrydtl = ctgrydtl.map((ctgry) => {
+      if (ctgry.rlm_id === item.rlm_id) {
+        return {
+          ...ctgry,
+          is_checked: !ctgry.is_checked,
+        };
+      }
+      const updatedDetail = ctgry.detail.map((detailItem) => {
+        if (detailItem.rlm_id === item.rlm_id) {
+          return {
+            ...detailItem,
+            is_checked: !detailItem.is_checked,
+          };
+        }
+        const updatedChild = detailItem.child.map((childItem) => {
+          if (childItem.rlm_id === item.rlm_id) {
+            return {
+              ...childItem,
+              is_checked: !childItem.is_checked,
+            };
+          }
+          return childItem;
+        });
+        return {
+          ...detailItem,
+          child: updatedChild,
+        };
+      });
+      return {
+        ...ctgry,
+        detail: updatedDetail,
+      };
+    });
+    setListCtgrDtl(updatedCtgrydtl);
+  };
+
+  useEffect(() => {
+    getListCategoryDetail();
+  }, []);
 
   if (!isOpen) return null;
   return (
@@ -253,28 +311,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                               value={item.rlm_id}
                               className="form-check-input"
                               checked={item.is_checked}
-                              onChange={() => {
-                                const updatedCtgrydtl = ctgrydtl.map(
-                                  (ctgry) => {
-                                    if (ctgry.rlm_id === item.rlm_id) {
-                                      return {
-                                        ...ctgry,
-                                        is_checked: !ctgry.is_checked,
-                                      };
-                                    }
-                                    return ctgry;
-                                  }
-                                );
-                                setListCtgrDtl(updatedCtgrydtl);
-                                if (
-                                  !selectedCategory ||
-                                  selectedCategory.rlm_id !== item.rlm_id
-                                ) {
-                                  setSelectedCategory(item);
-                                } else {
-                                  setSelectedCategory(null);
-                                }
-                              }}
+                              onChange={() => handleCheckboxChange(item)}
                             />
                             <label
                               htmlFor={item.rlm_id}
@@ -285,157 +322,61 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentUser }) => {
                           </div>
                         </td>
                         <td>
-                          {selectedCategory &&
-                            selectedCategory.rlm_id === item.rlm_id && (
-                              <ul>
-                                {item.detail.map((detailItem) => (
-                                  <li key={detailItem.rlm_id}>
-                                    <div className="form-check">
-                                      <input
-                                        type="checkbox"
-                                        id={detailItem.rlm_id}
-                                        name="chkCategoryParent"
-                                        value={detailItem.rlm_id}
-                                        className="form-check-input"
-                                        checked={detailItem.is_checked}
-                                        onChange={() => {
-                                          const updatedCtgrydtl = ctgrydtl.map(
-                                            (ctgry) => {
-                                              if (
-                                                ctgry.rlm_id === item.rlm_id
-                                              ) {
-                                                const updatedDetail =
-                                                  ctgry.detail.map((detail) => {
-                                                    if (
-                                                      detail.rlm_id ===
-                                                      detailItem.rlm_id
-                                                    ) {
-                                                      const updatedChild =
-                                                        detail.child.map(
-                                                          (child) => {
-                                                            if (
-                                                              child.rlm_parentid ===
-                                                              detailItem.rlm_id
-                                                            ) {
-                                                              return {
-                                                                ...child,
-                                                                is_checked:
-                                                                  !detailItem.is_checked,
-                                                              };
-                                                            }
-                                                            return child;
-                                                          }
-                                                        );
-                                                      return {
-                                                        ...detail,
-                                                        is_checked:
-                                                          !detailItem.is_checked,
-                                                        child: updatedChild,
-                                                      };
-                                                    }
-                                                    return detail;
-                                                  });
-                                                return {
-                                                  ...ctgry,
-                                                  detail: updatedDetail,
-                                                };
-                                              }
-                                              return ctgry;
-                                            }
-                                          );
-                                          setListCtgrDtl(updatedCtgrydtl);
-                                        }}
-                                      />
-                                      <label
-                                        htmlFor={detailItem.rlm_id}
-                                        className="form-check-label"
-                                      >
-                                        {detailItem.rlm_name}
-                                      </label>
-                                    </div>
+                          {item.detail.length > 0 && (
+                            <ul>
+                              {item.detail.map((detailItem) => (
+                                <li key={detailItem.rlm_id}>
+                                  <div className="form-check">
+                                    <input
+                                      type="checkbox"
+                                      id={detailItem.rlm_id}
+                                      name="chkCategoryParent"
+                                      value={detailItem.rlm_id}
+                                      className="form-check-input"
+                                      checked={detailItem.is_checked}
+                                      onChange={() =>
+                                        handleCheckboxChange(detailItem)
+                                      }
+                                    />
+                                    <label
+                                      htmlFor={detailItem.rlm_id}
+                                      className="form-check-label"
+                                    >
+                                      {detailItem.rlm_name}
+                                    </label>
+                                  </div>
 
-                                    {detailItem.child &&
-                                      detailItem.child.length > 0 && (
-                                        <ul>
-                                          {detailItem.child.map((childItem) => (
-                                            <li key={childItem.rlm_id}>
-                                              <div className="form-check">
-                                                <input
-                                                  type="checkbox"
-                                                  id={childItem.rlm_id}
-                                                  name="chkCategoryChild"
-                                                  value={childItem.rlm_id}
-                                                  className="form-check-input"
-                                                  checked={childItem.is_checked}
-                                                  onChange={() => {
-                                                    const updatedCtgrydtl =
-                                                      ctgrydtl.map((ctgry) => {
-                                                        if (
-                                                          ctgry.rlm_id ===
-                                                          item.rlm_id
-                                                        ) {
-                                                          const updatedDetail =
-                                                            ctgry.detail.map(
-                                                              (detail) => {
-                                                                if (
-                                                                  detail.rlm_id ===
-                                                                  detailItem.rlm_id
-                                                                ) {
-                                                                  const updatedChild =
-                                                                    detail.child.map(
-                                                                      (
-                                                                        child
-                                                                      ) => {
-                                                                        if (
-                                                                          child.rlm_id ===
-                                                                          childItem.rlm_id
-                                                                        ) {
-                                                                          return {
-                                                                            ...child,
-                                                                            is_checked:
-                                                                              !child.is_checked,
-                                                                          };
-                                                                        }
-                                                                        return child;
-                                                                      }
-                                                                    );
-                                                                  return {
-                                                                    ...detail,
-                                                                    child:
-                                                                      updatedChild,
-                                                                  };
-                                                                }
-                                                                return detail;
-                                                              }
-                                                            );
-                                                          return {
-                                                            ...ctgry,
-                                                            detail:
-                                                              updatedDetail,
-                                                          };
-                                                        }
-                                                        return ctgry;
-                                                      });
-                                                    setListCtgrDtl(
-                                                      updatedCtgrydtl
-                                                    );
-                                                  }}
-                                                />
-                                                <label
-                                                  htmlFor={childItem.rlm_id}
-                                                  className="form-check-label"
-                                                >
-                                                  {childItem.rlm_name}
-                                                </label>
-                                              </div>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      )}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
+                                  {detailItem.child.length > 0 && (
+                                    <ul>
+                                      {detailItem.child.map((childItem) => (
+                                        <li key={childItem.rlm_id}>
+                                          <div className="form-check">
+                                            <input
+                                              type="checkbox"
+                                              id={childItem.rlm_id}
+                                              name="chkCategoryChild"
+                                              value={childItem.rlm_id}
+                                              className="form-check-input"
+                                              checked={childItem.is_checked}
+                                              onChange={() =>
+                                                handleCheckboxChange(childItem)
+                                              }
+                                            />
+                                            <label
+                                              htmlFor={childItem.rlm_id}
+                                              className="form-check-label"
+                                            >
+                                              {childItem.rlm_name}
+                                            </label>
+                                          </div>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </td>
                       </tr>
                     </React.Fragment>
