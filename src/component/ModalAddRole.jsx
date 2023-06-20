@@ -194,21 +194,21 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
       if (ctgry.rlm_id === item.rlm_id) {
         return {
           ...ctgry,
-          is_checked: !ctgry.is_checked,
+          is_checked: !ctgry.is_checked, // Toggle the checked status
         };
       }
       const updatedDetail = ctgry.detail.map((detailItem) => {
         if (detailItem.rlm_id === item.rlm_id) {
           return {
             ...detailItem,
-            is_checked: !detailItem.is_checked,
+            is_checked: !detailItem.is_checked, // Toggle the checked status
           };
         }
         const updatedChild = detailItem.child.map((childItem) => {
           if (childItem.rlm_id === item.rlm_id) {
             return {
               ...childItem,
-              is_checked: !childItem.is_checked,
+              is_checked: !childItem.is_checked, // Toggle the checked status
             };
           }
           return childItem;

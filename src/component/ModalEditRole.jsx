@@ -61,7 +61,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Add Role Management",
+    plact: "Edit Role Management",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -210,67 +210,62 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   const handleCheckboxChange = (item) => {
-    const updatedCtgrydtl = ctgrydtl.map((ctgry) => {
-      if (ctgry.rlm_id === item.rlm_id) {
-        return {
-          ...ctgry,
-          is_checked: !ctgry.is_checked,
-        };
-      }
-      const updatedDetail = ctgry.detail.map((detailItem) => {
-        if (detailItem.rlm_id === item.rlm_id) {
+    setListCtgrDtl((prevCtgrydtl) => {
+      const updatedCtgrydtl = prevCtgrydtl.map((ctgry) => {
+        if (ctgry.rlm_id === item.rlm_id) {
           return {
-            ...detailItem,
-            is_checked: !detailItem.is_checked,
+            ...ctgry,
+            is_checked: !ctgry.is_checked, // Toggle the checked status
           };
         }
-        const updatedChild = detailItem.child.map((childItem) => {
-          if (childItem.rlm_id === item.rlm_id) {
+        const updatedDetail = ctgry.detail.map((detailItem) => {
+          if (detailItem.rlm_id === item.rlm_id) {
             return {
-              ...childItem,
-              is_checked: !childItem.is_checked,
+              ...detailItem,
+              is_checked: !detailItem.is_checked, // Toggle the checked status
             };
           }
-          return childItem;
+          const updatedChild = detailItem.child.map((childItem) => {
+            if (childItem.rlm_id === item.rlm_id) {
+              return {
+                ...childItem,
+                is_checked: !childItem.is_checked, // Toggle the checked status
+              };
+            }
+            return childItem;
+          });
+          return {
+            ...detailItem,
+            child: updatedChild,
+          };
         });
         return {
-          ...detailItem,
-          child: updatedChild,
+          ...ctgry,
+          detail: updatedDetail,
         };
       });
-      return {
-        ...ctgry,
-        detail: updatedDetail,
-      };
-    });
 
-    const checkedRoleIds = updatedCtgrydtl.reduce((acc, ctgry) => {
-      if (ctgry.is_checked) {
-        acc.push(ctgry.rlm_id);
-      }
-      ctgry.detail.forEach((detailItem) => {
-        if (detailItem.is_checked) {
-          acc.push(detailItem.rlm_id);
+      const checkedRoleIds = updatedCtgrydtl.reduce((acc, ctgry) => {
+        if (ctgry.is_checked) {
+          acc.push(ctgry.rlm_id);
         }
-        detailItem.child.forEach((childItem) => {
-          if (childItem.is_checked) {
-            acc.push(childItem.rlm_id);
+        ctgry.detail.forEach((detailItem) => {
+          if (detailItem.is_checked) {
+            acc.push(detailItem.rlm_id);
           }
+          detailItem.child.forEach((childItem) => {
+            if (childItem.is_checked) {
+              acc.push(childItem.rlm_id);
+            }
+          });
         });
-      });
-      return acc;
-    }, []);
+        return acc;
+      }, []);
 
-    setListCtgrDtl(updatedCtgrydtl);
-    setCheckedRoleIds(checkedRoleIds); // Menyimpan ID peran yang diperiksa dalam state variabel
+      setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
 
-    // Mengupdate rlm_id pada state roleid
-    setroleid((prevState) => ({
-      ...prevState,
-      rl_id: checkedRoleIds.includes(prevState.rl_id)
-        ? "" // Kosongkan rlm_id jika sudah tidak terpilih
-        : prevState.rl_id, // Jika masih terpilih, biarkan nilai rlm_id tetap sama
-    }));
+      return updatedCtgrydtl;
+    });
   };
 
   useEffect(() => {
@@ -280,8 +275,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full w-10/12 modal-xl">
-        <div className="modal_content">
+      <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
+        <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
             <h5 className="modal-title fw-bold">Role Add New</h5>
           </div>
@@ -355,7 +350,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                               name="chkCategory"
                               value={item.rlm_id}
                               className="form-check-input"
-                              checked={item.is_checked}
+                              checked={roleid.action.is_checked}
                               onChange={() => handleCheckboxChange(item)}
                             />
                             <label
@@ -381,7 +376,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                   name="chkCategoryParent"
                                   value={detailItem.rlm_id}
                                   className="form-check-input"
-                                  checked={detailItem.is_checked}
+                                  checked={roleid.action.is_checked}
                                   onChange={() =>
                                     handleCheckboxChange(detailItem)
                                   }
@@ -408,7 +403,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                     name="chkCategoryChild"
                                     value={childItem.rlm_id}
                                     className="form-check-input"
-                                    checked={childItem.is_checked}
+                                    checked={roleid.action.is_checked}
                                     onChange={() =>
                                       handleCheckboxChange(childItem)
                                     }

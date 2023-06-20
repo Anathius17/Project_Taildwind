@@ -3,13 +3,20 @@ import React, { useState, useEffect } from "react";
 import { getToken } from "../API/api";
 import Modal from "./Modal";
 import ModalEdit from "./ModalEdit";
+// import ModalChecker from "./ModalCheckedUserM";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { browserName, osName, browserVersion } from "react-device-detect";
 // import { BsFillPersonPlusFill } from "react-icons/bs";
 // import { ImSearch } from "react-icons/im";
 
 const UserMenagement = () => {
   const [users, setUsers] = useState([]);
+
+  const today = new Date();
+  console.log(today);
+  // const dateUser = users.usrefectivedate;
+
   console.log(users);
   const [status, setStatus] = useState();
   const [currentUser, setCurrentUser] = useState(users);
@@ -49,36 +56,82 @@ const UserMenagement = () => {
     }
   };
 
+  // console.log
+
+  // insert log activity
+  const [ip, setIP] = useState("");
+  const [logid, setlogid] = useState("");
+  const getData = async () => {
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    console.log(res.data);
+    setIP(res.data.ip);
+  };
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const userid = JSON.parse(localStorage.getItem("userid"));
   // ! nanti atur secara dinamis
   const dataLogUserTracking = {
     plcd: "user_management",
-    plusr: "crm_admin",
+    plusr: userid,
     plhtt: "OFF",
-    plsvrn: "uat-web-los",
-    plact: "Login Success",
-    plpgur: "/lmsadmin_ocbc/login/v6/nc",
+    plsvrn: window.location.hostname,
+    plact: "Delete User Management ",
+    plpgur: window.location.href,
     plqry: "-",
     plbro: "Firefox 72.0",
-    plos: "linux",
-    plcli: "uat-web-los/10.1.1.1",
+    plos: osName,
+    plcli: ip,
+  };
+
+  const Updateobjectdata = (val) => {
+    DeleteUser(val);
+  };
+
+  // ? Menghapus pengguna
+  const handleDeleteUser = (id) => {
+    Swal.fire({
+      title: "Are you sure you want to delete this data?",
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      icon: "warning",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        //postDataLogUserTracking();
+        deleteUser(id);
+        setUserId(id);
+      } else Swal.fire(" Cancelled", "", "error");
+    });
   };
 
   const postDataLogUserTracking = async () => {
+    let log = "";
     try {
-      const frisLogin = await axios.post(
-        "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
-        JSON.stringify(dataLogUserTracking),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
 
-      alert("postDataLogUserTracking Berhasil");
+      await Updateobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
     } catch (error) {
-      alert(error);
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
     }
   };
 
@@ -86,15 +139,15 @@ const UserMenagement = () => {
   const [userID, setUserId] = useState("");
 
   //! --------for API delete--------
-  const hitDelete = {
-    usr: userID,
-    logid: "11",
-  };
-  const DeleteUser = async () => {
+
+  const DeleteUser = async (val) => {
     try {
       const userDelete = await axios.post(
         "http://116.206.196.65:30983/skycore/User/postJDataDelRecord",
-        JSON.stringify(hitDelete),
+        {
+          usr: userID,
+          logid: val,
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -111,17 +164,9 @@ const UserMenagement = () => {
     }
   };
 
-  // ? Menghapus pengguna
-  const handleDeleteUser = (id) => {
-    if (window.confirm("Anda yakin ingin menghapus pengguna ini?")) {
-      deleteUser(id);
-      setUserId(id);
-    }
-  };
-
   useEffect(() => {
     if (userID !== "") {
-      DeleteUser();
+      postDataLogUserTracking();
     }
   }, [userID]);
 
@@ -169,6 +214,8 @@ const UserMenagement = () => {
   //  localStorage.setItem("tokenData", JSON.stringify(token));
   // sessionStorage.setItem("userDetailParam", "value");
 
+  console.log(detaiUserParam);
+
   useEffect(() => {
     if (detaiUserParam !== "") {
       sessionStorage.setItem("userDetailParam", detaiUserParam);
@@ -185,6 +232,14 @@ const UserMenagement = () => {
   const editUser = (userid) => {
     setDetaiUserParam(userid);
     setIsModalOpenEdit(true);
+  };
+
+  const [statusSend, setStatusSend] = useState("");
+  console.log(statusSend);
+  const checkerUser = (userid, status) => {
+    setDetaiUserParam(userid);
+    setStatusSend(status);
+    setIsModalCheked(true);
   };
 
   const [userEdit, setUserEdit] = useState();
@@ -226,18 +281,17 @@ const UserMenagement = () => {
 
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
 
-  const openModalEdit = () => {
-    setIsModalOpenEdit(true);
-  };
-
   const closeModalEdit = () => {
     setIsModalOpenEdit(false);
-    // window.location.reload();
-    // getUserDetail();
+  };
+
+  const [isModalOpenCheked, setIsModalCheked] = useState(false);
+
+  const closeModalCheked = () => {
+    setIsModalCheked(false);
   };
 
   // ! --- batas user aktif
-
   // const Aktif = (userid) => {
   //   setUserActive(userid);
   //   Active();
@@ -289,7 +343,7 @@ const UserMenagement = () => {
     }
   };
 
-  // --- batas user aktif
+  // ---batas user aktif
 
   useEffect(() => {
     DropDown();
@@ -395,8 +449,8 @@ const UserMenagement = () => {
           <h4> User Management</h4>
         </div>
         <div className="btn-new">
-          <button className="btn btn-primary" onClick={openModal}>
-            Add new
+          <button className="btn btn-sm btn-primary" onClick={openModal}>
+            <span className="text-sm">Add new </span>
           </button>
         </div>
       </div>
@@ -409,7 +463,8 @@ const UserMenagement = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control">
+                className="form-control"
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -437,6 +492,7 @@ const UserMenagement = () => {
                   <th className="py-3 px-6 text-left">Name</th>
                   <th className="py-3 px-6 text-center">Nip</th>
                   <th className="py-3 px-6 text-center">Role</th>
+                  <th className="py-3 px-6 text-center">Last Status</th>
                   <th className="py-3 px-6 text-center">Status</th>
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
@@ -445,7 +501,8 @@ const UserMenagement = () => {
                 {currentItems.map((user) => (
                   <tr
                     key={user.usrid}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
+                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                  >
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {user.usruserid}
                     </td>
@@ -458,30 +515,37 @@ const UserMenagement = () => {
                     <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                       {user.usraccesslevel}
                     </td>
+                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                      {user.usr_approved_status}
+                    </td>
                     <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold ">
                       {user.usrstatusformat}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
-                        className="btn btn-success btn-sm"
-                        onClick={() => editUser(user.usruserid)}>
+                        className=" btn-success btn-sm"
+                        onClick={() => editUser(user.usruserid)}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6">
+                          className="w-3.5 h-3.5"
+                        >
                           <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                           <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                         </svg>
                       </button>
                       <button
-                        className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeleteUser(user.usruserid)}>
+                        className=" btn-danger btn-sm ml-1"
+                        onClick={() => handleDeleteUser(user.usruserid)}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6">
+                          className="w-3.5 h-3.5"
+                        >
                           <path
                             fillRule="evenodd"
                             d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
@@ -491,20 +555,66 @@ const UserMenagement = () => {
                       </button>
                       {user.usrstatusformat !== "Active" ? (
                         <button
-                          className="btn btn-warning btn-sm ml-1"
-                          onClick={() => handleActiveUser(user.usruserid)}>
+                          className=" btn-warning btn-sm ml-1"
+                          onClick={() => handleActiveUser(user.usruserid)}
+                        >
                           <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6">
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em"
+                          >
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              fill="currentColor"
+                              d="M14 0H2C.9 0 0 .9 0 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 12.414L3.293 8.707l1.414-1.414L7 9.586l4.793-4.793 1.414 1.414L7 12.414z"
                             />
+                          </svg>
+                        </button>
+                      ) : (
+                        <></>
+                      )}
+
+                      {user.usr_approved_status === "Created" ||
+                      user.usr_approved_status === "Updated" ? (
+                        <button
+                          className="text-white bg-blue-800 btn-sm ml-1 m-0"
+                          onClick={() =>
+                            checkerUser(
+                              user.usruserid,
+                              user.usr_approved_status
+                            )
+                          }
+                        >
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                            height="1em"
+                            width="1em"
+                          >
+                            <path d="M10 .5a.5.5 0 00-.5-.5h-3a.5.5 0 00-.5.5.5.5 0 01-.5.5.5.5 0 00-.5.5V2a.5.5 0 00.5.5h5A.5.5 0 0011 2v-.5a.5.5 0 00-.5-.5.5.5 0 01-.5-.5z" />
+                            <path d="M4.085 1H3.5A1.5 1.5 0 002 2.5v12A1.5 1.5 0 003.5 16h9a1.5 1.5 0 001.5-1.5v-12A1.5 1.5 0 0012.5 1h-.585c.055.156.085.325.085.5V2a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 014 2v-.5c0-.175.03-.344.085-.5zm6.769 6.854l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 11.708-.708L7.5 9.793l2.646-2.647a.5.5 0 01.708.708z" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <></>
+                      )}
+                      {user.usr_approved_status === "checked" ? (
+                        <button
+                          className="text-white bg-blue-400 btn-sm ml-1 m-0"
+                          onClick={() =>
+                            checkerUser(
+                              user.usruserid,
+                              user.usr_approved_status
+                            )
+                          }
+                        >
+                          <svg
+                            viewBox="0 0 512 512"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em"
+                          >
+                            <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2h144c26.5 0 48 21.5 48 48 0 25.3-19.5 46-44.3 47.9 7.7 8.5 12.3 19.8 12.3 32.1 0 23.4-16.8 42.9-38.9 47.1 4.4 7.2 6.9 15.8 6.9 24.9 0 21.3-13.9 39.4-33.1 45.6.7 3.3 1.1 6.8 1.1 10.4 0 26.5-21.5 48-48 48h-73.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192h64c17.7 0 32 14.3 32 32v224c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
                           </svg>
                         </button>
                       ) : (
@@ -526,7 +636,8 @@ const UserMenagement = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}>
+                          disabled={currentPage === 1}
+                        >
                           Previous
                         </button>
                       </li>
@@ -539,7 +650,8 @@ const UserMenagement = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}>
+                            disabled={pageNumber === currentPage}
+                          >
                             {pageNumber}
                           </button>
                         ))}
@@ -548,7 +660,8 @@ const UserMenagement = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}>
+                          disabled={currentPage === totalPages}
+                        >
                           Next
                         </button>
                       </li>
@@ -578,335 +691,23 @@ const UserMenagement = () => {
       ) : (
         <></>
       )}
+      {/* 
+      {userEdit !== undefined ? (
+        <ModalChecker
+          isOpen={isModalOpenCheked}
+          onClose={closeModalCheked}
+          currentUser={userEdit}
+          dropdownBranch={branch}
+          dropdownSN={superVisior}
+          dropdownRole={role}
+          reload={getUserList}
+          sendStatus={statusSend}
+        />
+      ) : (
+        <></>
+      )} */}
     </div>
   );
 };
 
 export default UserMenagement;
-
-// import React, { useState, useEffect } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import { getToken } from "../API/api";
-// import Modal from "./Modal";
-// import ModalEdit from "./ModalEdit";
-// import axios from "axios";
-// import Swal from "sweetalert2";
-// import { BsFillPersonPlusFill } from "react-icons/bs";
-// import { ImSearch } from "react-icons/im";
-
-// const Demo = () => {
-//   const [users, setUsers] = useState([]);
-//   const [status, setStatus] = useState();
-
-//   const [currentUser, setCurrentUser] = useState(users);
-
-//   // ! variables untuk kebutuhan hit delete user
-//   const [userID, setUserId] = useState("");
-
-//   // const [users, setUsers] = useState([
-//   //   { id: 1, name: "John Doe", age: 25 },
-//   //   { id: 2, name: "Jane Smith", age: 30 },
-//   //   { id: 3, name: "Bob Johnson", age: 35 },
-//   //   { id: 4, name: "Grasia", age: 25 },
-//   //   { id: 5, name: "Aida", age: 30 },
-//   //   { id: 6, name: "Puspita", age: 35 },
-//   //   { id: 7, name: "Anatahius", age: 25 },
-//   //   { id: 8, name: "Lulu", age: 30 },
-//   //   { id: 9, name: "Rinto", age: 35 },
-//   //   { id: 10, name: "Oci", age: 25 },
-//   // ]);
-
-//   // Dapatkan data sesi
-//   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-//   // console.log(sessionData);
-//   const token = sessionData;
-
-//   useEffect(() => {
-//     if (token !== "") {
-//       getUserList();
-//       console.log(1);
-//     }
-//   }, [token]);
-
-//   const getUserList = async () => {
-//     try {
-//       const listUser = await axios.get(
-//         "http://116.206.196.65:30983/skycore/User/list",
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       const cekData = listUser.data.data.map((e) => {
-//         return e;
-//       });
-//       console.log(cekData);
-//       setUsers(cekData);
-//     } catch (errorUser) {
-//       alert(errorUser);
-//     }
-//   };
-
-//   // ! nanti atur secara dinamis
-//   const dataLogUserTracking = {
-//     plcd: "ua",
-//     plusr: "crm_admin",
-//     plhtt: "OFF",
-//     plsvrn: "uat-web-los",
-//     plact: "Login Success",
-//     plpgur: "/lmsadmin_ocbc/login/v6/nc",
-//     plqry: "-",
-//     plbro: "Firefox 72.0",
-//     plos: "linux",
-//     plcli: "uat-web-los/10.1.1.1",
-//   };
-
-//   const postDataLogUserTracking = async () => {
-//     try {
-//       const frisLogin = await axios.post(
-//         "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
-//         JSON.stringify(dataLogUserTracking),
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       alert("postDataLogUserTracking Berhasil");
-//     } catch (error) {
-//       alert(error);
-//     }
-//   };
-
-//   //! --------for API delete--------
-//   const hitDelete = {
-//     usr: userID,
-//     logid: "11",
-//   };
-//   const DeleteUser = async () => {
-//     try {
-//       const userDelete = await axios.post(
-//         "http://116.206.196.65:30983/skycore/User/postJDataDelRecord",
-//         JSON.stringify(hitDelete),
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       console.log(userDelete);
-//       Swal.fire("User Berhasil Di Hapus", "", "success");
-//       console.log(userID);
-//     } catch (error) {
-//       alert(error);
-//     }
-//   };
-
-//   // ? Menghapus pengguna
-//   const handleDeleteUser = (id) => {
-//     if (window.confirm("Anda yakin ingin menghapus pengguna ini?")) {
-//       deleteUser(id);
-//       setUserId(id);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (userID !== "") {
-//       DeleteUser();
-//     }
-//   }, [userID]);
-
-//   const deleteUser = (id) => {
-//     setUsers(users.filter((user) => user.usruserid !== id));
-//   };
-//   //! ----batas Hit Api delete-----
-
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [usersPerPage, setUsersPerPage] = useState(5);
-//   const [searchTerm, setSearchTerm] = useState("");
-
-//   // Mendapatkan index pengguna pada halaman saat ini
-//   const indexOfLastUser = currentPage * usersPerPage;
-//   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-//   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
-
-//   // Mengubah halaman
-//   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-//   // Mengatur nilai pencarian
-//   const handleSearch = (event) => {
-//     setSearchTerm(event.target.value);
-//     setCurrentPage(1);
-//   };
-
-//   // Filter pengguna berdasarkan kata kunci pencarian
-//   const filteredUsers = currentUsers.filter((user) =>
-//     user.usrname.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
-//   //! Edit User
-
-//   const [userEdit, setUserEdit] = useState();
-//   const editUser = (userid) => {
-//     setUserEdit(userid);
-//     setIsModalOpenEdit(true);
-//   };
-
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const openModal = () => {
-//     setIsModalOpen(true);
-//   };
-
-//   const closeModal = () => {
-//     setIsModalOpen(false);
-//   };
-
-//   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-
-//   const openModalEdit = () => {
-//     setIsModalOpenEdit(true);
-//   };
-
-//   const closeModalEdit = () => {
-//     setIsModalOpenEdit(false);
-//   };
-
-//   return (
-//     <div className="card shadow mb-4">
-//       <div className="card-header d-flex justify-content-between mb-2">
-//         <div className="test">
-//           <h4> User Menagement</h4>
-//         </div>
-//         <div className="btn-new">
-//           <button className="btn btn-primary" onClick={openModal}>
-//             Add new
-//           </button>
-//         </div>
-//       </div>
-
-//       <div className="card-body">
-//         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
-//           <div className="datatable-top mb-3 d-flex justify-content-between">
-//             <div className="page-iittem"></div>
-//             <div className="page-iittem">
-//               <input
-//                 type="text"
-//                 placeholder="Cari pengguna..."
-//                 value={searchTerm}
-//                 onChange={handleSearch}
-//                 className="form-control"
-//               />
-//             </div>
-
-//             {/* <input type="number" /> */}
-//           </div>
-//           <div className="datatable-container">
-//             <table
-//               className="table table-bordered dataTable"
-//               id="dataTable"
-//               cellSpacing="0">
-//               <thead>
-//                 <tr>
-//                   <th>User Id</th>
-//                   <th>Name</th>
-//                   <th>Nip</th>
-//                   <th>Role</th>
-//                   <th>Status</th>
-//                   <th>Action</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {filteredUsers.map((user) => (
-//                   <tr key={user.usrid}>
-//                     <td>{user.usruserid}</td>
-//                     <td>{user.usrname}</td>
-//                     <td>{user.usrnip}</td>
-//                     <td>{user.usrsupervisor}</td>
-//                     <td>{user.usrstatusformat}</td>
-//                     <td>
-//                       <button
-//                         className="btn btn-success btn-sm"
-//                         onClick={() => editUser(user.usruserid)}>
-//                         Edit
-//                       </button>
-//                       <button
-//                         className="btn btn-danger btn-sm ml-1"
-//                         onClick={() => handleDeleteUser(user.usruserid)}>
-//                         Hapus
-//                       </button>
-//                       {user.usrstatusformat === "Active" ? (
-//                         <button className="btn btn-warning btn-sm ml-1">
-//                           Active
-//                         </button>
-//                       ) : (
-//                         <></>
-//                       )}
-//                     </td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//             {/* Pagination */}
-//             <nav>
-//               <div className="pagination-item d-flex justify-content-between">
-//                 <div className="page-1"></div>
-//                 <div className="page-2">
-//                   {" "}
-//                   <ul className="pagination">
-//                     {users.map((user, index) => (
-//                       <li className="page-item" key={index}>
-//                         <button
-//                           className={`page-link ${
-//                             currentPage === index + 1 ? "active" : ""
-//                           }`}
-//                           onClick={() => paginate(index + 1)}>
-//                           {index + 1}
-//                         </button>
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               </div>
-//             </nav>
-//           </div>
-//         </div>
-//       </div>
-
-//       <Modal isOpen={isModalOpen} onClose={closeModal} reload={getUserList}>
-//         <button onClick={closeModal}>Tutup Modal</button>
-//       </Modal>
-
-//       {userEdit !== undefined ? (
-//         <ModalEdit
-//           isOpen={isModalOpenEdit}
-//           onClose={closeModalEdit}
-//           currentUser={userEdit}
-//           reload={getUserList}
-//         />
-//       ) : (
-//         <></>
-//       )}
-
-//       {/*  modal edit */}
-
-//       {/* {isModalOpenEdit ? (
-//         <ModalEdit
-//           isOpen={isModalOpenEdit}
-//           onClose={closeModalEdit}
-//           currentUser={userEdit}
-//         />
-//       ) : (
-//         <></>
-//       )} */}
-//     </div>
-//   );
-// };
-
-// export default Demo;

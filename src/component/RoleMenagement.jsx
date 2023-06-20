@@ -3,11 +3,14 @@ import axios from "axios";
 import ModalEdit from "./ModalEditRole";
 import ModalAdd from "./ModalAddRole";
 import Swal from "sweetalert2";
+import { browserName, osName, browserVersion } from "react-device-detect";
 
 const RoleMenagement = () => {
   const [role, setRole] = useState([]);
   const [currentRole, setcurrentRole] = useState(role);
   const userid = JSON.parse(localStorage.getItem("userid"));
+  const [activeStatus, setActiveStatus] = useState(false);
+
   //const [token, setToken] = useState();
 
   // hit token
@@ -122,8 +125,38 @@ const RoleMenagement = () => {
     }
   };
 
+  // insert log activity
+  const [ip, setIP] = useState("");
+  const [logid, setlogid] = useState("");
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data);
+      setIP(res.data.ip);
+    };
+
+    getData();
+  }, []);
   // ? Menghapus pengguna
   const [id, setDeleteRole] = useState("");
+
+  const dataLogUserTracking = {
+    plcd: "general_setting",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Delete Role Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
+
+  const Updateobjectdata = (val) => {
+    DeleteRole(val);
+    Active(val);
+  };
 
   const handleDeleteRole = (id) => {
     Swal.fire({
@@ -147,6 +180,32 @@ const RoleMenagement = () => {
   //     DeleteRole();
   //   }
   // }, [id]);
+  const postDataLogUserTracking = async () => {
+    let log = "";
+    try {
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
+      await Updateobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
+    }
+  };
 
   const DeleteRole = async () => {
     try {
@@ -178,18 +237,18 @@ const RoleMenagement = () => {
 
   const handleActiveRole = (id) => {
     setRoleActive(id);
-    Active();
+    Active(id);
   };
 
-  const Active = async () => {
+  const Active = async (id, val) => {
     try {
       await axios.post(
         "http://116.206.196.65:30983/skycore/role/activate",
         {
-          role_id: detaiRoleParam,
-          role_status: "",
+          role_id: id,
+          role_status: activeStatus ? "activate" : "deactivate",
           action_by: userid,
-          log_id: "",
+          log_id: val,
         },
         {
           headers: {
@@ -199,13 +258,13 @@ const RoleMenagement = () => {
         }
       );
 
-      Swal.fire("User Berhasil Di Aktifkan", "", "success");
+      Swal.fire("Role Berhasil Diupdate", "", "success");
       getRoleList();
+      setActiveStatus(!activeStatus); // Toggle status aktif/nonaktif
     } catch (errorUser) {
       console.log(errorUser);
     }
   };
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -340,29 +399,27 @@ const RoleMenagement = () => {
                           />
                         </svg>
                       </button>
-                      {rol.usrstatusformat !== "Active" ? (
-                        <button
-                          className="btn btn-warning btn-sm ml-1"
-                          onClick={() => handleActiveRole(rol.rl_id)}
+
+                      <button
+                        className="btn btn-warning btn-sm ml-1"
+                        onClick={() => handleActiveRole(rol.rl_id)}
+                      >
+                        {/* {rol.rl_status ? "deactivate" : "activate"} */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </button>
-                      ) : (
-                        <></>
-                      )}
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </button>
                     </td>
                   </tr>
                 ))}
