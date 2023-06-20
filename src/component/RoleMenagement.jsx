@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 const RoleMenagement = () => {
   const [role, setRole] = useState([]);
   const [currentRole, setcurrentRole] = useState(role);
+  const userid = JSON.parse(localStorage.getItem("userid"));
   //const [token, setToken] = useState();
 
   // hit token
@@ -108,19 +109,18 @@ const RoleMenagement = () => {
           },
         }
       );
-  
+
       const cekData = listRoleDetail.data.data.map((e) => {
         console.log(e);
         return e;
       });
-  
+
       console.log(listRoleDetail.data.status);
       setRoleEdit(cekData[0]);
     } catch (errorUser) {
       console.log(errorUser);
     }
   };
-  
 
   // ? Menghapus pengguna
   const [id, setDeleteRole] = useState("");
@@ -186,9 +186,9 @@ const RoleMenagement = () => {
       await axios.post(
         "http://116.206.196.65:30983/skycore/role/activate",
         {
-          role_id: "",
+          role_id: detaiRoleParam,
           role_status: "",
-          action_by: "",
+          action_by: userid,
           log_id: "",
         },
         {

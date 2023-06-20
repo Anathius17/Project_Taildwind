@@ -33,7 +33,6 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   }, [token]);
 
   useEffect(() => {
-
     setroleid(currentRole);
   }, [currentRole]);
 
@@ -165,7 +164,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     if (
       !roleid.rl_id ||
       !roleid.rl_name ||
-      !roleid.rl_description||
+      !roleid.rl_description ||
       !roleid.rl_status ||
       !roleid.val
     ) {
@@ -179,12 +178,12 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
           {
             role_id: roleid.rl_id,
             action_by: userid,
-            log_id: roleid.val,
+            log_id: val,
             role_name: roleid.rl_name,
             role_description: roleid.rl_description,
-            role_status: roleid.rl_status ,
+            role_status: roleid.rl_status,
             update_log_id: val,
-            update_role_master_id: roleid.role_master_id,
+            update_role_master_id: checkedRoleIds,
           },
           {
             headers: {
@@ -263,7 +262,15 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     }, []);
 
     setListCtgrDtl(updatedCtgrydtl);
-    setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
+    setCheckedRoleIds(checkedRoleIds); // Menyimpan ID peran yang diperiksa dalam state variabel
+
+    // Mengupdate rlm_id pada state roleid
+    setroleid((prevState) => ({
+      ...prevState,
+      rl_id: checkedRoleIds.includes(prevState.rl_id)
+        ? "" // Kosongkan rlm_id jika sudah tidak terpilih
+        : prevState.rl_id, // Jika masih terpilih, biarkan nilai rlm_id tetap sama
+    }));
   };
 
   useEffect(() => {
@@ -322,7 +329,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                     id="flexSwitchCheckDefault"
                     name="rl_status"
                     checked={roleid.rl_status} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
-                    onChange={handleInputChange}// Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
+                    onChange={handleInputChange} // Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
                   />
                 </div>
               </div>

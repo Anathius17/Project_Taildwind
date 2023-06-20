@@ -252,8 +252,8 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full w-10/12 modal-xl">
-        <div className="modal_content">
+      <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
+        <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
             <h5 className="modal-title fw-bold">Role Add New</h5>
           </div>
