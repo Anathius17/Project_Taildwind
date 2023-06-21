@@ -182,8 +182,15 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
   if (!isOpen) return null;
 
   // Ubah format modulName menjadi User Access
-  const formattedModulName = lgc_name
+  const formattedModulName = modulName
     .split("_")
+    .map((word) => {
+      if (word === "mgmt") {
+        return "management";
+      } else {
+        return word;
+      }
+    })
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
