@@ -5,16 +5,18 @@ import { getToken } from "../../API/api";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalAddBranch = ({ isOpen, onClose, reload }) => {
+const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
   const [code, setCodeBranch] = useState("");
   const [name, setNameBranch] = useState("");
   const [address, setAddressBranch] = useState("");
   const [city, setCityBranch] = useState("");
   const [phonenum, setNoTelepon] = useState("");
+  const [group, setGroupBranch] = useState("");
 
   useEffect(() => {
     setCodeBranch("");
     setNameBranch("");
+    setGroupBranch("");
     setAddressBranch("");
     setCityBranch("");
     setNoTelepon("");
@@ -40,12 +42,12 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
   // insert log activity
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
   useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data);
+      setIP(res.data.ip);
+    };
     //passing getData method to the lifecycle method
     getData();
   }, []);
@@ -91,7 +93,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
   };
 
   const Save = async (e) => {
-    if (!code || !name || !address || !city || !phonenum) {
+    if (!code || !group || !name || !address || !city || !phonenum) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -116,6 +118,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
           {
             code: code,
             name: name,
+            group: group,
             address: address,
             city: city,
             phonenum: phonenum,
@@ -162,7 +165,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}></button>
+              onClick={onClose}
+            ></button>
           </div>
           <div className="modal-body">
             <form>
@@ -203,6 +207,29 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
                         onChange={(e) => setNameBranch(e.target.value)}
                         required
                       />
+                    </div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-4">
+                      <label className="form-label">
+                        Branch Group <span className="text-danger">*</span>
+                      </label>
+                    </div>
+
+                    <div className="col-8">
+                      <select
+                        className="form-control"
+                        value={group || ""}
+                        onChange={(e) => setGroupBranch(e.target.value)}
+                        required
+                      >
+                        <option value="">Select One</option>
+                        {groupOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className=" row mb-2">
@@ -269,7 +296,8 @@ const ModalAddBranch = ({ isOpen, onClose, reload }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Save}>

@@ -8,7 +8,7 @@ import Skysite from "../assets/images/LogoSky.png";
 import "../assets/css/Dashboard.css";
 import Demo from "../component/UserMenagement";
 import Rule from "../component/RuleMenagement";
-import Audit from "../component/AuditTrail";
+import Audit from "../component/auditTrail/AuditTrail";
 import BranchMenagement from "../component/branchmgmt/BranchManagement";
 import GeneralSettings from "../component/glsetting/GenenalSetting";
 import BatchScheduler from "../component/system/BatchScheduler";

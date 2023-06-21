@@ -27,6 +27,7 @@ const AuditTrail = () => {
   const [selectedModulName, setSelectedModulName] = useState("");
   const [selectedLgcName, setSelectedLgcName] = useState("");
   const [selectedBLogId, setSelectedBLogId] = useState(null);
+  const [selectedBLogActivity, setSelectedBLogActivity] = useState(null);
 
   // const [tampung, setTampung] = useState(null);
   // Dapatkan data sesi
@@ -182,14 +183,16 @@ const AuditTrail = () => {
       });
 
       setLogList(logList);
+      setCurrentPage(1); // Tambahkan ini untuk mengatur tampilan kembali ke halaman 1
     } catch (error) {
       alert(error);
     }
   };
 
-  const openModal = (modulName, b_log_id) => {
+  const openModal = (modulName, b_log_id, b_log_activity) => {
     setSelectedLgcName(modulName); // Menggunakan modulName langsung sebagai lgc_name
     setSelectedBLogId(b_log_id);
+    setSelectedBLogActivity(b_log_activity);
     setIsModalOpen(true);
   };
 
@@ -311,8 +314,10 @@ const AuditTrail = () => {
       <div className="card-body">
         <div className="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
           <div className="flex justify-between mb-3">
-            <button className="btn btn-primary" onClick={handleExportCSV}>
-              Export to CSV
+            <button
+              className="btn btn-primary w-fit text-sm"
+              onClick={handleExportCSV}>
+              Excel
             </button>
             <button className="btn btn-success btn-sm" onClick={handleSearch}>
               <svg fill="currentColor" viewBox="0 0 16 16" className="w-6 h-6">
@@ -337,7 +342,7 @@ const AuditTrail = () => {
             <div className="page-iittem">
               <input
                 type="text"
-                placeholder="Search by Name"
+                placeholder="Search by Date"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="form-control"
@@ -387,7 +392,11 @@ const AuditTrail = () => {
                         <button
                           className="btn btn-success btn-sm"
                           onClick={() =>
-                            openModal(modul.b_code, modul.b_log_id)
+                            openModal(
+                              modul.b_code,
+                              modul.b_log_id,
+                              modul.lgc_name
+                            )
                           }>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -459,7 +468,8 @@ const AuditTrail = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         modulName={modulsName} // Menggunakan modulsName sebagai modulName
-        b_log_id={selectedBLogId}></ModalTrail>
+        b_log_id={selectedBLogId}
+        lgc_name={selectedLgcName}></ModalTrail>
     </div>
   );
 };

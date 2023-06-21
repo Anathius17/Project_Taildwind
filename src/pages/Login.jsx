@@ -8,22 +8,23 @@ import { useNavigate } from "react-router-dom";
 import { getToken } from "../API/api";
 import md5 from "js-md5";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import Captcha from "react-captcha-code";
 
 // ? membuat isi dalam captcha
-const generateCaptcha = () => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let captcha = "";
-  for (let i = 0; i < 6; i++) {
-    captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
+// const generateCaptcha = () => {
+//   const characters =
+//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//   let captcha = "";
+//   for (let i = 0; i < 6; i++) {
+//     captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+//   }
 
-  return captcha;
-};
+//   return captcha;
+// };
 
 const Login = (props) => {
   // ! pada kodingan dibawah kita memasukan nilai ke variabel captcha pada render awal
-  const [captcha, setCaptcha] = useState(generateCaptcha());
+  const [captcha, setCaptcha] = useState("");
   // ! pada kodingan dibawah kita set input pada saat render pertama
   const [input, setInput] = useState("");
   // ! kemudian kita atur expirednya ketika render awal yg berisi boolean bernilai false
@@ -424,10 +425,9 @@ const Login = (props) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCaptcha(generateCaptcha());
-      setInput("");
-      setExpired(true);
+      handleRefresh();
     }, 30000);
+
     return () => clearTimeout(timer);
   }, [captcha]);
 
@@ -437,16 +437,23 @@ const Login = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     if (input === captcha) {
       // alert("CAPTCHA validated successfully!");
       getTokenApi();
     } else {
       alert("CAPTCHA validation failed. Please try again.");
-      setCaptcha(generateCaptcha());
-
-      setInput("");
+      handleRefresh();
     }
   };
+
+  const handleRefresh = () => {
+    // const newCaptcha = generateCaptcha();
+    setCaptcha(Captcha);
+    setInput("");
+    setExpired(false);
+  };
+  console.log(captcha);
 
   //? ---batas bagian captcha validation
 
@@ -547,29 +554,12 @@ const Login = (props) => {
                   {expired ? (
                     <button
                       className="btn btn-primary text-center items-center"
-                      onClick={() => {
-                        setCaptcha(generateCaptcha());
-                        setInput("");
-                        setExpired(false);
-                      }}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 1536 1536">
-                        <path
-                          fill="currentColor"
-                          d="M1511 928q0 5-1 7q-64 268-268 434.5T764 1536q-146 0-282.5-55T238 1324l-129 129q-19 19-45 19t-45-19t-19-45V960q0-26 19-45t45-19h448q26 0 45 19t19 45t-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117q8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45t19-45l138-138Q969 256 768 256q-134 0-250 65T332 500q-11 17-53 117q-8 23-30 23H50q-13 0-22.5-9.5T18 608v-7q65-268 270-434.5T768 0q146 0 284 55.5T1297 212l130-129q19-19 45-19t45 19t19 45z"
-                        />
-                      </svg>
+                      onClick={handleRefresh}>
+                      Refresh Captcha
                     </button>
                   ) : (
                     <div>
-                      <img
-                        src={`https://dummyimage.com/200x100/000/fff&text=${captcha}`}
-                        alt="CAPTCHA"
-                        className="w-24 my-auto px-2 py-1 mx-auto"
-                      />
+                      <Captcha charNum={6} onChange={setCaptcha} />
                     </div>
                   )}
                 </div>

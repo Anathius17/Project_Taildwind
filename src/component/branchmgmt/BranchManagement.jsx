@@ -285,6 +285,14 @@ const BranchMenagement = () => {
     getBranchDetail();
   }, [detaiBranchParam]);
 
+  const groupOptions = [
+    "Branch",
+    "Cash Office",
+    "Payment Point",
+    "Sub Branch",
+    "Syariah Branch",
+  ];
+
   return (
     <div className="card shadow mb-4">
       <div className="card-header d-flex justify-content-between mb-2">
@@ -331,6 +339,7 @@ const BranchMenagement = () => {
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-center">Branch Code</th>
+                  <th className="py-3 px-6 text-center">Branch Group</th>
                   <th className="py-3 px-6 text-center">Branch Name</th>
                   <th className="py-3 px-6 text-center">Branch Address</th>
                   <th className="py-3 px-6 text-center">Branch City</th>
@@ -345,6 +354,9 @@ const BranchMenagement = () => {
                     className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {brc.lbrc_code}
+                    </td>
+                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      {brc.lbrc_group}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
                       {brc.lbrc_name}
@@ -438,7 +450,11 @@ const BranchMenagement = () => {
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} reload={getBranchList}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        reload={getBranchList}
+        groupOptions={groupOptions}>
         {/* <button onClick={closeModal}>Tutup Modal</button> */}
       </Modal>
 
@@ -448,6 +464,7 @@ const BranchMenagement = () => {
           onClose={closeModalEdit}
           currentBranch={branchEdit}
           reload={getBranchList}
+          groupOptions={groupOptions}
         />
       ) : (
         <></>
