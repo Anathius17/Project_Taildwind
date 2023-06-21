@@ -8,6 +8,273 @@ import { browserName, osName, browserVersion } from "react-device-detect";
 
 const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const [isStatusChecked, setIsStatusChecked] = useState(false);
+  const [isStatus, setIsStatus] = useState(false);
+  const [roleid, setroleid] = useState(currentRole);
+  const [name, setNameRole] = useState("");
+  const [desc, setDescRole] = useState("");
+  const [stats, setStatsRole] = useState(false);
+  const [ctgrydtl, setListCtgrDtl] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
+  const [clickButton, setclickButton] = useState("");
+  const [checkedRoleIds, setCheckedRoleIds] = useState([]);
+  const [updatedCheckedRoleIds, setUpdatedCheckedRoleIds] = useState([]);
+
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const userid = JSON.parse(localStorage.getItem("userid"));
+  console.log(userid);
+
+  const token = sessionData;
+  useEffect(() => {
+    if (token && token.map !== "") {
+      getListCategoryDetail();
+    }
+  }, [token]);
+
+  useEffect(() => {
+    setroleid(currentRole);
+  }, [currentRole]);
+
+  const handleInputChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    const newValue = type === "checkbox" ? !checked : value;
+
+    setroleid((prevState) => ({
+      ...prevState,
+      [name]: newValue,
+    }));
+  };
+
+  // insert log activity
+  const [ip, setIP] = useState("");
+  const [logid, setlogid] = useState("");
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data.ip);
+      setIP(res.data.ip);
+    };
+    getData();
+  }, []);
+
+  const dataLogUserTracking = {
+    plcd: "role_management",
+    plusr: userid,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Update Role Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
+
+  const postDataLogUserTracking = async () => {
+    let log = "";
+    try {
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTracking,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
+      await Updateobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
+    }
+  };
+
+  const Updateobjectdata = (val) => {
+    UpdateRoleNew(val);
+  };
+  const Submit = () => {
+    postDataLogUserTracking();
+  };
+
+  const getListCategoryDetail = async () => {
+    try {
+      const body = {
+        role_id: "-1",
+      };
+
+      const listCategoryDetail = await axios.post(
+        "http://116.206.196.65:30983/skycore/role/category/detail/v2",
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const updatedListCategoryDetail = listCategoryDetail.data.data.map(
+        (item) => {
+          const updatedDetail = item.detail.map((detailItem) => {
+            const updatedChild = detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: false,
+            }));
+            return {
+              ...detailItem,
+              is_checked: false,
+              child: updatedChild,
+            };
+          });
+          return {
+            ...item,
+            is_checked: false,
+            detail: updatedDetail,
+          };
+        }
+      );
+
+      setListCtgrDtl(updatedListCategoryDetail);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const UpdateRoleNew = async (val) => {
+    if (
+      !roleid.rl_id ||
+      !roleid.rl_name ||
+      !roleid.rl_description ||
+      !roleid.rl_status ||
+      !checkedValues
+    ) {
+      Swal.fire("Please completed all fields", "", "error");
+      return;
+    }
+    try {
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/role/update",
+          {
+            role_id: roleid.rl_id,
+            action_by: userid,
+            log_id: val,
+            role_name: roleid.rl_name,
+            role_description: roleid.rl_description,
+            role_status: roleid.rl_status,
+            update_log_id: val,
+            update_role_master_id: checkedValues,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
+            Swal.fire("Update Successfully ", "", "success");
+          } else {
+            Swal.fire(response.data.message, "", "error");
+          }
+        });
+
+      reload();
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCheckboxChange = (item) => {
+    setListCtgrDtl((prevCtgrydtl) => {
+      const updatedCtgrydtl = prevCtgrydtl.map((ctgry) => {
+        if (ctgry.rlm_id === item.rlm_id) {
+          return {
+            ...ctgry,
+            is_checked: !ctgry.is_checked, // Toggle the checked status
+          };
+        }
+        const updatedDetail = ctgry.detail.map((detailItem) => {
+          if (detailItem.rlm_id === item.rlm_id) {
+            return {
+              ...detailItem,
+              is_checked: !detailItem.is_checked, // Toggle the checked status
+            };
+          }
+          const updatedChild = detailItem.child.map((childItem) => {
+            if (childItem.rlm_id === item.rlm_id) {
+              return {
+                ...childItem,
+                is_checked: !childItem.is_checked, // Toggle the checked status
+              };
+            }
+            return childItem;
+          });
+          return {
+            ...detailItem,
+            child: updatedChild,
+          };
+        });
+        return {
+          ...ctgry,
+          detail: updatedDetail,
+        };
+      });
+
+      const checkedRoleIds = updatedCtgrydtl.reduce((acc, ctgry) => {
+        if (ctgry.is_checked) {
+          acc.push(ctgry.rlm_id);
+        }
+        ctgry.detail.forEach((detailItem) => {
+          if (detailItem.is_checked) {
+            acc.push(detailItem.rlm_id);
+          }
+          detailItem.child.forEach((childItem) => {
+            if (childItem.is_checked) {
+              acc.push(childItem.rlm_id);
+            }
+          });
+        });
+        return acc;
+      }, []);
+
+      const updatedRoleid = {
+        ...roleid,
+        action: roleid.action.map((action) => {
+          if (action.rlm_id === item.rlm_id) {
+            return {
+              ...action,
+              is_checked: !action.is_checked,
+            };
+          }
+          return action;
+        }),
+      };
+
+      const updatedCheckedRoleIds = updatedRoleid.action.reduce(
+        (acc, action) => {
+          if (action.is_checked) {
+            acc.push(action.rlm_id);
+          }
+          return acc;
+        },
+        checkedRoleIds
+      );
+
+      setUpdatedCheckedRoleIds(updatedCheckedRoleIds);
+      setroleid(updatedRoleid);
 
       return updatedCtgrydtl;
     });
@@ -110,8 +377,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                             />
                             <label
                               htmlFor={item.rlm_id}
-                              className="form-check-label"
-                            >
+                              className="form-check-label">
                               {item.rlm_name}
                             </label>
                           </div>
@@ -142,8 +408,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                 />
                                 <label
                                   htmlFor={detailItem.rlm_id}
-                                  className="form-check-label"
-                                >
+                                  className="form-check-label">
                                   {detailItem.rlm_name}
                                 </label>
                               </div>
@@ -173,8 +438,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                   />
                                   <label
                                     htmlFor={childItem.rlm_id}
-                                    className="form-check-label"
-                                  >
+                                    className="form-check-label">
                                     {childItem.rlm_name}
                                   </label>
                                 </div>
@@ -194,8 +458,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}
-            >
+              onClick={onClose}>
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Submit}>
