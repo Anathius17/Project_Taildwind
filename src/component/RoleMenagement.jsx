@@ -103,7 +103,7 @@ const RoleMenagement = () => {
       const listRoleDetail = await axios.post(
         "http://116.206.196.65:30983/skycore/role/detail",
         {
-          role_id: detaiRoleParam, // Menggunakan id yang terpilih dari state
+          role_id: detaiRoleParam,
         },
         {
           headers: {
@@ -168,10 +168,11 @@ const RoleMenagement = () => {
       icon: "warning",
     }).then((result) => {
       if (result.isConfirmed) {
-        //postDataLogUserTracking();
+        postDataLogUserTracking();
         DeleteRole(id);
-        setDeleteRole(id);
-      } else Swal.fire(" Cancelled", "", "error");
+      } else {
+        Swal.fire("Cancelled", "", "error");
+      }
     });
   };
 
@@ -212,9 +213,11 @@ const RoleMenagement = () => {
       const userDelete = await axios.post(
         "http://116.206.196.65:30983/skycore/role/delete",
         {
-          role_id: "", //roleEdit.rl_id
-          role_detail_id: "", //roleEdit.action.rlm_id
-          action_by: userid, 
+          role_id: roleEdit.rl_id,
+          role_detail_id: roleEdit.action
+            .filter((action) => action.is_checked)
+            .map((action) => action.rlm_id),
+          action_by: userid,
           log_id: val,
         },
         {
@@ -347,27 +350,27 @@ const RoleMenagement = () => {
                 {currentItems.map((rol) => (
                   <tr
                     key={rol.rl_id}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                    className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
                   >
-                    <td className=" py-2 px-4 text-left whitespace-nowrap font-semibold">
+                    <td className="py-2 px-4 text-left whitespace-nowrap font-semibold">
                       {rol.rl_name}
                     </td>
-                    <td className="py-2 px-4 text-left  whitespace-nowrap font-semibold">
+                    <td className="py-2 px-4 text-left whitespace-nowrap font-semibold">
                       {rol.rl_description}
                     </td>
                     {rol.rl_status === true ? (
-                      <td className="py-2 px-4 text-center  whitespace-nowrap font-semibold">
+                      <td className="py-2 px-4 text-center whitespace-nowrap font-semibold">
                         Aktif
                       </td>
                     ) : (
-                      <td className="py-2 px-4 text-center  whitespace-nowrap font-semibold">
+                      <td className="py-2 px-4 text-center whitespace-nowrap font-semibold">
                         Inactive
                       </td>
                     )}
                     <td className="py-2 px-4 text-center whitespace-nowrap font-semibold">
                       {rol.rl_created_by}
                     </td>
-                    <td className="py-2 px-4 text-center  whitespace-nowrap ">
+                    <td className="py-2 px-4 text-center whitespace-nowrap ">
                       <button
                         className="btn btn-success btn-sm"
                         onClick={() => editRole(rol.rl_id)}
@@ -404,7 +407,6 @@ const RoleMenagement = () => {
                         className="btn btn-warning btn-sm ml-1"
                         onClick={() => handleActiveRole(rol.rl_id)}
                       >
-                        {/* {rol.rl_status ? "deactivate" : "activate"} */}
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
