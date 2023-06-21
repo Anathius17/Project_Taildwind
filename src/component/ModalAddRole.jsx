@@ -85,7 +85,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
   };
 
   const Save = async (e) => {
-    if (!name || !desc || !checkedRoleIds) {
+    if (!name) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",

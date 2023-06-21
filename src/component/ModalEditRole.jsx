@@ -297,6 +297,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   name="rl_name" // Remove the "roleid." prefix
                   onChange={handleInputChange}
                   required
+                  readOnly
                 />
               </div>
               <div className="mb-3">
