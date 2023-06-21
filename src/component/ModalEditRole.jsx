@@ -18,6 +18,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
   const [checkedRoleIds, setCheckedRoleIds] = useState([]);
+  const [updatedCheckedRoleIds, setUpdatedCheckedRoleIds] = useState([]);
 
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -154,7 +155,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
       !roleid.rl_name ||
       !roleid.rl_description ||
       !roleid.rl_status ||
-      !checkedRoleIds
+      !checkedValues
     ) {
       Swal.fire("Please completed all fields", "", "error");
       return;
@@ -171,7 +172,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
             role_description: roleid.rl_description,
             role_status: roleid.rl_status,
             update_log_id: val,
-            update_role_master_id: checkedRoleIds,
+            update_role_master_id: checkedValues,
           },
           {
             headers: {
@@ -249,26 +250,42 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
         return acc;
       }, []);
 
-      setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
-
-      // Update the roleid state object
       const updatedRoleid = {
         ...roleid,
         action: roleid.action.map((action) => {
           if (action.rlm_id === item.rlm_id) {
             return {
               ...action,
-              is_checked: !action.is_checked, // Toggle the checked status
+              is_checked: !action.is_checked,
             };
           }
           return action;
         }),
       };
+
+      const updatedCheckedRoleIds = updatedRoleid.action.reduce(
+        (acc, action) => {
+          if (action.is_checked) {
+            acc.push(action.rlm_id);
+          }
+          return acc;
+        },
+        checkedRoleIds
+      );
+
+      setUpdatedCheckedRoleIds(updatedCheckedRoleIds);
       setroleid(updatedRoleid);
 
       return updatedCtgrydtl;
     });
   };
+
+  // Contoh untuk mendapatkan nilai-nilai checkbox yang sudah dicentang
+  const checkedValues = roleid.action
+    .filter((action) => action.is_checked)
+    .map((action) => action.rlm_id);
+
+  console.log(checkedValues);
 
   useEffect(() => {
     getListCategoryDetail();
