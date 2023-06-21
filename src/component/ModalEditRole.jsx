@@ -37,14 +37,15 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   }, [currentRole]);
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-
+    const { name, value, type, checked } = event.target;
+    const newValue = type === 'checkbox' ? checked : value;
+  
     setroleid((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: newValue,
     }));
   };
-
+  
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
   useEffect(() => {
@@ -339,7 +340,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {ctgrydtl.map((item) => (
+                {ctgrydtl.map((item) => (
                     <React.Fragment key={item.rlm_id}>
                       <tr>
                         <td>
@@ -350,7 +351,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                               name="chkCategory"
                               value={item.rlm_id}
                               className="form-check-input"
-                              checked={roleid.action.is_checked}
+                              checked={item.is_checked}
                               onChange={() => handleCheckboxChange(item)}
                             />
                             <label
@@ -376,7 +377,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                   name="chkCategoryParent"
                                   value={detailItem.rlm_id}
                                   className="form-check-input"
-                                  checked={roleid.action.is_checked}
+                                  checked={detailItem.is_checked}
                                   onChange={() =>
                                     handleCheckboxChange(detailItem)
                                   }
@@ -403,7 +404,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                     name="chkCategoryChild"
                                     value={childItem.rlm_id}
                                     className="form-check-input"
-                                    checked={roleid.action.is_checked}
+                                    checked={childItem.is_checked}
                                     onChange={() =>
                                       handleCheckboxChange(childItem)
                                     }

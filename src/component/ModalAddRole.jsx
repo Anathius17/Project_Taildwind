@@ -13,7 +13,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
   const [roleid, setidRole] = useState("");
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
-  const [stats, setStatsRole] = useState("");
+  const [stats, setStatsRole] = useState(false);
   // const [ctgry, setListCategory] = useState("");
   const [ctgrydtl, setListCtgrDtl] = useState([]);
   // const [token, setToken] = useState();
@@ -85,7 +85,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
   };
 
   const Save = async (e) => {
-    if (!name || !desc || !stats || !checkedRoleIds) {
+    if (!name || !desc || !checkedRoleIds) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -285,7 +285,6 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
                   onChange={(x) => setDescRole(x.target.value)}
                 />
               </div>
-
               <div className="row mb-2">
                 <div className="col-3">
                   <label htmlFor="exampleInputAddress" className="form-label">
@@ -298,8 +297,8 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckDefault"
-                    checked={stats} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
-                    onChange={(e) => setStatsRole(e.target.checked)} // Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
+                    checked={stats}
+                    onChange={(e) => setStatsRole(e.target.checked)}
                   />
                 </div>
               </div>
