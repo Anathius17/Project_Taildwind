@@ -141,7 +141,7 @@ const RoleMenagement = () => {
   const [id, setDeleteRole] = useState("");
 
   const dataLogUserTracking = {
-    plcd: "general_setting",
+    plcd: "role_management",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
@@ -227,7 +227,7 @@ const RoleMenagement = () => {
           },
         }
       );
-
+      console.log(userDelete);
       Swal.fire("Role Berhasil Di Hapus", "", "success");
       getRoleList();
     } catch (error) {
