@@ -207,15 +207,15 @@ const RoleMenagement = () => {
     }
   };
 
-  const DeleteRole = async () => {
+  const DeleteRole = async (val) => {
     try {
       const userDelete = await axios.post(
         "http://116.206.196.65:30983/skycore/role/delete",
         {
-          role_id: "",
-          role_detail_id: "",
-          action_by: "",
-          log_id: "",
+          role_id: "", //roleEdit.rl_id
+          role_detail_id: "", //roleEdit.action.rlm_id
+          action_by: userid, 
+          log_id: val,
         },
         {
           headers: {

@@ -13,7 +13,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   const [roleid, setroleid] = useState(currentRole);
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
-  const [stats, setStatsRole] = useState("");
+  const [stats, setStatsRole] = useState(false);
   const [ctgrydtl, setListCtgrDtl] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
@@ -35,8 +35,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   }, [currentRole]);
 
   const handleInputChange = (event) => {
-    const { name, checked } = event.target;
-    const newValue = checked;
+    const { name, value, type, checked } = event.target;
+    const newValue = type === "checkbox" ? !checked : value;
 
     setroleid((prevState) => ({
       ...prevState,
@@ -150,10 +150,10 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
 
   const UpdateRoleNew = async (val) => {
     if (
-      // !roleid.rl_id ||
-      // !roleid.rl_name ||
-      // !roleid.rl_description ||
-      // !roleid.rl_status ||
+      !roleid.rl_id ||
+      !roleid.rl_name ||
+      !roleid.rl_description ||
+      !roleid.rl_status ||
       !checkedRoleIds
     ) {
       Swal.fire("Please completed all fields", "", "error");
@@ -290,11 +290,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                 </label>
                 <input
                   type="text"
-                  value={roleid.rl_name}
+                  value={roleid?.rl_name || ""}
                   className="form-control"
                   maxLength={25}
                   id="recipient-name"
-                  name="roleid.rl_name"
+                  name="rl_name" // Remove the "roleid." prefix
                   onChange={handleInputChange}
                   required
                 />
@@ -306,8 +306,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   cols={2}
                   className="form-control"
                   id="txtname"
-                  name="roleid.rl_description"
-                  value={roleid.rl_description}
+                  name="rl_description" // Remove the "roleid." prefix
+                  value={roleid?.rl_description || ""}
                   onChange={handleInputChange}
                 />
               </div>
@@ -323,8 +323,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   type="checkbox"
                   role="switch"
                   id="flexSwitchCheckDefault"
-                  name="roleid.rl_status"
-                  checked={roleid.rl_status}
+                  name="rl_status" // Remove the "roleid." prefix
+                  checked={roleid?.rl_status || false}
                   onChange={handleInputChange}
                 />
               </div>
