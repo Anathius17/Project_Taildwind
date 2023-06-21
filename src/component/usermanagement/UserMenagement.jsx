@@ -7,11 +7,21 @@ import ModalChecker from "./ModalCheckedUserM";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  Link,
+  NavLink,
+} from "react-router-dom";
 // import { BsFillPersonPlusFill } from "react-icons/bs";
 // import { ImSearch } from "react-icons/im";
 
 const UserMenagement = () => {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+  const userid = JSON.parse(localStorage.getItem("userid"));
 
   const today = new Date();
   console.log(today);
@@ -20,6 +30,8 @@ const UserMenagement = () => {
   console.log(users);
   const [status, setStatus] = useState();
   const [currentUser, setCurrentUser] = useState(users);
+
+  const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
@@ -52,12 +64,37 @@ const UserMenagement = () => {
       console.log(cekData);
       setUsers(cekData);
     } catch (errorUser) {
-      alert(errorUser);
+      // alert(errorUser);
+      postJDataUserResetIsLogin();
+      navigate("/");
+    }
+  };
+
+  const datalogout = {
+    p_usr: userid,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
     }
   };
 
   // console.log
-
   // insert log activity
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
@@ -70,14 +107,13 @@ const UserMenagement = () => {
     getData();
   }, []);
 
-  const userid = JSON.parse(localStorage.getItem("userid"));
   // ! nanti atur secara dinamis
   const dataLogUserTracking = {
     plcd: "user_management",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "User Management ",
+    plact: "Delete User Management ",
     plpgur: window.location.href,
     plqry: "-",
     plbro: "Firefox 72.0",
@@ -229,12 +265,13 @@ const UserMenagement = () => {
     getUserDetail();
   }, [detaiUserParam]);
 
-  const editUser = (userid) => {
+  const [statusSend, setStatusSend] = useState("");
+  const editUser = (userid, status) => {
     setDetaiUserParam(userid);
+    setStatusSend(status);
     setIsModalOpenEdit(true);
   };
 
-  const [statusSend, setStatusSend] = useState("");
   console.log(statusSend);
   const checkerUser = (userid, status) => {
     setDetaiUserParam(userid);
@@ -443,16 +480,42 @@ const UserMenagement = () => {
   };
 
   return (
-    <div className="card shadow mb-4 p-2">
+    <div className="card shadow mb-4 ">
       <div className="card-header flex justify-between mt-2 p-6">
         <div className="test">
           <h4> User Management</h4>
         </div>
-        <div className="btn-new">
+        {/* <div className="btn-new">
           <button className="btn btn-sm btn-primary" onClick={openModal}>
             <span className="text-sm">Add new </span>
           </button>
-        </div>
+        </div> */}
+        {/* 
+        {level.map((item, i) => {
+          if (item.ldlmdescription === "lvl_prm_brm_add") {
+            return (
+              <div className="btn-new" key={i}>
+                <button className="btn btn-primary" onClick={openModal}>
+                  Add new
+                </button>
+              </div>
+            );
+          }
+        })} */}
+
+        {level.map((item, i) => {
+          if (item.ldlmdescription === "lvl_prm_brm_add") {
+            return (
+              <div className="btn-new" key={i}>
+                <button className="btn btn-primary" onClick={openModal}>
+                  Add new
+                </button>
+              </div>
+            );
+          } else {
+            return null;
+          }
+        })}
       </div>
 
       <div className="card-body">
@@ -463,7 +526,7 @@ const UserMenagement = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control">
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -477,15 +540,15 @@ const UserMenagement = () => {
                 placeholder="Search by Name"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="form-control"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
 
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full table-bordered ">
-              <thead className="text-xs">
+            <table className="min-w-max w-full table-bordered p-10 ">
+              <thead className="text-sm">
                 <tr className="bg-gray-200 text-gray-600 uppercase leading-normal">
                   <th className="text-center">User Id</th>
                   <th className="text-center">Name</th>
@@ -496,7 +559,7 @@ const UserMenagement = () => {
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-gray-600 text-xs font-light ">
+              <tbody className="text-gray-600 text-sm font-light ">
                 {currentItems.map((user) => (
                   <tr
                     key={user.usrid}
@@ -522,7 +585,7 @@ const UserMenagement = () => {
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
                         className=" btn-success btn-sm"
-                        onClick={() => editUser(user.usruserid)}>
+                        onClick={() => editUser(user.usruserid, "edit")}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -571,10 +634,7 @@ const UserMenagement = () => {
                         <button
                           className="text-white bg-blue-800 btn-sm ml-1 m-0"
                           onClick={() =>
-                            checkerUser(
-                              user.usruserid,
-                              user.usr_approved_status
-                            )
+                            editUser(user.usruserid, user.usr_approved_status)
                           }>
                           <svg
                             fill="currentColor"
@@ -592,10 +652,7 @@ const UserMenagement = () => {
                         <button
                           className="text-white bg-blue-400 btn-sm ml-1 m-0"
                           onClick={() =>
-                            checkerUser(
-                              user.usruserid,
-                              user.usr_approved_status
-                            )
+                            editUser(user.usruserid, user.usr_approved_status)
                           }>
                           <svg
                             viewBox="0 0 512 512"
@@ -672,6 +729,7 @@ const UserMenagement = () => {
           dropdownSN={superVisior}
           dropdownRole={role}
           reload={getUserList}
+          sendStatus={statusSend}
         />
       ) : (
         <></>

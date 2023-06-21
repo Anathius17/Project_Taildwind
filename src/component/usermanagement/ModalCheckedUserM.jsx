@@ -313,7 +313,9 @@ const Modal = ({
   return (
     <>
       {statusLast === "Created" || statusLast === "Updated" ? (
-        <div class="fixed inset-0 flex items-center justify-center z-50">
+        <div
+          class="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: "rgb(52 52 52 / 72%)" }}>
           <div class="absolute bg-white p-6 rounded-lg shadow-lg">
             <div className="modal-content">
               <div className="modal-header">

@@ -6,6 +6,14 @@ import ModalEdit from "./ModalEditBranch";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  Link,
+  NavLink,
+} from "react-router-dom";
 
 const BranchMenagement = () => {
   const [branch, setBranch] = useState([]);
@@ -30,6 +38,7 @@ const BranchMenagement = () => {
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token && token.map !== "") {
@@ -55,7 +64,33 @@ const BranchMenagement = () => {
 
       setBranch(cekData);
     } catch (errorbranch) {
-      alert(errorbranch);
+      //alert(errorbranch);
+      postJDataUserResetIsLogin();
+      navigate("/");
+    }
+  };
+
+  const datalogout = {
+    p_usr: userid,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
     }
   };
 

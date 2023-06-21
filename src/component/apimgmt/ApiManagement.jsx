@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 
 import { browserName, osName, browserVersion } from "react-device-detect";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  Link,
+  NavLink,
+} from "react-router-dom";
 
 import axios from "axios";
 
@@ -9,6 +17,7 @@ const ApiManagement = () => {
   const [currentAPI, setCurrentAPI] = useState(api);
   const [isChecked, setIsChecked] = useState("false");
   //const [token, setToken] = useState();
+  const navigate = useNavigate();
 
   // hit token
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
@@ -95,7 +104,32 @@ const ApiManagement = () => {
       });
       setAPI(cekData);
     } catch (error) {
-      alert(error);
+      postJDataUserResetIsLogin();
+      navigate("/");
+    }
+  };
+
+  const datalogout = {
+    p_usr: userid,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
     }
   };
 

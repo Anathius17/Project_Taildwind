@@ -15,6 +15,7 @@ const Modal = ({
   dropdownSN,
   dropdownRole,
   reload,
+  sendStatus,
 }) => {
   const [token, setToken] = useState();
   const [users, setUser] = useState(currentUser);
@@ -22,6 +23,9 @@ const Modal = ({
   const [status, setStatus] = useState("");
   const [password, setPassword] = useState("");
   console.log(password);
+
+  const statusLast = sendStatus;
+  console.log(statusLast);
   const pass = md5(password);
   const [passwordMd5, setPasswordMd5] = useState("");
   console.log(pass);
@@ -214,7 +218,7 @@ const Modal = ({
           p_position: "area",
           p_acclevel: users.usraccesslevel,
           p_efectivedate: startDate,
-          p_status: status,
+          p_status: "false",
           p_usr: "bani",
           p_defaultpwd: tampungpassword,
           p_logid: val,
@@ -227,11 +231,8 @@ const Modal = ({
         }
       );
 
-      Swal.fire("Save Berhasil", "", "success");
-
-      // alert(tampungpassword);
-
       reload();
+      Swal.fire("Save Berhasil", "", "success");
       onClose();
     } catch (error) {
       console.log(error);
@@ -242,191 +243,270 @@ const Modal = ({
     margin: 0,
   };
 
+  const SubmitChecked = () => {
+    Cheked();
+  };
+
+  const SubmitApproval = () => {
+    Approval();
+  };
+
+  const Cheked = async (val) => {
+    const tampungpassword = passwordMd5;
+    if (!users.usrname || !users.usrnip) {
+      Swal.fire("Mohon lengkapi semua field", "", "error");
+      return;
+    }
+    try {
+      await axios.post(
+        "http://116.206.196.65:30983/skycore/User/approval",
+        {
+          userid: users.usruserid,
+          approval_usr: userid,
+          approval_status: "checked",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Swal.fire("Save Berhasil", "", "success");
+
+      reload();
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const Approval = async (val) => {
+    if (!users.usrname || !users.usrnip) {
+      Swal.fire("Mohon lengkapi semua field", "", "error");
+      return;
+    }
+    try {
+      await axios.post(
+        "http://116.206.196.65:30983/skycore/User/approval",
+        {
+          userid: users.usruserid,
+          approval_usr: userid,
+          approval_status: "approved",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Swal.fire("Save Berhasil", "", "success");
+
+      reload();
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (!isOpen) return null;
   return (
-    <div class="fixed inset-0 flex items-center justify-center z-50">
-      <div class="absolute bg-white p-6 rounded-lg shadow-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">User Edit</h5>
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-              onClick={onClose}></button>
-          </div>
-          <div className="modal-body">
-            <form>
-              <div className="row">
-                <div className="col-6">
-                  {" "}
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        User Id
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        name="usruserid"
-                        value={users.usruserid}
-                        onChange={handleInputChange}
-                        disabled
-                        // onChange={(e) => setUserId(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Name <span className="text-danger">*</span>
-                      </label>
-                    </div>
+    <>
+      {statusLast === "Created" || statusLast === "Updated" ? (
+        <div
+          class="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: "rgb(52 52 52 / 72%)" }}>
+          <div class="absolute bg-white p-6 rounded-lg shadow-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">User Edit</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onClick={onClose}></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="row">
+                    <div className="col-6">
+                      {" "}
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            User Id
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usruserid"
+                            value={users.usruserid}
+                            onChange={handleInputChange}
+                            disabled
+                            // onChange={(e) => setUserId(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Name <span className="text-danger">*</span>
+                          </label>
+                        </div>
 
-                    <div className="col-9">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={users.usrname}
-                        name="usrname"
-                        onChange={handleInputChange}
-                        required
-                      />
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={users.usrname}
+                            name="usrname"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            NIP <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            value={users.usrnip}
+                            name="usrnip"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Email <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={users.usremail}
+                            name="usremail"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            No Tlp <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            value={users.usrnotlp}
+                            name="usrnotlp"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        NIP <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        value={users.usrnip}
-                        name="usrnip"
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Email <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={users.usremail}
-                        name="usremail"
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        No Tlp <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        value={users.usrnotlp}
-                        name="usrnotlp"
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-6">
-                  <div className=" row mb-2">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Branch <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <select
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        name="usrbranch"
-                        value={users.usrbranch}
-                        onChange={handleInputChange}>
-                        {branch.map((item, i) => {
-                          return (
-                            <option value={item.namevalue} key={i}>
-                              {item.nameview}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Supervisor Name
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <select
-                        type="text"
-                        className="form-control"
-                        id="recipient-name"
-                        name="usrsupervisor"
-                        value={users.usrsupervisor}
-                        onChange={handleInputChange}>
-                        {superVisior.map((item, i) => {
-                          return (
-                            <option value={item.namevalue} key={i}>
-                              {item.nameview}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Role <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-9">
-                      <select
-                        type="text"
-                        required
-                        className="form-control"
-                        id="recipient-name"
-                        name="usraccesslevel"
-                        value={users.usraccesslevel}
-                        onChange={handleInputChange}>
-                        {role.map((item, i) => {
-                          return (
-                            <option value={item.namevalue} key={i}>
-                              {item.nameview}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
-                  {/* <div className=" row mb-1">
+                    <div className="col-6">
+                      <div className=" row mb-2">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Branch <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usrbranch"
+                            value={users.usrbranch}
+                            onChange={handleInputChange}
+                            disabled>
+                            {branch.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Supervisor Name
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usrsupervisor"
+                            value={users.usrsupervisor}
+                            onChange={handleInputChange}
+                            disabled>
+                            {superVisior.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Role <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            required
+                            className="form-control"
+                            id="recipient-name"
+                            name="usraccesslevel"
+                            value={users.usraccesslevel}
+                            onChange={handleInputChange}
+                            disabled>
+                            {role.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      {/* <div className=" row mb-1">
                     <div className="col-3">
                       <label for="exampleInputEmail1" class="form-label">
                         Status
@@ -442,58 +522,584 @@ const Modal = ({
                       />
                     </div>
                   </div> */}
-                  <div className=" row mb-1">
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Effective Date
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <DatePicker
+                            className="form-control"
+                            selected={startDate}
+                            name="usrefectivedate"
+                            // onChange={handleInputChange}
+                            onChange={handleDateChange}
+                            dateFormat="yyyy/MM/dd"
+                            disabled
+                            // onChange={(date) => setStartDate(date)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Password
+                          </label>
+                        </div>
+                        <div className="col-9 ">
+                          <input
+                            type="password"
+                            className="form-control"
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  onClick={onClose}>
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  onClick={SubmitChecked}>
+                  Checked
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : statusLast === "checked" ? (
+        <div class="fixed inset-0 flex items-center justify-center z-50">
+          <div class="absolute bg-white p-6 rounded-lg shadow-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Approval</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onClick={onClose}></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="row">
+                    <div className="col-6">
+                      {" "}
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            User Id
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usruserid"
+                            value={users.usruserid}
+                            onChange={handleInputChange}
+                            disabled
+                            // onChange={(e) => setUserId(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Name <span className="text-danger">*</span>
+                          </label>
+                        </div>
+
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={users.usrname}
+                            name="usrname"
+                            onChange={handleInputChange}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            NIP <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            value={users.usrnip}
+                            name="usrnip"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Email <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={users.usremail}
+                            name="usremail"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            No Tlp <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            value={users.usrnotlp}
+                            name="usrnotlp"
+                            onChange={handleInputChange}
+                            required
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className=" row mb-2">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Branch <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usrbranch"
+                            value={users.usrbranch}
+                            onChange={handleInputChange}
+                            disabled>
+                            {branch.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Supervisor Name
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usrsupervisor"
+                            value={users.usrsupervisor}
+                            onChange={handleInputChange}
+                            disabled>
+                            {superVisior.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Role <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            required
+                            className="form-control"
+                            id="recipient-name"
+                            name="usraccesslevel"
+                            value={users.usraccesslevel}
+                            onChange={handleInputChange}
+                            disabled>
+                            {role.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      {/* <div className=" row mb-1">
                     <div className="col-3">
                       <label for="exampleInputEmail1" class="form-label">
-                        Effective Date
+                        Status
                       </label>
                     </div>
                     <div className="col-9">
-                      <DatePicker
-                        className="form-control"
-                        selected={startDate}
-                        name="usrefectivedate"
-                        // onChange={handleInputChange}
-                        onChange={handleDateChange}
-                        dateFormat="yyyy/MM/dd"
-                        // onChange={(date) => setStartDate(date)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className=" row mb-1">
-                    <div className="col-3">
-                      <label for="exampleInputEmail1" class="form-label">
-                        Password
-                      </label>
-                    </div>
-                    <div className="col-9 ">
                       <input
-                        type="password"
-                        className="form-control"
-                        onChange={(e) => setPassword(e.target.value)}
+                        className="form-check-input mt-0 bg-primary"
+                        type="checkbox"
+                        style={checkBoxStyle}
+                        checked={isChecked}
+                        onChange={handleCheckboxChange}
+                        disabled
                       />
                     </div>
+                  </div> */}
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Effective Date
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <DatePicker
+                            className="form-control"
+                            selected={startDate}
+                            name="usrefectivedate"
+                            // onChange={handleInputChange}
+                            onChange={handleDateChange}
+                            dateFormat="yyyy/MM/dd"
+                            disabled
+                            // onChange={(date) => setStartDate(date)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Password
+                          </label>
+                        </div>
+                        <div className="col-9 ">
+                          <input
+                            type="password"
+                            className="form-control"
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </form>
               </div>
-            </form>
-          </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              data-bs-dismiss="modal"
-              onClick={onClose}>
-              Close
-            </button>
-            <button type="submit" className="btn btn-primary" onClick={Submit}>
-              Save changes
-            </button>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  onClick={onClose}>
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  onClick={SubmitApproval}>
+                  Approval
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div
+          class="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: "rgb(52 52 52 / 72%)" }}>
+          <div class="absolute bg-white p-6 rounded-lg shadow-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">User Edit</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onClick={onClose}></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="row">
+                    <div className="col-6">
+                      {" "}
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            User Id
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usruserid"
+                            value={users.usruserid}
+                            onChange={handleInputChange}
+                            disabled
+                            // onChange={(e) => setUserId(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Name <span className="text-danger">*</span>
+                          </label>
+                        </div>
+
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={users.usrname}
+                            name="usrname"
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            NIP <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            value={users.usrnip}
+                            name="usrnip"
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Email <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={users.usremail}
+                            name="usremail"
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            No Tlp <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            value={users.usrnotlp}
+                            name="usrnotlp"
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className=" row mb-2">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Branch <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usrbranch"
+                            value={users.usrbranch}
+                            onChange={handleInputChange}>
+                            {branch.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Supervisor Name
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            className="form-control"
+                            id="recipient-name"
+                            name="usrsupervisor"
+                            value={users.usrsupervisor}
+                            onChange={handleInputChange}>
+                            {superVisior.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Role <span className="text-danger">*</span>
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <select
+                            type="text"
+                            required
+                            className="form-control"
+                            id="recipient-name"
+                            name="usraccesslevel"
+                            value={users.usraccesslevel}
+                            onChange={handleInputChange}>
+                            {role.map((item, i) => {
+                              return (
+                                <option value={item.namevalue} key={i}>
+                                  {item.nameview}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                      {/* <div className=" row mb-1">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        Status
+                      </label>
+                    </div>
+                    <div className="col-9">
+                      <input
+                        className="form-check-input mt-0 bg-primary"
+                        type="checkbox"
+                        style={checkBoxStyle}
+                        checked={isChecked}
+                        onChange={handleCheckboxChange}
+                      />
+                    </div>
+                  </div> */}
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Effective Date
+                          </label>
+                        </div>
+                        <div className="col-9">
+                          <DatePicker
+                            className="form-control"
+                            selected={startDate}
+                            name="usrefectivedate"
+                            // onChange={handleInputChange}
+                            onChange={handleDateChange}
+                            dateFormat="yyyy/MM/dd"
+                            // onChange={(date) => setStartDate(date)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className=" row mb-1">
+                        <div className="col-3">
+                          <label for="exampleInputEmail1" class="form-label">
+                            Password
+                          </label>
+                        </div>
+                        <div className="col-9 ">
+                          <input
+                            type="password"
+                            className="form-control"
+                            onChange={(e) => setPassword(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  onClick={onClose}>
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  onClick={Submit}>
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

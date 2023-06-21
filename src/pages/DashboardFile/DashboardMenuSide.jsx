@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
 
 const users = [
   {
@@ -341,9 +342,17 @@ const menuLevel = [
   },
 ];
 
-const DashboardMenuSide = () => {
-  const filteredUsers = users.filter((user) => {
-    const matchingMenuLevel = menuLevel.find(
+const dataMenu = localStorage.getItem("MenuList");
+const parsedData = JSON.parse(dataMenu);
+const dataMenuLevel = localStorage.getItem("detailRoleUser");
+const parsedDataLevel = JSON.parse(dataMenuLevel);
+
+const DashboardMenuSide = (props) => {
+  const menuTest = props.listmenu;
+  const levelm = props.levelmenu;
+
+  const filteredUsers = parsedData.filter((user) => {
+    const matchingMenuLevel = parsedDataLevel.find(
       (menu) => menu.ldlmdescription === user.mn_acl
     );
     return matchingMenuLevel !== undefined;
@@ -358,12 +367,13 @@ const DashboardMenuSide = () => {
     }
   };
 
+  const rute = "/dashboard";
   const renderChildMenu = (children) => {
     return (
-      <ul className="dropdown-menu">
+      <ul className="dropdown-menu1">
         {children
           .filter((child) => {
-            const level = menuLevel.find(
+            const level = parsedDataLevel.find(
               (menu) => menu.ldlmdescription === child.mn_acl
             );
             return level;
@@ -372,13 +382,22 @@ const DashboardMenuSide = () => {
             <li key={child.id} className="cabang p-0">
               {child.child && child.child.length > 0 ? (
                 <div>
-                  <button className="btn" onClick={() => toggleDropdown(child)}>
-                    {child.mn_name}
+                  <button
+                    onClick={() => toggleDropdown(child)}
+                    className="text-white ml-3">
+                    <span className="text-sm">{child.mn_name}</span>
                   </button>
                   {activeUsers.includes(child) && renderChildMenu(child.child)}
                 </div>
               ) : (
-                <a href={child.mn_link}>{child.mn_name}</a>
+                <NavLink to={`${rute}${child.mn_link}`}>
+                  <button
+                    className="text-white ml-3"
+                    // onClick={() => setclickButton(child.mn_link)}
+                    id={child.mn_name}>
+                    <span className="text-sm">{child.mn_name}</span>
+                  </button>
+                </NavLink>
               )}
             </li>
           ))}
@@ -386,25 +405,76 @@ const DashboardMenuSide = () => {
     );
   };
 
+  // <a href={child.mn_link}>{child.mn_name}</a>;
   return (
-    <div className="side-menu">
-      <ul className="menu-items">
-        {filteredUsers.map((user) => (
-          <li key={user.id}>
-            {user.child && user.child.length > 0 ? (
-              <div>
-                <button onClick={() => toggleDropdown(user)}>
-                  {user.mn_name}
-                </button>
-                {activeUsers.includes(user) && renderChildMenu(user.child)}
-              </div>
-            ) : (
-              <span>{user.mn_name}</span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+    // <div className="side-menu">
+    //   <ul className="menu-items">
+    //     {filteredUsers.map((user) => (
+    //       <li key={user.id}>
+    //         {user.child && user.child.length > 0 ? (
+    //           <div>
+    //             <button onClick={() => toggleDropdown(user)}>
+    //               {user.mn_name}
+    //             </button>
+    //             {activeUsers.includes(user) && renderChildMenu(user.child)}
+    //           </div>
+    //         ) : (
+    //           <span>{user.mn_name}</span>
+    //         )}
+    //       </li>
+    //     ))}
+    //   </ul>
+    // </div>
+    <>
+      <aside
+        id="sidebar-multi-level-sidebar"
+        className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 "
+        aria-label="Sidebar">
+        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-800 dark:bg-gray-800">
+          <ul className="navbar-nav ">
+            {filteredUsers.map((user) => (
+              <li className="ml-2 mt-3" key={user.id}>
+                {user.child && user.child.length > 0 ? (
+                  <>
+                    <div className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <button
+                        onClick={() => toggleDropdown(user)}
+                        className="flex items-center p-1 text-white rounded-lg dark:text-white "
+                        id={user.mn_name}>
+                        <span className="text-base font-semibold ml-2">
+                          {user.mn_name}
+                        </span>
+                      </button>
+                      {activeUsers.includes(user) &&
+                        renderChildMenu(user.child)}
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <NavLink to={"/dashboard" + user.mn_link}>
+                      <button className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                        <span className="flex items-center p-1 text-white rounded-lg dark:text-white text-base font-semibold ml-2 ">
+                          {" "}
+                          <svg
+                            viewBox="0 0 1024 1024"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em"
+                            className="mr-2">
+                            <path d="M924.8 385.6a446.7 446.7 0 00-96-142.4 446.7 446.7 0 00-142.4-96C631.1 123.8 572.5 112 512 112s-119.1 11.8-174.4 35.2a446.7 446.7 0 00-142.4 96 446.7 446.7 0 00-96 142.4C75.8 440.9 64 499.5 64 560c0 132.7 58.3 257.7 159.9 343.1l1.7 1.4c5.8 4.8 13.1 7.5 20.6 7.5h531.7c7.5 0 14.8-2.7 20.6-7.5l1.7-1.4C901.7 817.7 960 692.7 960 560c0-60.5-11.9-119.1-35.2-174.4zM482 232c0-4.4 3.6-8 8-8h44c4.4 0 8 3.6 8 8v80c0 4.4-3.6 8-8 8h-44c-4.4 0-8-3.6-8-8v-80zM270 582c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8v-44c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v44zm90.7-204.5l-31.1 31.1a8.03 8.03 0 01-11.3 0L261.7 352a8.03 8.03 0 010-11.3l31.1-31.1c3.1-3.1 8.2-3.1 11.3 0l56.6 56.6c3.1 3.1 3.1 8.2 0 11.3zm291.1 83.6l-84.5 84.5c5 18.7.2 39.4-14.5 54.1a55.95 55.95 0 01-79.2 0 55.95 55.95 0 010-79.2 55.87 55.87 0 0154.1-14.5l84.5-84.5c3.1-3.1 8.2-3.1 11.3 0l28.3 28.3c3.1 3.1 3.1 8.1 0 11.3zm43-52.4l-31.1-31.1a8.03 8.03 0 010-11.3l56.6-56.6c3.1-3.1 8.2-3.1 11.3 0l31.1 31.1c3.1 3.1 3.1 8.2 0 11.3l-56.6 56.6a8.03 8.03 0 01-11.3 0zM846 582c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8v-44c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v44z" />
+                          </svg>
+                          {user.mn_name}
+                        </span>
+                      </button>
+                    </NavLink>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    </>
   );
 };
 

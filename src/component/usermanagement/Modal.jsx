@@ -364,33 +364,34 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50"
+      style={{ backgroundColor: "rgb(52 52 52 / 72%)" }}>
       <div className="absolute bg-white p-6 rounded-lg shadow-lg">
-        <div classNameName="modal-content">
-          <div classNameName="modal-header">
-            <h5 classNameName="modal-title fw-bold">User Add New</h5>
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title fw-bold">User Add New</h5>
             <button
               type="button"
-              classNameName="btn-close"
+              className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
               onClick={onClose}></button>
           </div>
-          <div classNameName="modal-body">
+          <div className="modal-body">
             <form>
-              <div classNameName="row">
-                <div classNameName="col-6">
-                  {" "}
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
-                        User Id <span classNameName="text-danger">*</span>
+              <div className="row">
+                <div className="col-6">
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        User Id <span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <input
                         type="text"
-                        classNameName="form-control"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         value={userId}
                         maxLength={25}
                         id="recipient-name"
@@ -399,17 +400,17 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       />
                     </div>
                   </div>
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
-                        Name <span classNameName="text-danger">*</span>
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        Name <span className="text-danger">*</span>
                       </label>
                     </div>
 
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <input
                         type="text"
-                        classNameName="form-control"
+                        className="form-control"
                         id="recipient-name"
                         value={name}
                         onChange={(e) => {
@@ -422,16 +423,16 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       />
                     </div>
                   </div>
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
-                        NIP <span classNameName="text-danger">*</span>
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        NIP <span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <input
                         type="text"
-                        classNameName="form-control"
+                        className="form-control"
                         id="recipient-name"
                         value={nip}
                         onChange={(e) => setNip(e.target.value)}
@@ -439,18 +440,18 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       />
                     </div>
                   </div>
-                  <div classNameName="row mb-2">
-                    <div classNameName="col-3">
+                  <div className="row mb-2">
+                    <div className="col-3">
                       <label
                         htmlFor="exampleInputEmail1"
-                        classNameName="form-label">
-                        Email <span classNameName="text-danger">*</span>
+                        className="form-label">
+                        Email <span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <input
                         type="email"
-                        classNameName={`form-control ${
+                        className={`form-control ${
                           isValidEmail ? "" : "is-invalid"
                         }`}
                         id="recipient-name"
@@ -460,22 +461,22 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                         required
                       />
                       {!isValidEmail && (
-                        <div classNameName="invalid-feedback">
+                        <div className="invalid-feedback">
                           Email is not valid.
                         </div>
                       )}
                     </div>
                   </div>
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
-                        No Hp <span classNameName="text-danger">*</span>
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        No Hp <span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <input
                         type="text"
-                        classNameName="form-control"
+                        className="form-control"
                         id="recipient-name"
                         onChange={(e) => setNoTelepon(e.target.value)}
                         required
@@ -483,17 +484,17 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                     </div>
                   </div>
                 </div>
-                <div classNameName="col-6">
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
-                        Branch <span classNameName="text-danger">*</span>
+                <div className="col-6">
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
+                        Branch <span className="text-danger">*</span>
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <select
                         type="text"
-                        classNameName="form-control"
+                        className="form-control"
                         id="recipient-name"
                         onChange={(e) => setBranchName(e.target.value)}
                         required>
@@ -507,16 +508,16 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       </select>
                     </div>
                   </div>
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
                         Supervisior Name
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <select
                         type="text"
-                        classNameName="form-control"
+                        className="form-control"
                         id="recipient-name"
                         onChange={(e) => setSupervisiorName(e.target.value)}>
                         {superVisior.map((item, i) => {
@@ -529,19 +530,17 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       </select>
                     </div>
                   </div>
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label
-                        for="exampleInputEmail1"
-                        classNameName="form-label">
-                        Role <span classNameName="text-danger">*</span>
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" className="form-label">
+                        Role <span className="text-danger">*</span>
                       </label>
                     </div>
 
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <select
                         type="text"
-                        classNameName="form-control"
+                        className="form-control"
                         id="recipient-name"
                         onChange={(e) => setRoleName(e.target.value)}
                         required>
@@ -555,17 +554,15 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       </select>
                     </div>
                   </div>
-                  <div classNameName=" row mb-2" style={{ display: "none" }}>
-                    <div classNameName="col-3">
-                      <label
-                        for="exampleInputEmail1"
-                        classNameName="form-label">
+                  <div className=" row mb-2" style={{ display: "none" }}>
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" className="form-label">
                         Status
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <input
-                        classNameName="form-check-input mt-0 bg-primary"
+                        className="form-check-input mt-0 bg-primary"
                         type="checkbox"
                         style={checkBoxStyle}
                         checked={isChecked}
@@ -573,15 +570,15 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                       />
                     </div>
                   </div>
-                  <div classNameName=" row mb-2">
-                    <div classNameName="col-3">
-                      <label for="exampleInputEmail1" className="form-label">
+                  <div className=" row mb-2">
+                    <div className="col-3">
+                      <label for="exampleInputEmail1" class="form-label">
                         Effectived Date
                       </label>
                     </div>
-                    <div classNameName="col-9">
+                    <div className="col-9">
                       <DatePicker
-                        classNameName="form-control"
+                        className="form-control"
                         selected={startDate}
                         onChange={(date) => setStartDate(date)}
                         dateFormat="yyyy/MM/dd"
@@ -589,15 +586,15 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
                     </div>
                   </div>
                   {/* {isChecked ? (
-                    <div classNameName=" row mb-2">
-                      <div classNameName="col-3">
-                        <label for="exampleInputEmail1" className="form-label">
+                    <div className=" row mb-2">
+                      <div className="col-3">
+                        <label for="exampleInputEmail1" class="form-label">
                           Effectived Date
                         </label>
                       </div>
-                      <div classNameName="col-9">
+                      <div className="col-9">
                         <DatePicker
-                          classNameName="form-control"
+                          className="form-control"
                           selected={startDate}
                           onChange={(date) => setStartDate(date)}
                           dateFormat="yyyy/MM/dd"
@@ -611,18 +608,15 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
               </div>
             </form>
           </div>
-          <div classNameName="modal-footer flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <div className="modal-footer ">
             <button
               type="button"
-              classNameName="btn btn-secondary"
+              className="btn btn-secondary"
               data-bs-dismiss="modal"
               onClick={onClose}>
               Close
             </button>
-            <button
-              type="submit"
-              classNameName="btn btn-primary"
-              onClick={Save}>
+            <button type="submit" className="btn btn-primary" onClick={Save}>
               Save
             </button>
           </div>
