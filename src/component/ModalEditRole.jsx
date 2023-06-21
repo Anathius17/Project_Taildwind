@@ -14,9 +14,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   const [name, setNameRole] = useState("");
   const [desc, setDescRole] = useState("");
   const [stats, setStatsRole] = useState("");
-  // const [ctgry, setListCategory] = useState("");
   const [ctgrydtl, setListCtgrDtl] = useState([]);
-  // const [token, setToken] = useState();
   const [activeUsers, setActiveUsers] = useState([]);
   const [clickButton, setclickButton] = useState("");
   const [checkedRoleIds, setCheckedRoleIds] = useState([]);
@@ -37,32 +35,34 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   }, [currentRole]);
 
   const handleInputChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    const newValue = type === 'checkbox' ? checked : value;
-  
+    const { name, checked } = event.target;
+    const newValue = checked;
+
     setroleid((prevState) => ({
       ...prevState,
       [name]: newValue,
     }));
   };
-  
+
+  // insert log activity
   const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
+
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
+      console.log(res.data.ip);
       setIP(res.data.ip);
     };
-    //passing getData method to the lifecycle method
     getData();
   }, []);
+
   const dataLogUserTracking = {
     plcd: "role_management",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Edit Role Management",
+    plact: "Update Role Management",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -86,11 +86,10 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
         )
         .then((response) => {
           console.log(response.data.data[0].resultprocess);
-          setlogid(response.data.data[0].resultprocess);
           log = response.data.data[0].resultprocess;
         });
 
-      await insertobjectdata(log);
+      await Updateobjectdata(log);
       // alert("postDataLogUserTracking Berhasil");
     } catch (error) {
       alert("postDataLogUserTracking Tidak Berhasil");
@@ -98,23 +97,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     }
   };
 
-  const Save = async (e) => {
-    if (!name || !desc || !stats || !checkedRoleIds) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops... Data Tidak Boleh Kosong. Please check again?",
-        text: "",
-        footer: '<a href="">Why do I have this issue?</a>',
-      });
-      return;
-    }
-    postDataLogUserTracking();
-
-    console.log("Checked Role IDs:", checkedRoleIds);
-  };
-
-  const insertobjectdata = (val) => {
+  const Updateobjectdata = (val) => {
     UpdateRoleNew(val);
+  };
+  const Submit = () => {
+    postDataLogUserTracking();
   };
 
   const getListCategoryDetail = async () => {
@@ -163,11 +150,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
 
   const UpdateRoleNew = async (val) => {
     if (
-      !roleid.rl_id ||
-      !roleid.rl_name ||
-      !roleid.rl_description ||
-      !roleid.rl_status ||
-      !roleid.val
+      // !roleid.rl_id ||
+      // !roleid.rl_name ||
+      // !roleid.rl_description ||
+      // !roleid.rl_status ||
+      !checkedRoleIds
     ) {
       Swal.fire("Please completed all fields", "", "error");
       return;
@@ -175,7 +162,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     try {
       await axios
         .post(
-          "http://116.206.196.65:30983/skycore/Branch/update",
+          "http://116.206.196.65:30983/skycore/role/update",
           {
             role_id: roleid.rl_id,
             action_by: userid,
@@ -201,7 +188,6 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
             Swal.fire(response.data.message, "", "error");
           }
         });
-      //Swal.fire("Save Berhasil", "", "success");
 
       reload();
       onClose();
@@ -265,6 +251,21 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
 
       setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
 
+      // Update the roleid state object
+      const updatedRoleid = {
+        ...roleid,
+        action: roleid.action.map((action) => {
+          if (action.rlm_id === item.rlm_id) {
+            return {
+              ...action,
+              is_checked: !action.is_checked, // Toggle the checked status
+            };
+          }
+          return action;
+        }),
+      };
+      setroleid(updatedRoleid);
+
       return updatedCtgrydtl;
     });
   };
@@ -293,7 +294,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   className="form-control"
                   maxLength={25}
                   id="recipient-name"
-                  name="rl_name"
+                  name="roleid.rl_name"
                   onChange={handleInputChange}
                   required
                 />
@@ -305,7 +306,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   cols={2}
                   className="form-control"
                   id="txtname"
-                  name="rl_description"
+                  name="roleid.rl_description"
                   value={roleid.rl_description}
                   onChange={handleInputChange}
                 />
@@ -317,17 +318,15 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                     Status
                   </label>
                 </div>
-                <div className="col-8">
-                  <input
-                    className="mr-2 mt-[0.3rem] h-3.5 w-10 appearance-none rounded-[0.4375rem] bg-neutral-300 before:pointer-events-none before:absolute before:h-3.5 before:w-3.5 before:rounded-full before:bg-transparent before:content-[''] after:absolute after:z-[2] after:-mt-[0.1875rem] after:h-5 after:w-5 after:rounded-full after:border-none after:bg-neutral-100 after:shadow-[0_0px_3px_0_rgb(0_0_0_/_7%),_0_2px_2px_0_rgb(0_0_0_/_4%)] after:transition-[background-color_0.2s,transform_0.2s] after:content-[''] checked:bg-success checked:after:absolute checked:after:z-[2] checked:after:-mt-[3px] checked:after:ml-[1.0625rem] checked:after:h-5 checked:after:w-5 checked:after:rounded-full checked:after:border-none checked:after:bg-success checked:after:shadow-[0_3px_1px_-2px_rgba(0,0,0,0.2),_0_2px_2px_0_rgba(0,0,0,0.14),_0_1px_5px_0_rgba(0,0,0,0.12)] checked:after:transition-[background-color_0.2s,transform_0.2s] checked:after:content-[''] hover:cursor-pointer focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[3px_-1px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-5 focus:after:w-5 focus:after:rounded-full focus:after:content-[''] checked:focus:border-primary checked:focus:bg-success checked:focus:before:ml-[1.0625rem] checked:focus:before:scale-100 checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:bg-neutral-600 dark:after:bg-neutral-400 dark:checked:bg-success dark:checked:after:bg-success dark:focus:before:shadow-[3px_-1px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca]"
-                    type="checkbox"
-                    role="switch"
-                    id="flexSwitchCheckDefault"
-                    name="rl_status"
-                    checked={roleid.rl_status} // Ubah nilai 'stats' menjadi true atau false untuk memeriksa atau tidak memeriksa kotak centang
-                    onChange={handleInputChange} // Gunakan 'e.target.checked' untuk mengambil nilai true atau false dari checkbox
-                  />
-                </div>
+                <input
+                  className="mr-2 mt-[0.3rem] h-3.5 w-10 appearance-none rounded-[0.4375rem] bg-neutral-300 before:pointer-events-none before:absolute before:h-3.5 before:w-3.5 before:rounded-full before:bg-transparent before:content-[''] after:absolute after:z-[2] after:-mt-[0.1875rem] after:h-5 after:w-5 after:rounded-full after:border-none after:bg-neutral-100 after:shadow-[0_0px_3px_0_rgb(0_0_0_/_7%),_0_2px_2px_0_rgb(0_0_0_/_4%)] after:transition-[background-color_0.2s,transform_0.2s] after:content-[''] checked:bg-success checked:after:absolute checked:after:z-[2] checked:after:-mt-[3px] checked:after:ml-[1.0625rem] checked:after:h-5 checked:after:w-5 checked:after:rounded-full checked:after:border-none checked:after:bg-success checked:after:shadow-[0_3px_1px_-2px_rgba(0,0,0,0.2),_0_2px_2px_0_rgba(0,0,0,0.14),_0_1px_5px_0_rgba(0,0,0,0.12)] checked:after:transition-[background-color_0.2s,transform_0.2s] checked:after:content-[''] hover:cursor-pointer focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[3px_-1px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-5 focus:after:w-5 focus:after:rounded-full focus:after:content-[''] checked:focus:border-primary checked:focus:bg-success checked:focus:before:ml-[1.0625rem] checked:focus:before:scale-100 checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:bg-neutral-600 dark:after:bg-neutral-400 dark:checked:bg-success dark:checked:after:bg-success dark:focus:before:shadow-[3px_-1px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca]"
+                  type="checkbox"
+                  role="switch"
+                  id="flexSwitchCheckDefault"
+                  name="roleid.rl_status"
+                  checked={roleid.rl_status}
+                  onChange={handleInputChange}
+                />
               </div>
             </form>
             <div className="main">
@@ -340,7 +339,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   </tr>
                 </thead>
                 <tbody>
-                {ctgrydtl.map((item) => (
+                  {ctgrydtl.map((item) => (
                     <React.Fragment key={item.rlm_id}>
                       <tr>
                         <td>
@@ -351,7 +350,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                               name="chkCategory"
                               value={item.rlm_id}
                               className="form-check-input"
-                              checked={item.is_checked}
+                              checked={roleid.action.some(
+                                (action) =>
+                                  action.rlm_id === item.rlm_id &&
+                                  action.is_checked
+                              )}
                               onChange={() => handleCheckboxChange(item)}
                             />
                             <label
@@ -377,7 +380,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                   name="chkCategoryParent"
                                   value={detailItem.rlm_id}
                                   className="form-check-input"
-                                  checked={detailItem.is_checked}
+                                  checked={roleid.action.some(
+                                    (action) =>
+                                      action.rlm_id === detailItem.rlm_id &&
+                                      action.is_checked
+                                  )}
                                   onChange={() =>
                                     handleCheckboxChange(detailItem)
                                   }
@@ -404,7 +411,11 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                                     name="chkCategoryChild"
                                     value={childItem.rlm_id}
                                     className="form-check-input"
-                                    checked={childItem.is_checked}
+                                    checked={roleid.action.some(
+                                      (action) =>
+                                        action.rlm_id === childItem.rlm_id &&
+                                        action.is_checked
+                                    )}
                                     onChange={() =>
                                       handleCheckboxChange(childItem)
                                     }
@@ -436,7 +447,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
             >
               Close
             </button>
-            <button type="button" className="btn btn-primary" onClick={Save}>
+            <button type="button" className="btn btn-primary" onClick={Submit}>
               Save
             </button>
           </div>
