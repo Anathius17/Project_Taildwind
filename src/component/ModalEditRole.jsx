@@ -150,13 +150,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   const UpdateRoleNew = async (val) => {
-    if (
-      !roleid.rl_id ||
-      !roleid.rl_name ||
-      !roleid.rl_description ||
-      !roleid.rl_status ||
-      !checkedValues
-    ) {
+    if (!roleid.rl_id || !roleid.rl_name) {
       Swal.fire("Please completed all fields", "", "error");
       return;
     }
@@ -466,7 +460,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Submit}>
-            Save changes
+              Save changes
             </button>
           </div>
         </div>

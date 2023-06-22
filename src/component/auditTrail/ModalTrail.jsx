@@ -135,24 +135,43 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
           a.p_rl_log_action.localeCompare(b.p_rl_log_action)
         );
 
-        let beforeData = null;
-        let afterData = null;
+        let roleData = {
+          beforeData: null,
+          afterData: null,
+        };
 
-        for (let i = 0; i < sortedData.length; i++) {
+        let roleDetailData = {
+          beforeData: null,
+          afterData: null,
+        };
+
+        for (let i = 0; i < sortedData[0].role.length; i++) {
+          const role = sortedData[0].role[i];
+
           if (
-            sortedData[i].p_rl_log_action === "before" ||
-            sortedData[i].p_rl_log_action === "delete"
+            role.p_rl_log_action === "before" ||
+            role.p_rl_log_action === "delete"
           ) {
-            beforeData = sortedData[i];
+            roleData.beforeData = role;
           } else if (
-            sortedData[i].p_rl_log_action === "after" ||
-            sortedData[i].api_log_action === "create"
+            role.p_rl_log_action === "after" ||
+            role.p_rl_log_action === "create"
           ) {
-            afterData = sortedData[i];
+            roleData.afterData = role;
           }
         }
 
-        setModalData({ beforeData, afterData });
+        for (let i = 0; i < sortedData[0].role_detail.length; i++) {
+          const roleDetail = sortedData[0].role_detail[i];
+
+          if (roleDetail.p_rld_log_action === "before") {
+            roleDetailData.beforeData = roleDetail;
+          } else if (roleDetail.p_rld_log_action === "after") {
+            roleDetailData.afterData = roleDetail;
+          }
+        }
+
+        setModalData({ roleData, roleDetailData });
       }
     } catch (error) {
       console.log(error);
@@ -201,7 +220,55 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
       </>
     );
   };
+  const renderRoleTableCell = (fieldName) => {
+    const beforeValue = modalData?.roleData?.beforeData?.[fieldName];
+    const afterValue = modalData?.roleData?.afterData?.[fieldName];
+    const hasDifference = beforeValue !== afterValue;
 
+    return (
+      <>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
+          }`}
+        >
+          {beforeValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
+          }`}
+        >
+          {afterValue}
+        </td>
+      </>
+    );
+  };
+
+  const renderRoleDetailTableCell = (fieldName) => {
+    const beforeValue = modalData?.roleDetailData?.beforeData?.[fieldName];
+    const afterValue = modalData?.roleDetailData?.afterData?.[fieldName];
+    const hasDifference = beforeValue !== afterValue;
+
+    return (
+      <>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
+          }`}
+        >
+          {beforeValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
+          }`}
+        >
+          {afterValue}
+        </td>
+      </>
+    );
+  };
   if (!isOpen) return null;
 
   // Ubah format modulName menjadi User Access
@@ -430,6 +497,80 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                   })()}
                 </tbody>
               </table>
+            )}
+
+            {modulName === "role_management" && (
+              <>
+                <h2>Role Table</h2>
+                <table className="min-w-max w-full table-auto table-bordered">
+                  <thead>
+                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">Field Name</th>
+                      <th className="py-3 px-6 text-left">Before</th>
+                      <th className="py-3 px-6 text-left">After</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const fieldNames = [
+                        { fieldName: "p_rl_id", label: "ID" },
+                        { fieldName: "p_rl_name", label: "Name" },
+                        { fieldName: "p_rl_description", label: "Description" },
+                        { fieldName: "p_rl_status", label: "Status" },
+                        { fieldName: "p_rl_action_by", label: "Action By" },
+                        { fieldName: "p_rl_log_date", label: "Log Date" },
+                        { fieldName: "p_rl_log_action", label: "Log Action" },
+                      ];
+
+                      return fieldNames.map(({ fieldName, label }) => {
+                        const tableCells = renderRoleTableCell(fieldName);
+                        return (
+                          <tr key={fieldName}>
+                            <td className="py-3 px-6 text-left">{label}</td>
+                            {tableCells}
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+
+                <h2>Role Detail Table</h2>
+                <table className="min-w-max w-full table-auto table-bordered">
+                  <thead>
+                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">Field Name</th>
+                      <th className="py-3 px-6 text-left">Before</th>
+                      <th className="py-3 px-6 text-left">After</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const fieldNames = [
+                        { fieldName: "p_ids", label: "IDS" },
+                        { fieldName: "p_rld_id", label: "ID" },
+                        { fieldName: "p_rld_rl_id", label: "Role ID" },
+                        { fieldName: "p_rld_rlm_id", label: "Role Manager ID" },
+                        { fieldName: "p_rlm_name", label: "Role Manager Name" },
+                        { fieldName: "p_rlm_code", label: "Role Manager Code" },
+                        { fieldName: "p_rld_action_by", label: "Action By" },
+                        { fieldName: "p_rld_log_date", label: "Log Date" },
+                        { fieldName: "p_rld_log_action", label: "Log Action" },
+                      ];
+
+                      return fieldNames.map(({ fieldName, label }) => {
+                        const tableCells = renderRoleDetailTableCell(fieldName);
+                        return (
+                          <tr key={fieldName}>
+                            <td className="py-3 px-6 text-left">{label}</td>
+                            {tableCells}
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </>
             )}
           </div>
           <div className="modal-footer">
