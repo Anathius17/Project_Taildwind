@@ -94,6 +94,47 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
         }
 
         setModalData({ beforeData, afterData });
+      } else if (modulName === "role_management") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.p_rl_log_action.localeCompare(b.p_rl_log_action)
+        );
+
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (
+            sortedData[i].p_rl_log_action === "before" ||
+            sortedData[i].p_rl_log_action === "Delete"
+          ) {
+            beforeData = sortedData[i];
+          } else if (
+            sortedData[i].p_rl_log_action === "after" ||
+            sortedData[i].p_rl_log_action === "create"
+          ) {
+            afterData = sortedData[i];
+          }
+        }
+
+        const role = response.data.data.filter((item) =>
+          item.role.some(
+            (r) =>
+              r.p_rl_log_action === "before" ||
+              r.p_rl_log_action === "after" ||
+              r.p_rl_log_action === "Delete" ||
+              r.p_rl_log_action === "create"
+          )
+        )[0];
+
+        const roleDetail = response.data.data.filter((item) =>
+          item.role_detail.some(
+            (rd) =>
+              rd.p_rld_log_action === "before" ||
+              rd.p_rld_log_action === "after"
+          )
+        )[0];
+
+        setModalData({ beforeData, afterData, role, roleDetail });
       } else if (modulName === "user_access") {
         const sortedData = response.data.data.sort((a, b) =>
           a.log_action_date.localeCompare(b.log_action_date)
@@ -141,9 +182,9 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
     const afterValue = modalData?.afterData?.[fieldName];
     const hasDifference = beforeValue !== afterValue;
 
-    // Perbarui bagian ini untuk menangani tampilan status dengan benar
     let beforeRenderValue = beforeValue;
     let afterRenderValue = afterValue;
+
     if (fieldName === "p_usr_status" || fieldName === "api_status") {
       beforeRenderValue =
         beforeValue !== undefined && beforeValue !== ""
@@ -154,6 +195,24 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
           ? String(afterValue)
           : null;
     }
+
+    const roleBeforeValue = modalData?.role?.role.find(
+      (r) => r.p_rl_log_action === "before"
+    )?.[fieldName];
+    const roleAfterValue = modalData?.role?.role.find(
+      (r) => r.p_rl_log_action === "after"
+    )?.[fieldName];
+
+    const roleDetailBeforeValue = modalData?.roleDetail?.role_detail.find(
+      (rd) => rd.p_rld_log_action === "before"
+    )?.[fieldName];
+    const roleDetailAfterValue = modalData?.roleDetail?.role_detail.find(
+      (rd) => rd.p_rld_log_action === "after"
+    )?.[fieldName];
+
+    const hasRoleDifference = roleBeforeValue !== roleAfterValue;
+    const hasRoleDetailDifference =
+      roleDetailBeforeValue !== roleDetailAfterValue;
 
     return (
       <>
@@ -173,7 +232,56 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
               : ""
           }`}
         >
+          {beforeRenderValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
+          }`}
+        >
           {afterRenderValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasRoleDifference && roleBeforeValue && roleAfterValue
+              ? "text-red-500"
+              : ""
+          }`}
+        >
+          {roleBeforeValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasRoleDifference && roleBeforeValue && roleAfterValue
+              ? "text-red-500"
+              : ""
+          }`}
+        >
+          {roleAfterValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasRoleDetailDifference &&
+            roleDetailBeforeValue &&
+            roleDetailAfterValue
+              ? "text-red-500"
+              : ""
+          }`}
+        >
+          {roleDetailBeforeValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasRoleDetailDifference &&
+            roleDetailBeforeValue &&
+            roleDetailAfterValue
+              ? "text-red-500"
+              : ""
+          }`}
+        >
+          {roleDetailAfterValue}
         </td>
       </>
     );
@@ -367,6 +475,39 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                           <td className="py-3 px-6 text-left">{label}</td>
                           <td className="py-3 px-6 text-left">{beforeValue}</td>
                           <td className="py-3 px-6 text-left">{afterValue}</td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            )}
+
+            {modulName === "role_management" && (
+              <table className="min-w-max w-full table-auto table-bordered">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th className="py-3 px-6 text-left">Field Name</th>
+                    <th className="py-3 px-6 text-left">Before</th>
+                    <th className="py-3 px-6 text-left">After</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const fieldNames = [
+                      { fieldName: "p_rl_name", label: "Name" },
+                      { fieldName: "p_rl_description", label: "Description" },
+                      { fieldName: "p_rl_status", label: "Status" },
+                      { fieldName: "p_rl_action_by", label: "Action By" },
+                      { fieldName: "p_rl_log_date", label: "Log Date" },
+                    ];
+
+                    return fieldNames.map(({ fieldName, label }) => {
+                      const tableCells = renderTableCell(fieldName);
+                      return (
+                        <tr key={fieldName}>
+                          <td className="py-3 px-6 text-left">{label}</td>
+                          {tableCells}
                         </tr>
                       );
                     });
