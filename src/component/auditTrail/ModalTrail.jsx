@@ -130,6 +130,29 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
         }
 
         setModalData({ beforeData, afterData });
+      } else if (modulName === "role_management") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.p_rl_log_action.localeCompare(b.p_rl_log_action)
+        );
+
+        let beforeData = null;
+        let afterData = null;
+
+        for (let i = 0; i < sortedData.length; i++) {
+          if (
+            sortedData[i].p_rl_log_action === "before" ||
+            sortedData[i].p_rl_log_action === "delete"
+          ) {
+            beforeData = sortedData[i];
+          } else if (
+            sortedData[i].p_rl_log_action === "after" ||
+            sortedData[i].api_log_action === "create"
+          ) {
+            afterData = sortedData[i];
+          }
+        }
+
+        setModalData({ beforeData, afterData });
       }
     } catch (error) {
       console.log(error);
