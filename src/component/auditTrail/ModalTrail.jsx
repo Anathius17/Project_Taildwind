@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
-  const [modalData, setModalData] = useState(null);
+  const [modalData, setModalData] = useState({});
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
   console.log(modulName);
