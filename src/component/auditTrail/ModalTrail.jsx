@@ -166,7 +166,10 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
 
           if (roleDetail.p_rld_log_action === "before") {
             roleDetailData.beforeData.push(roleDetail);
-          } else if (roleDetail.p_rld_log_action === "after") {
+          } else if (
+            roleDetail.p_rld_log_action === "after" ||
+            roleDetail.p_rld_log_action === "create"
+          ) {
             roleDetailData.afterData.push(roleDetail);
           }
         }
@@ -263,6 +266,11 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
 
   const renderRoleDetailTableCell = (fieldName) => {
     const { roleDetailData } = modalData;
+
+    if (!roleDetailData) {
+      return null; // Menampilkan null atau dapat diganti dengan tampilan kosong sesuai kebutuhan
+    }
+
     const { beforeData, afterData } = roleDetailData;
 
     const beforeCells = beforeData.map((data, index) => (
@@ -284,6 +292,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
       </>
     );
   };
+
   if (!isOpen) return null;
 
   // Ubah format modulName menjadi User Access
