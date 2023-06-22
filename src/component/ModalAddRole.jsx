@@ -410,7 +410,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Save}>
-              Save
+            Save changes
             </button>
           </div>
         </div>

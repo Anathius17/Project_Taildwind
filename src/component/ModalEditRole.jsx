@@ -297,7 +297,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
       <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
         <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
-            <h5 className="modal-title fw-bold">Role Add New</h5>
+            <h5 className="modal-title fw-bold">Role Edit</h5>
           </div>
           <div className="modal-body">
             <form>
@@ -466,7 +466,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Submit}>
-              Save
+            Save changes
             </button>
           </div>
         </div>
