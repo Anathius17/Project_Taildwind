@@ -488,8 +488,12 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                 <thead>
                   <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                     <th className="py-3 px-6 text-left">Field Name</th>
-                    <th className="py-3 px-6 text-left">Before</th>
-                    <th className="py-3 px-6 text-left">After</th>
+                    <th className="py-3 px-6 text-left">Before (Role)</th>
+                    <th className="py-3 px-6 text-left">After (Role)</th>
+                    <th className="py-3 px-6 text-left">
+                      Before (Role Detail)
+                    </th>
+                    <th className="py-3 px-6 text-left">After (Role Detail)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -504,10 +508,22 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
 
                     return fieldNames.map(({ fieldName, label }) => {
                       const tableCells = renderTableCell(fieldName);
+                      const tableCellRoleDetailBefore = renderTableCell(
+                        `p_rld_${fieldName}_before`
+                      );
+                      const tableCellRoleDetailAfter = renderTableCell(
+                        `p_rld_${fieldName}_after`
+                      );
                       return (
                         <tr key={fieldName}>
                           <td className="py-3 px-6 text-left">{label}</td>
                           {tableCells}
+                          <td className="py-3 px-6 text-left">
+                            {tableCellRoleDetailBefore}
+                          </td>
+                          <td className="py-3 px-6 text-left">
+                            {tableCellRoleDetailAfter}
+                          </td>
                         </tr>
                       );
                     });
