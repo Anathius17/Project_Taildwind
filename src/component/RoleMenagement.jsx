@@ -176,11 +176,7 @@ const RoleMenagement = () => {
     });
   };
 
-  // useEffect(() => {
-  //   if (id !== "") {
-  //     DeleteRole();
-  //   }
-  // }, [id]);
+ 
   const postDataLogUserTracking = async () => {
     let log = "";
     try {
@@ -213,7 +209,7 @@ const RoleMenagement = () => {
       const userDelete = await axios.post(
         "http://116.206.196.65:30983/skycore/role/delete",
         {
-          role_id: roleEdit.rl_id,
+          role_id: detaiRoleParam,
           role_detail_id: roleEdit.action
             .filter((action) => action.is_checked)
             .map((action) => action.rlm_id),
