@@ -195,6 +195,14 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
         return {
           ...ctgry,
           is_checked: !ctgry.is_checked, // Toggle the checked status
+          detail: ctgry.detail.map((detailItem) => ({
+            ...detailItem,
+            is_checked: !ctgry.is_checked, // Toggle the checked status
+            child: detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: !ctgry.is_checked, // Toggle the checked status
+            })),
+          })),
         };
       }
       const updatedDetail = ctgry.detail.map((detailItem) => {
@@ -202,6 +210,10 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
           return {
             ...detailItem,
             is_checked: !detailItem.is_checked, // Toggle the checked status
+            child: detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: !detailItem.is_checked, // Toggle the checked status
+            })),
           };
         }
         const updatedChild = detailItem.child.map((childItem) => {
@@ -410,7 +422,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Save}>
-            Save changes
+              Save changes
             </button>
           </div>
         </div>

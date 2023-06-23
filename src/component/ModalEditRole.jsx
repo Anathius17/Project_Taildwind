@@ -37,7 +37,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
-    const newValue = type === "checkbox" ? !checked : value;
+    const newValue = type === "checkbox" ? checked : value;
 
     setroleid((prevState) => ({
       ...prevState,
@@ -335,8 +335,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   type="checkbox"
                   role="switch"
                   id="flexSwitchCheckDefault"
-                  name="rl_status" // Remove the "roleid." prefix
-                  checked={roleid?.rl_status || false}
+                  name="rl_status"
+                  checked={roleid.rl_status || false}
                   onChange={handleInputChange}
                 />
               </div>
