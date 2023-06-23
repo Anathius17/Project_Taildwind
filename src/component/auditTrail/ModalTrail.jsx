@@ -164,7 +164,10 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
         for (let i = 0; i < sortedData[0].role_detail.length; i++) {
           const roleDetail = sortedData[0].role_detail[i];
 
-          if (roleDetail.p_rld_log_action === "before") {
+          if (
+            roleDetail.p_rld_log_action === "before" ||
+            roleDetail.p_rld_log_action === "delete"
+          ) {
             roleDetailData.beforeData.push(roleDetail);
           } else if (
             roleDetail.p_rld_log_action === "after" ||

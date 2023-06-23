@@ -159,6 +159,8 @@ const RoleMenagement = () => {
   };
 
   const handleDeleteRole = (id) => {
+    setDetaiRoleParam(id);
+    console.log(id);
     Swal.fire({
       title: "Are you sure you want to delete this data?",
       showConfirmButton: true,
@@ -176,7 +178,6 @@ const RoleMenagement = () => {
     });
   };
 
- 
   const postDataLogUserTracking = async () => {
     let log = "";
     try {
@@ -209,10 +210,10 @@ const RoleMenagement = () => {
       const userDelete = await axios.post(
         "http://116.206.196.65:30983/skycore/role/delete",
         {
-          role_id: detaiRoleParam,
+          role_id: roleEdit.rl_id,
           role_detail_id: roleEdit.action
-            .filter((action) => action.is_checked)
-            .map((action) => action.rlm_id),
+          .filter((action) => action.is_checked)
+          .map((action) => action.rlm_id),
           action_by: userid,
           log_id: val,
         },
