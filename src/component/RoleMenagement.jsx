@@ -212,8 +212,8 @@ const RoleMenagement = () => {
         {
           role_id: roleEdit.rl_id,
           role_detail_id: roleEdit.action
-          .filter((action) => action.is_checked)
-          .map((action) => action.rlm_id),
+            .filter((action) => action.is_checked)
+            .map((action) => action.rlm_id),
           action_by: userid,
           log_id: val,
         },
@@ -228,7 +228,7 @@ const RoleMenagement = () => {
       Swal.fire("Role Berhasil Di Hapus", "", "success");
       getRoleList();
     } catch (error) {
-      alert(error);
+      // alert(error);
     }
   };
 
@@ -399,26 +399,27 @@ const RoleMenagement = () => {
                           />
                         </svg>
                       </button>
-
-                      <button
-                        className="btn btn-warning btn-sm ml-1"
-                        onClick={() => handleActiveRole(rol.rl_id)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-6 h-6"
+                      {rol.rl_status === false && (
+                        <button
+                          className="btn btn-warning btn-sm ml-1"
+                          onClick={() => handleActiveRole(rol.rl_id)}
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </button>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
