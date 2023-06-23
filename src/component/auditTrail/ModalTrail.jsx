@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
-  const [modalData, setModalData] = useState(null);
+  const [modalData, setModalData] = useState({});
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
   console.log(modulName);
@@ -141,8 +141,8 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
         };
 
         let roleDetailData = {
-          beforeData: null,
-          afterData: null,
+          beforeData: [],
+          afterData: [],
         };
 
         for (let i = 0; i < sortedData[0].role.length; i++) {
@@ -165,9 +165,9 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
           const roleDetail = sortedData[0].role_detail[i];
 
           if (roleDetail.p_rld_log_action === "before") {
-            roleDetailData.beforeData = roleDetail;
+            roleDetailData.beforeData.push(roleDetail);
           } else if (roleDetail.p_rld_log_action === "after") {
-            roleDetailData.afterData = roleDetail;
+            roleDetailData.afterData.push(roleDetail);
           }
         }
 
@@ -224,48 +224,67 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
     const beforeValue = modalData?.roleData?.beforeData?.[fieldName];
     const afterValue = modalData?.roleData?.afterData?.[fieldName];
     const hasDifference = beforeValue !== afterValue;
+    let beforeRenderValue = beforeValue;
+    let afterRenderValue = afterValue;
+    if (fieldName === "p_rl_status" || fieldName === "api_status") {
+      beforeRenderValue =
+        beforeValue !== undefined && beforeValue !== ""
+          ? String(beforeValue)
+          : null;
+      afterRenderValue =
+        afterValue !== undefined && afterValue !== ""
+          ? String(afterValue)
+          : null;
+    }
 
     return (
       <>
         <td
           className={`py-3 px-6 text-left ${
-            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
           }`}
         >
-          {beforeValue}
+          {beforeRenderValue}
         </td>
         <td
           className={`py-3 px-6 text-left ${
-            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
           }`}
         >
-          {afterValue}
+          {afterRenderValue}
         </td>
       </>
     );
   };
 
   const renderRoleDetailTableCell = (fieldName) => {
-    const beforeValue = modalData?.roleDetailData?.beforeData?.[fieldName];
-    const afterValue = modalData?.roleDetailData?.afterData?.[fieldName];
-    const hasDifference = beforeValue !== afterValue;
+    const roleDetailData = modalData?.roleDetailData ?? {
+      beforeData: [],
+      afterData: [],
+    };
+
+    const { beforeData, afterData } = roleDetailData;
+
+    const beforeCells = beforeData.map((data, index) => (
+      <td className="py-3 px-6 text-left" key={`before_${index}`}>
+        {data[fieldName]}
+      </td>
+    ));
+
+    const afterCells = afterData.map((data, index) => (
+      <td className="py-3 px-6 text-left" key={`after_${index}`}>
+        {data[fieldName]}
+      </td>
+    ));
 
     return (
       <>
-        <td
-          className={`py-3 px-6 text-left ${
-            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
-          }`}
-        >
-          {beforeValue}
-        </td>
-        <td
-          className={`py-3 px-6 text-left ${
-            hasDifference && beforeValue && afterValue ? "text-red-500" : ""
-          }`}
-        >
-          {afterValue}
-        </td>
+        {beforeCells}
+        {afterCells}
       </>
     );
   };
@@ -286,8 +305,8 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full">
-        <div className="max-w-full">
+      <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
+        <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
             <h5 className="modal-title">Audit Trail - {formattedModulName}</h5>
             <button
@@ -540,8 +559,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                   <thead>
                     <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                       <th className="py-3 px-6 text-left">Field Name</th>
-                      <th className="py-3 px-6 text-left">Before</th>
-                      <th className="py-3 px-6 text-left">After</th>
+                      {renderRoleDetailTableCell("p_rld_log_action")}
                     </tr>
                   </thead>
                   <tbody>
