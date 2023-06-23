@@ -228,7 +228,7 @@ const RoleMenagement = () => {
       Swal.fire("Role Berhasil Di Hapus", "", "success");
       getRoleList();
     } catch (error) {
-      // alert(error);
+      console.log(error);
     }
   };
 

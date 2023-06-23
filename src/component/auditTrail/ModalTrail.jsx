@@ -338,6 +338,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                     const fieldNames = [
                       { fieldName: "p_lbrc_code", label: "Code" },
                       { fieldName: "p_lbrc_name", label: "Name" },
+                      { fieldName: "p_lbrc_group", label: "Group" },
                       { fieldName: "p_lbrc_address", label: "Address" },
                       { fieldName: "p_lbrc_city", label: "City" },
                       { fieldName: "p_lbrc_phone_num", label: "Phone Number" },
