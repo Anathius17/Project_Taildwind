@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import "../assets/css/sb-admin-2.css";
-// import "../vendor/fontawesome-free/css/all.min.css";
 import Sky from "../assets/images/Sky.png";
 import Skysite from "../assets/images/LogoSky.png";
 import "../assets/css/Dashboard.css";
 import Demo from "../component/usermanagement/UserMenagement";
-import Rule from "../component/RoleMenagement";
+import Rule from "../component/RuleMenagement";
 import Audit from "../component/auditTrail/AuditTrail";
 import BranchMenagement from "../component/branchmgmt/BranchManagement";
 import GeneralSettings from "../component/glsetting/GenenalSetting";
 import BatchScheduler from "../component/system/BatchScheduler";
-// import BatchScheduler from "../component/system/BatchScheduler";
+import BatchSchedulerApp from "../component/system/BatchSchedulerApproval";
+import BatchSchedulerCk from "../component/system/BatchSchedulerChecker";
+import Apimanagement from "../component/apimgmt/ApiManagement";
 import { IconName } from "react-icons/ri";
 import "../assets/css/modal.css";
 import axios from "axios";
@@ -21,265 +21,26 @@ import {
   Routes,
   Route,
   useNavigate,
+  Link,
+  NavLink,
 } from "react-router-dom";
 
-import { Link, NavLink } from "react-router-dom";
-
-const users = [
-  {
-    id: "1",
-    mn_name: "Dashboard",
-    mn_link: "/dashboard",
-    mn_parentid: "0",
-    mn_acl: "lvl_dash",
-    mn_order: "1",
-    mn_icon: "fa fa-dashboard",
-    mn_breadcrumb: " ",
-    child: [],
-  },
-  {
-    id: "2",
-    mn_name: "Administrator",
-    mn_link: "",
-    mn_parentid: "0",
-    mn_acl: "lvl_adm",
-    mn_order: "2",
-    mn_icon: "fa fa-users",
-    mn_breadcrumb: " ",
-    element: "",
-    child: [
-      {
-        id: "4",
-        mn_name: "User Management",
-        mn_link: "user",
-        mn_parentid: "2",
-        mn_acl: "lvl_adm_mgt",
-        mn_order: "1",
-        mn_icon: "",
-        mn_breadcrumb: "User Management",
-        element: <Demo />,
-        child: [],
-      },
-      {
-        id: "5",
-        mn_name: "Role Management",
-        mn_link: "/RoleManagement",
-        mn_parentid: "2",
-        mn_acl: "lvl_adm_acl",
-        mn_order: "2",
-        mn_icon: "",
-        mn_breadcrumb: "Role Management",
-        element: <Rule />,
-        child: [],
-      },
-      {
-        id: "6",
-        mn_name: "System",
-        mn_link: "",
-        mn_parentid: "2",
-        mn_acl: "lvl_adm_sys",
-        mn_order: "3",
-        mn_icon: "",
-        mn_breadcrumb: "fa fa-cogs",
-        child: [
-          {
-            id: "11",
-            mn_name: "Batch Schedule",
-            mn_link: "/BatchSchedule",
-            mn_parentid: "6",
-            mn_acl: "lvl_sys_bch_sch",
-            mn_order: "1",
-            mn_icon: "",
-            mn_breadcrumb: "Batch Schedule",
-            child: [],
-          },
-          {
-            id: "12",
-            mn_name: "Batch Schedule Checker",
-            mn_link: "/BatchSchedule/Checker",
-            mn_parentid: "6",
-            mn_acl: "lvl_sys_bch_sch_chk",
-            mn_order: "2",
-            mn_icon: "",
-            mn_breadcrumb: "Batch Schedule Checker",
-            child: [],
-          },
-          {
-            id: "13",
-            mn_name: "Batch Schedule Approval",
-            mn_link: "/BatchSchedule/Approval",
-            mn_parentid: "6",
-            mn_acl: "lvl_sys_bch_sch_apr",
-            mn_order: "3",
-            mn_icon: "",
-            mn_breadcrumb: "Batch Schedule Approval",
-            child: [],
-          },
-        ],
-      },
-      {
-        id: "7",
-        mn_name: "Audit Trail",
-        mn_link: "/AuditTrail",
-        mn_parentid: "2",
-        mn_acl: "lvl_adm_adt",
-        mn_order: "4",
-        mn_icon: "",
-        mn_breadcrumb: "Audit Trail",
-        child: [],
-      },
-    ],
-  },
-  {
-    id: "3",
-    mn_name: "Parameter",
-    mn_link: "",
-    mn_parentid: "0",
-    mn_acl: "lvl_prm",
-    mn_order: "3",
-    mn_icon: "",
-    mn_breadcrumb: " ",
-    child: [
-      {
-        id: "9",
-        mn_name: "Global Setting",
-        mn_link: "/global",
-        mn_parentid: "3",
-        mn_acl: "lvl_prm_gnr",
-        mn_order: "1",
-        mn_icon: "",
-        mn_breadcrumb: "Global Setting",
-        child: [],
-      },
-      {
-        id: "10",
-        mn_name: "Branch Management",
-        mn_link: "/Branch",
-        mn_parentid: "3",
-        mn_acl: "lvl_sys_bch_m",
-        mn_order: "2",
-        mn_icon: "",
-        mn_breadcrumb: "Branch Management",
-        child: [],
-      },
-    ],
-  },
-];
-
-const menuLevel = [
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_dash",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_adm",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_prm",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_adm_mgt",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_adm_acl",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_adm_sys",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_adm_adt",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_prm_gnr",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_prm_brm",
-    modules: "CORE",
-  },
-  {
-    usruserid: "crm_admin",
-    usrname: "crm_admin",
-    usrnip: "crm_admin",
-    usraccesslevel: "1",
-    usrbranch: "BC001",
-    usrstatus: 1,
-    ldlmdescription: "lvl_sys_bch_sch",
-    modules: "CORE",
-  },
-];
+// const dataMenu = localStorage.getItem("MenuList");
+// const parsedData = JSON.parse(dataMenu);
+// const dataMenuLevel = localStorage.getItem("detailRoleUser");
+// const parsedDataLevel = JSON.parse(dataMenuLevel);
 
 const Dashboard = (props) => {
   const [activeUsers, setActiveUsers] = useState([]);
-
+  // ! get userid
+  const userid = JSON.parse(localStorage.getItem("userid"));
+  const userId = props.userid;
+  console.log(userId);
   const menuTest = props.listmenu;
   const levelm = props.levelmenu;
 
-  console.log(menuTest);
-  console.log(levelm);
-
   const [sideBarHide, setSideBarHide] = useState(true);
-  // const [userActive, setUserActive] = useState(user);
+
   const [token, setToken] = useState();
   const navigate = useNavigate();
 
@@ -297,16 +58,11 @@ const Dashboard = (props) => {
     getTokenApi();
   }, []);
 
-  // useEffect(() => {
-  //   if (token !== "") {
-  //     postJDataUserResetIsLogin();
-  //   }
-  // }, []);
-
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("sessionData"));
   const listMenu = JSON.parse(localStorage.getItem("ListMenu"));
   const levelMenu = JSON.parse(localStorage.getItem("LevelMenu"));
+  console.log(clickButton);
 
   const filteredUsers = menuTest.filter((user) => {
     const matchingMenuLevel = levelm.find(
@@ -323,11 +79,20 @@ const Dashboard = (props) => {
     }
   };
 
-  const demo = (test) => {
-    setclickButton(test);
-  };
-  console.log(clickButton);
+  //  <button
+  //    className="text-white ml-3"
+  //    onClick={() => setclickButton(child.mn_link)}
+  //    id={child.mn_name}>
+  //    <span className="text-sm">{child.mn_name}</span>
+  //  </button>;
 
+  // useEffect(() => {
+  // setTimeout(() => {
+
+  // }, 30000);
+  // }, [input])
+
+  const rute = "/dashboard";
   const renderChildMenu = (children) => {
     return (
       <ul className="dropdown-menu1">
@@ -344,19 +109,20 @@ const Dashboard = (props) => {
                 <div>
                   <button
                     onClick={() => toggleDropdown(child)}
-                    className="text-white ml-3"
-                  >
-                    {child.mn_name}
+                    className="text-white ml-10">
+                    <span className="text-sm">{child.mn_name}</span>
                   </button>
                   {activeUsers.includes(child) && renderChildMenu(child.child)}
                 </div>
               ) : (
-                <button
-                  className="text-white ml-3"
-                  onClick={() => setclickButton(child.mn_link)}
-                >
-                  {child.mn_name}
-                </button>
+                <NavLink to={`${rute}${child.mn_link}`}>
+                  <button
+                    className="text-white ml-10"
+                    // onClick={() => setclickButton(child.mn_link)}
+                    id={child.mn_name}>
+                    <span className="text-sm">{child.mn_name}</span>
+                  </button>
+                </NavLink>
               )}
             </li>
           ))}
@@ -364,40 +130,104 @@ const Dashboard = (props) => {
     );
   };
 
-  // <NavLink to={`/dasboard ${child.mn_link}`}>
-  //   <button>{child.mn_name}</button>
-  // </NavLink>;
+  const datalogout = {
+    p_usr: userId,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
+    }
+  };
+
+  const LogOut = () => {
+    postJDataUserResetIsLogin();
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  };
+
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.toLocaleDateString("en-US", {
+    weekday: "long",
+  })}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+
   return (
     <div id="page-top">
       <div id="wrapper">
-        <div className="test-sidebar">
-          <a
+        <div className="">
+          <div
             className="sidebar-brand d-flex align-items-center justify-content-center"
-            href="index.html"
-          >
+            href="index.html">
             <div className="sidebar-brand-icon rotate-n-15"></div>
             <div className="sidebar-brand-text mx-3 shadow">
               <img src={Sky} alt="" className="logoSky" />
             </div>
-          </a>
-
-          <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion ">
+          </div>
+          {}
+          <ul className="navbar-nav bg-gradient-to-b from-cyan-500 to-blue-500 sidebar sidebar-dark">
             {filteredUsers.map((user) => (
-              <li className="ml-4" key={user.id}>
+              <li className="ml-2 mt-3" key={user.id}>
                 {user.child && user.child.length > 0 ? (
-                  <div>
-                    <button
-                      onClick={() => toggleDropdown(user)}
-                      className="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <span className="">{user.mn_name}</span>
-                    </button>
-                    {activeUsers.includes(user) && renderChildMenu(user.child)}
-                  </div>
+                  <>
+                    <div className="">
+                      <button
+                        onClick={() => toggleDropdown(user)}
+                        className="flex items-center p-1 text-white rounded-lg dark:text-white ml-2"
+                        id={user.mn_name}>
+                        {" "}
+                        <svg
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          height="1em"
+                          width="1em"
+                          {...props}>
+                          <path
+                            fill="currentColor"
+                            d="M4 4h4v4H4V4zM4 10h4v4H4v-4zM8 16H4v4h4v-4zM10 4h4v4h-4V4zM14 10h-4v4h4v-4zM10 16h4v4h-4v-4zM20 4h-4v4h4V4zM16 10h4v4h-4v-4zM20 16h-4v4h4v-4z"
+                          />
+                        </svg>
+                        <span className="text-base font-semibold ml-2">
+                          {user.mn_name}
+                        </span>
+                      </button>
+
+                      {activeUsers.includes(user) &&
+                        renderChildMenu(user.child)}
+                    </div>
+                  </>
                 ) : (
-                  <span className="flex items-center p-2 text-white rounded-lg dark:text-white  ">
-                    {user.mn_name}
-                  </span>
+                  <div>
+                    <NavLink to={"/dashboard" + user.mn_link}>
+                      <button className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                        <span className="flex items-center p-1 text-white rounded-lg dark:text-white text-base font-semibold ml-2 ">
+                          {" "}
+                          <svg
+                            viewBox="0 0 1024 1024"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em"
+                            className="mr-2">
+                            <path d="M924.8 385.6a446.7 446.7 0 00-96-142.4 446.7 446.7 0 00-142.4-96C631.1 123.8 572.5 112 512 112s-119.1 11.8-174.4 35.2a446.7 446.7 0 00-142.4 96 446.7 446.7 0 00-96 142.4C75.8 440.9 64 499.5 64 560c0 132.7 58.3 257.7 159.9 343.1l1.7 1.4c5.8 4.8 13.1 7.5 20.6 7.5h531.7c7.5 0 14.8-2.7 20.6-7.5l1.7-1.4C901.7 817.7 960 692.7 960 560c0-60.5-11.9-119.1-35.2-174.4zM482 232c0-4.4 3.6-8 8-8h44c4.4 0 8 3.6 8 8v80c0 4.4-3.6 8-8 8h-44c-4.4 0-8-3.6-8-8v-80zM270 582c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8v-44c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v44zm90.7-204.5l-31.1 31.1a8.03 8.03 0 01-11.3 0L261.7 352a8.03 8.03 0 010-11.3l31.1-31.1c3.1-3.1 8.2-3.1 11.3 0l56.6 56.6c3.1 3.1 3.1 8.2 0 11.3zm291.1 83.6l-84.5 84.5c5 18.7.2 39.4-14.5 54.1a55.95 55.95 0 01-79.2 0 55.95 55.95 0 010-79.2 55.87 55.87 0 0154.1-14.5l84.5-84.5c3.1-3.1 8.2-3.1 11.3 0l28.3 28.3c3.1 3.1 3.1 8.1 0 11.3zm43-52.4l-31.1-31.1a8.03 8.03 0 010-11.3l56.6-56.6c3.1-3.1 8.2-3.1 11.3 0l31.1 31.1c3.1 3.1 3.1 8.2 0 11.3l-56.6 56.6a8.03 8.03 0 01-11.3 0zM846 582c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8v-44c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v44z" />
+                          </svg>
+                          {user.mn_name}
+                        </span>
+                      </button>
+                    </NavLink>
+                  </div>
                 )}
               </li>
             ))}
@@ -411,14 +241,12 @@ const Dashboard = (props) => {
                 <>
                   <button
                     className="btn mr-3"
-                    onClick={() => setSideBarHide(false)}
-                  >
+                    onClick={() => setSideBarHide(false)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6"
-                    >
+                      className="w-6 h-6">
                       <path
                         fillRule="evenodd"
                         d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
@@ -431,14 +259,12 @@ const Dashboard = (props) => {
                 <>
                   <button
                     className="btn mr-3 "
-                    onClick={() => setSideBarHide(true)}
-                  >
+                    onClick={() => setSideBarHide(true)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      className="w-6 h-6"
-                    >
+                      className="w-6 h-6">
                       <path
                         fillRule="evenodd"
                         d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
@@ -450,80 +276,92 @@ const Dashboard = (props) => {
               )}
 
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item dropdown no-arrow flex">
-                  <a href="/" className="log-out flex">
+                <li>
+                  <div className="flex items-center p-1 text-gray rounded-lg dark:text-white ml-2">
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
+                      viewBox="0 0 448 512"
                       fill="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
-                        clipRule="evenodd"
-                      />
+                      height="1em"
+                      width="1em"
+                      className="mr-1"
+                      {...props}>
+                      <path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm-45.7 48C79.8 304 0 383.8 0 482.3 0 498.7 13.3 512 29.7 512h388.6c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3h-91.4z" />
                     </svg>
-                    <span>Log Out</span>
-                  </a>
+                    <span className="">{userid}</span>
+                  </div>
+                </li>
+                <li>
+                  <div className="flex items-center p-1 text-gray rounded-lg dark:text-white ml-2">
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      height="1em"
+                      width="1em"
+                      className="mr-1"
+                      {...props}>
+                      <path d="M4 .5a.5.5 0 00-1 0V1H2a2 2 0 00-2 2v1h16V3a2 2 0 00-2-2h-1V.5a.5.5 0 00-1 0V1H4V.5zm5.402 9.746c.625 0 1.184-.484 1.184-1.18 0-.832-.527-1.23-1.16-1.23-.586 0-1.168.387-1.168 1.21 0 .817.543 1.2 1.144 1.2z" />
+                      <path d="M16 14V5H0v9a2 2 0 002 2h12a2 2 0 002-2zm-6.664-1.21c-1.11 0-1.656-.767-1.703-1.407h.683c.043.37.387.82 1.051.82.844 0 1.301-.848 1.305-2.164h-.027c-.153.414-.637.79-1.383.79-.852 0-1.676-.61-1.676-1.77 0-1.137.871-1.809 1.797-1.809 1.172 0 1.953.734 1.953 2.668 0 1.805-.742 2.871-2 2.871zm-2.89-5.435v5.332H5.77V8.079h-.012c-.29.156-.883.52-1.258.777V8.16a12.6 12.6 0 011.313-.805h.632z" />
+                    </svg>
+                    <span className="">{formattedDate}</span>
+                  </div>
+                </li>
+                {/* <li>
+                  <div className="flex items-center p-1 text-gray rounded-lg dark:text-white ml-2">
+                    {" "}
+                    <svg
+                      viewBox="0 0 512 512"
+                      fill="currentColor"
+                      height="1em"
+                      width="1em"
+                      {...props}>
+                      <path d="M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208 208-93.13 208-208S370.87 48 256 48zm96 240h-96a16 16 0 01-16-16V128a16 16 0 0132 0v128h80a16 16 0 010 32z" />
+                    </svg>
+                    <span className="">{time.toLocaleTimeString()}</span>
+                  </div>
+                </li> */}
+                <li className="nav-item dropdown no-arrow flex">
+                  <div>
+                    <button
+                      onClick={LogOut}
+                      className="flex items-center p-1 text-gray rounded-lg dark:text-white ml-2">
+                      <svg
+                        viewBox="0 0 900 1000"
+                        fill="currentColor"
+                        height="1em"
+                        width="1em"
+                        {...props}>
+                        <path d="M502 850V750h98v100c0 26.667-9.667 50-29 70s-43 30-71 30H100c-26.667 0-50-10-70-30S0 876.667 0 850V150c0-28 10-51.667 30-71s43.333-29 70-29h400c28 0 51.667 9.667 71 29s29 43 29 71v150h-98V150H100v700h402m398-326L702 720V600H252V450h450V330l198 194" />
+                      </svg>
+                      <span>Log Out</span>
+                    </button>
+                  </div>
                 </li>
               </ul>
             </nav>
-
-            {clickButton === "user" ? (
-              <Demo />
-            ) : clickButton === "RoleManagement" ? (
-              <Rule />
-            ) : clickButton === "AuditTrail" ? (
-              <Audit />
-            ) : clickButton === "Branch" ? (
-              <BranchMenagement />
-            ) : clickButton === "global" ? (
-              <GeneralSettings />
-            ) : clickButton === "BatchSchedule" ? (
-              <BatchScheduler />
-            ) : (
-              <div>
-                <h1>Dashboard</h1>
-              </div>
-            )}
-
-            {/* <Routes>
-              <Route exact path={"/user"} element={<Demo />}></Route>
-              <Route path={"/RoleManagement"} element={<Rule />}></Route>
-            </Routes> */}
-
-            {/* <Routes>
-              {users.map((link, pages) => (
-                <Routes exact path={link.mn_link} element={link.element} />
-              ))}
-            </Routes> */}
-
-            {/* <Routes>
-              {menuTest.map(
-                (menu) =>
-                  menu.mn_name === "Dashboard" &&
-                  child.map(({ , element }) => (
-                    <Route exact path={path} element={element} />
-                  ))
-              )}
-            </Routes> */}
-
-            {/* <Routes>
-              {menuTest.map(
-                (menu) =>
-                  menu.name === "Dashboard" &&
-                  menu.child.map((childs) => (
-                    <Route
-                      exact
-                      path={childs.mn_link}
-                      element={childs.element}
-                    />
-                  ))
-              )}
-            </Routes> */}
+            <Routes>
+              <Route path="/user" element={<Demo></Demo>}></Route>
+              <Route path="/RoleManagement" element={<Rule></Rule>}></Route>
+              <Route
+                path="/BatchSchedule"
+                element={<BatchScheduler></BatchScheduler>}></Route>
+              <Route
+                path="/BatchSchedule/Checker"
+                element={<BatchSchedulerCk></BatchSchedulerCk>}></Route>
+              <Route
+                path="/BatchSchedule/Approval"
+                element={<BatchSchedulerApp></BatchSchedulerApp>}></Route>
+              <Route path="/AuditTrail" element={<Audit></Audit>}></Route>
+              <Route
+                path="/global"
+                element={<GeneralSettings></GeneralSettings>}></Route>
+              <Route
+                path="/Branch"
+                element={<BranchMenagement></BranchMenagement>}></Route>
+              <Route
+                path="/Apimanagement"
+                element={<Apimanagement></Apimanagement>}></Route>
+            </Routes>
           </div>
-
           <footer className="sticky-footer bg-white">
             <div className="container my-auto">
               <div className="copyright text-center my-auto">
