@@ -97,6 +97,12 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
     postDataLogUserTracking();
 
     console.log("Checked Role IDs:", checkedRoleIds);
+    setidRole("");
+    setNameRole("");
+    setDescRole("");
+    setStatsRole(false);
+    setCheckedRoleIds([]);
+    clearState();
   };
 
   const insertobjectdata = (val) => {
@@ -255,6 +261,35 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
 
     setListCtgrDtl(updatedCtgrydtl);
     setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
+  };
+
+  const clearState = () => {
+    setIsChecked(false);
+    setListCtgrDtl((prevCtgrDtl) => {
+      const updatedCtgrDtl = prevCtgrDtl.map((ctgry) => ({
+        ...ctgry,
+        is_checked: false,
+        detail: ctgry.detail.map((detailItem) => ({
+          ...detailItem,
+          is_checked: false,
+          child: detailItem.child.map((childItem) => ({
+            ...childItem,
+            is_checked: false,
+          })),
+        })),
+      }));
+      return updatedCtgrDtl;
+    });
+  };
+
+  const onCloseModal = () => {
+    setidRole("");
+    setNameRole("");
+    setDescRole("");
+    setStatsRole(false);
+    setCheckedRoleIds([]);
+    clearState(); // Menghapus state saat menutup modal
+    onClose(); // Menutup modal
   };
 
   useEffect(() => {
@@ -417,7 +452,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}
+              onClick={onCloseModal}
             >
               Close
             </button>
