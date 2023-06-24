@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Logo from "../assets/images/LogoSky.png";
-import "../assets/css/style.css";
-import "../assets/css/util.css";
+import Branch from "../assets/images/Sky.png";
+import "../assets/css/style_login.css";
+// import "../assets/css/util.css";
 // import "bootstrap/dist/css/bootstrap.css";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../API/api";
@@ -45,6 +46,9 @@ const Login = (props) => {
   const [userDataCekLogin, setUserLoginDataCek] = useState("");
   const [userFaillLogin, setuserFaillLogin] = useState();
 
+  const today = new Date();
+  console.log(today);
+
   const [ip, setIP] = useState("");
   const getData = async () => {
     const res = await axios.get("https://api.ipify.org/?format=json");
@@ -60,11 +64,12 @@ const Login = (props) => {
   console.log(osName);
 
   const [dataRoleUserDetail, setDataRoleUserDetail] = useState([]); // ! Hasil data yang di ambil dari getroleuserdetail
+  localStorage.setItem("detailRoleUser", JSON.stringify(dataRoleUserDetail));
+  const [listMenuSend, setListMenuSend] = useState([]);
+  localStorage.setItem("MenuList", JSON.stringify(listMenuSend));
 
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const [listMenuSend, setListMenuSend] = useState([]);
 
   // Simpan data sesi
   localStorage.setItem("tokenData", JSON.stringify(token));
@@ -79,6 +84,7 @@ const Login = (props) => {
   useEffect(() => {
     if (token !== "") {
       getPasswordUser();
+      generalListMenuAPI();
       console.log(1);
     }
   }, [token]);
@@ -126,7 +132,7 @@ const Login = (props) => {
       setUserIsLogin(userLogin[0]);
       setUserDateTampungan(UserDate[0]);
       setUslPassword(cekpassword[0]);
-      alert("Berhasil");
+      // alert("Berhasil");
     } catch (errorUser) {
       alert(
         "Sorry, we have trouble getting data, please contact administrator"
@@ -176,6 +182,7 @@ const Login = (props) => {
       });
       console.log(dataUserRoleDetailApi);
       setDataRoleUserDetail(dataUserRoleDetailApi);
+
       // alert("userRoleDetail Berhasil ke Hit");
     } catch (error) {
       alert("reset fail login gagal");
@@ -194,16 +201,11 @@ const Login = (props) => {
         }
       );
 
-      console.log(listMenu);
       let generalListMenu = listMenu.data.data.map((e) => {
         return e;
       });
 
-      console.log(listMenu);
       setListMenuSend(generalListMenu);
-      // setListMenuSend(generalListMenu);
-
-      // alert("List Menu Berhasil");
     } catch (error) {
       alert("List Menu gagal");
     }
@@ -245,6 +247,32 @@ const Login = (props) => {
     }
   };
 
+  // postJDataUserIsLogin;
+
+  const dataUserLogiin = {
+    p_usr: username,
+    p_ipaddress: "10.101.123.234",
+  };
+
+  const postJDataUserIsLogin = async () => {
+    try {
+      const userIsLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserIsLogin",
+        JSON.stringify(dataUserLogiin),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("postDataLogUserTracking Berhasil");
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+    }
+  };
+
   // !  atur secara dinamis
   const dataLogUserTracking = {
     plcd: "user_access",
@@ -259,6 +287,7 @@ const Login = (props) => {
     plcli: ip,
   };
 
+  const [dataTracking, setDataTracking] = useState();
   const postDataLogUserTracking = async () => {
     try {
       const frisLogin = await axios.post(
@@ -305,22 +334,28 @@ const Login = (props) => {
     setIsLoggedIn(true);
   };
 
+  console.log(userDateTampungan);
+
   // if (dataCheckData.length > 0) {
 
   useEffect(() => {
     if (username === usernameCek && username !== "") {
+      //
       console.log(2);
       if (userStatus === true) {
         console.log(3);
+
         if (userIsLogin === 0) {
+          getDataUserRoleDetail();
           console.log(4);
-          if (userDateTampungan !== "") {
+          if (new Date(userDateTampungan) < new Date()) {
             console.log(5);
             if (hashedPassword === uslPassword) {
               console.log(6);
               resetFailLogin();
-              getDataUserRoleDetail();
-              generalListMenuAPI();
+              // getDataUserRoleDetail();
+              postJDataUserIsLogin();
+              // generalListMenuAPI();
               getIsFristLogin();
             } else if (hashedPassword !== uslPassword) {
               //hit API UserFalLogin
@@ -328,9 +363,9 @@ const Login = (props) => {
               faillLogin();
               // resetFailLogin();
             }
-          } else if (userDateTampungan === "") {
+          } else {
             postDataLogUserTracking();
-            alert("Sorry, the username has not been activated or is blocked");
+            alert("Sorry, tanggal user belum aktif");
           }
         } else if (userIsLogin === 1) {
           //hit API postDataLogUserTracking
@@ -342,7 +377,7 @@ const Login = (props) => {
         alert("Sorry, the username has not been activated or is blocked");
       }
     } else if (username !== usernameCek) {
-      alert("Please enter a username yang benar atau hilang gigi lu");
+      alert("Please enter a username yang benar ");
     }
   }, [dataCheckData]);
 
@@ -381,7 +416,10 @@ const Login = (props) => {
       handleMenuList();
       handleMenuLevel();
       handleSendDataToParent();
-      navigate("/dashboard");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
     } else {
       navigate("/");
       console.log("gagal login");
@@ -406,7 +444,7 @@ const Login = (props) => {
     event.preventDefault();
 
     if (input === captcha) {
-      alert("CAPTCHA validated successfully!");
+      // alert("CAPTCHA validated successfully!");
       getTokenApi();
     } else {
       alert("CAPTCHA validation failed. Please try again.");
@@ -425,127 +463,167 @@ const Login = (props) => {
   //? ---batas bagian captcha validation
 
   return (
-    <div className="fullscreen_bg">
-      <div className="limiter">
-        <div className="container-login100">
-          <div className="wrap-login100 p-t-190 p-b-30">
+    // <div classNameName="fullscreen_bg">
+    //   <div classNameName="limiter">
+    //     <div classNameName="container-login100">
+    //       <div classNameName="wrap-login100 p-t-190 p-b-30">
+    //         <form
+    //           classNameName="mx-auto px-1"
+    //           onSubmit={(event) => {
+    //             handleSubmit(event);
+    //           }}>
+    //           <div classNameName="mx-auto w-32 my-1">
+    //             <img src={Logo} alt="Logo" classNameName="logo" />
+    //           </div>
+    //           <div
+    //             classNameName="mx-auto my-2"
+    //             data-validate="Username is required">
+    //             <input
+    //               classNameName="input100"
+    //               type="text"
+    //               name="username"
+    //               placeholder="Username"
+    //               value={username}
+    //               onChange={(e) => setUsername(e.target.value)}
+    //             />
+    //             <span classNameName="focus-input100"></span>
+    //             <span classNameName="symbol-input100">
+    //               <i classNameName="fa fa-user"></i>
+    //             </span>
+    //           </div>
+    //           <div
+    //             classNameName="mx-auto my-2"
+    //             data-validate="Password is required">
+    //             <input
+    //               classNameName="input100"
+    //               type="password"
+    //               name="pass"
+    //               placeholder="Password"
+    //               value={password}
+    //               onChange={(e) => setPassword(e.target.value)}
+    //             />
+    //             <span classNameName="focus-input100"></span>
+    //             <span classNameName="symbol-input100">
+    //               <i classNameName="fa fa-lock"></i>
+    //             </span>
+    //           </div>
+    //           <span>
+    //             {errorMessage && <p classNameName="eror">{errorMessage}</p>}{" "}
+    //           </span>
+    //           <div classNameName="bg-zinc-600 rounded-md item-center mx-auto">
+    //             <div classNameName="flex flex-nowrap gap-1 px-1 py-1 mx-auto my-auto">
+    //               <input
+    //                 type="text"
+    //                 value={input}
+    //                 onChange={handleInputChange}
+    //                 classNameName="input100-captha"
+    //                 placeholder="Enter CAPTCHA"
+    //               />
+    //               <br />
+
+    //               {expired ? (
+    //                 <button
+    //                   classNameName="btn btn-primary text-center items-center"
+    //                   onClick={handleRefresh}>
+    //                   Refresh Captcha
+    //                 </button>
+    //               ) : (
+    //                 <div classNameName="mt-1 ml-4">
+    //                   <Captcha charNum={6} onChange={setCaptcha} />
+    //                 </div>
+    //               )}
+    //             </div>
+    //           </div>
+    //           <div classNameName="login-form-btn mx-auto my-2">
+    //             <button
+    //               classNameName="btn-accent px-44 py-1 rounded-full"
+    //               type="submit">
+    //               Login
+    //             </button>
+    //           </div>
+    //           <div classNameName="text-center w-full p-t-25 p-b-230"></div>
+    //         </form>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+
+    <div className="fullscreen_bg bg-gray-50 dark:bg-gray-900">
+      <div className="flex justify-end  py-8 mx-auto md:h-screen lg:py-0">
+        {/* <div>
+          <img src={Branch} alt="" className="w-96 my-20 " />
+        </div> */}
+        <div className="w-full md:w-full lg:w-full bg-gradient-to-b from-teal-200 to-teal-600 rounded-bl-full shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 ">
+          <div className="flex justify-center">
+            <img className="w-32 mt-28 sm:mt-28" src={Logo} alt="logo" />
+          </div>
+
+          <div className="p-36 space-y-4  md:space-y-6 sm:p-8 ">
             <form
-              className="mx-auto px-1"
+              className="space-y-4 md:space-y-6"
               onSubmit={(event) => {
                 handleSubmit(event);
               }}
             >
-              <div className="mx-auto w-32 my-1">
-                <img src={Logo} alt="Logo" className="logo" />
-              </div>
-              <div
-                className="mx-auto my-2"
-                data-validate="Username is required"
-              >
+              <div>
+                <label
+                  for="email"
+                  className="block mb-2 text-sm font-medium text-white dark:text-white"
+                >
+                  User Name
+                </label>
                 <input
-                  className="input100"
                   type="text"
-                  name="username"
-                  placeholder="Username"
+                  name="userName"
+                  id="userName"
+                  placeholder="Enter your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600  dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 placeholder-gray-300 placeholder-opacity-100 "
+                  required=""
                 />
-                <span className="focus-input100"></span>
-                <span className="symbol-input100">
-                  <i className="fa fa-user"></i>
-                </span>
               </div>
-              <div
-                className="mx-auto my-2"
-                data-validate="Password is required"
-              >
+              <div>
+                <label
+                  for="password"
+                  className="block mb-2 text-sm font-medium dark:text-white text-white"
+                >
+                  Password
+                </label>
                 <input
-                  className="input100"
                   type="password"
-                  name="pass"
-                  placeholder="Password"
+                  name="password"
+                  id="password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600  dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 placeholder-gray-300 placeholder-opacity-100 "
+                  required=""
                 />
-                <span className="focus-input100"></span>
-                <span className="symbol-input100">
-                  <i className="fa fa-lock"></i>
-                </span>
               </div>
-              <span>
-                {errorMessage && <p className="eror">{errorMessage}</p>}{" "}
-              </span>
-              <div className="bg-zinc-600 rounded-md item-center mx-auto">
-                <div className="flex flex-nowrap gap-1 px-1 py-1 mx-auto my-auto">
+              <div className="flex gap-10 bg-gray-700 items-center p-2">
+                <div>
                   <input
                     type="text"
                     value={input}
                     onChange={handleInputChange}
-                    className="input100-captha mx-auto my-auto"
-                    placeholder="Enter CAPTCHA"
+                    placeholder="Enter captcha"
+                    classNameName="input100-captha"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 placeholder-gray-300 placeholder-opacity-100 "
                   />
-                  <br />
-                  {/* <button
-                    className="btn btn-primary text-center items-center"
-                    onClick={() => {
-                      setCaptcha(generateCaptcha());
-                      setInput("");
-                      setExpired(false);
-                    }}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 1536 1536">
-                      <path
-                        fill="currentColor"
-                        d="M1511 928q0 5-1 7q-64 268-268 434.5T764 1536q-146 0-282.5-55T238 1324l-129 129q-19 19-45 19t-45-19t-19-45V960q0-26 19-45t45-19h448q26 0 45 19t19 45t-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117q8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45t19-45l138-138Q969 256 768 256q-134 0-250 65T332 500q-11 17-53 117q-8 23-30 23H50q-13 0-22.5-9.5T18 608v-7q65-268 270-434.5T768 0q146 0 284 55.5T1297 212l130-129q19-19 45-19t45 19t19 45z"
-                      />
-                    </svg>
-                  </button> */}
-                  {/* <button
-                    className="btn btn-primary text-center items-center"
-                    onClick={() => {
-                      setCaptcha(generateCaptcha());
-                      setInput("");
-                      setExpired(false);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 1536 1536"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M1511 928q0 5-1 7q-64 268-268 434.5T764 1536q-146 0-282.5-55T238 1324l-129 129q-19 19-45 19t-45-19t-19-45V960q0-26 19-45t45-19h448q26 0 45 19t19 45t-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117q8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45t19-45l138-138Q969 256 768 256q-134 0-250 65T332 500q-11 17-53 117q-8 23-30 23H50q-13 0-22.5-9.5T18 608v-7q65-268 270-434.5T768 0q146 0 284 55.5T1297 212l130-129q19-19 45-19t45 19t19 45z"
-                      />
-                    </svg>
-                  </button> */}
-                  {expired ? (
-                    <button
-                      className="btn btn-primary text-center items-center"
-                      onClick={handleRefresh}
-                    >
-                      Refresh Captcha
-                    </button>
-                  ) : (
-                    <div className="mx-auto my-auto">
-                      <Captcha className="w-40" charNum={6} onChange={setCaptcha} />
-                    </div>
-                  )}
+                </div>
+                <div>
+                  <Captcha charNum={6} onChange={setCaptcha} />
                 </div>
               </div>
-              <div className="login-form-btn mx-auto my-2">
+              <div className="">
                 <button
-                  className="btn-accent px-44 py-1 rounded-full"
                   type="submit"
+                  className="text-white bg-teal-800 hover:bg-teal-200 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full"
                 >
                   Login
                 </button>
               </div>
-              <div className="text-center w-full p-t-25 p-b-230"></div>
             </form>
           </div>
         </div>
