@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
 import { saveAs } from "file-saver";
+import _ from "lodash";
 
 const AuditTrail = () => {
   const [users, setUsers] = useState([]);
@@ -118,7 +119,8 @@ const AuditTrail = () => {
     item.b_log_action_date.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const sortedData = _.orderBy(filteredData, ["b_log_id"], ["desc"]);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);

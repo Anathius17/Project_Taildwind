@@ -4,6 +4,7 @@ import ModalEdit from "./ModalEditRole";
 import ModalAdd from "./ModalAddRole";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import _ from "lodash";
 
 const RoleMenagement = () => {
   const [role, setRole] = useState([]);
@@ -57,7 +58,8 @@ const RoleMenagement = () => {
   const filteredData = role.filter((item) =>
     item.rl_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const sortedData = _.orderBy(filteredData, ["rl_created_date"], ["desc"]);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
