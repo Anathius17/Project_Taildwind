@@ -9,7 +9,6 @@ const RoleMenagement = () => {
   const [role, setRole] = useState([]);
   const [currentRole, setcurrentRole] = useState(role);
   const userid = JSON.parse(localStorage.getItem("userid"));
-  const [activeStatus, setActiveStatus] = useState(false);
 
   //const [token, setToken] = useState();
 
@@ -17,14 +16,6 @@ const RoleMenagement = () => {
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
   const token = sessionData;
-  // Dapatkan data sesi
-
-  // get userid
-  //const userid = JSON.parse(localStorage.getItem("userid"));
-  //console.log("test1233");
-  //console.log(userid);
-  //const userid = sessionUserid;
-  // Dapatkan data sesi
 
   useEffect(() => {
     if (token && token.map !== "") {
@@ -138,7 +129,7 @@ const RoleMenagement = () => {
     getData();
   }, []);
   // ? Menghapus pengguna
-  const [id, setDeleteRole] = useState("");
+  const [deleteRoleId, setDeleteRoleId] = useState("");
 
   const dataLogUserTracking = {
     plcd: "role_management",
@@ -155,12 +146,10 @@ const RoleMenagement = () => {
 
   const Updateobjectdata = (val) => {
     DeleteRole(val);
-    Active(val);
   };
 
   const handleDeleteRole = (id) => {
-    setDetaiRoleParam(id);
-    console.log(id);
+    console.log(deleteRoleId)
     Swal.fire({
       title: "Are you sure you want to delete this data?",
       showConfirmButton: true,
@@ -170,8 +159,9 @@ const RoleMenagement = () => {
       icon: "warning",
     }).then((result) => {
       if (result.isConfirmed) {
-        postDataLogUserTracking();
-        DeleteRole(id);
+        // postDataLogUserTracking();
+        deleteRole(id);
+        setDeleteRoleId(id);
       } else {
         Swal.fire("Cancelled", "", "error");
       }
@@ -210,10 +200,8 @@ const RoleMenagement = () => {
       const userDelete = await axios.post(
         "http://116.206.196.65:30983/skycore/role/delete",
         {
-          role_id: roleEdit.rl_id,
-          role_detail_id: roleEdit.action
-            .filter((action) => action.is_checked)
-            .map((action) => action.rlm_id),
+          role_id: deleteRoleId,
+          role_detail_id: "",
           action_by: userid,
           log_id: val,
         },
@@ -232,24 +220,38 @@ const RoleMenagement = () => {
     }
   };
 
+  useEffect(() => {
+    if (deleteRoleId !== "") {
+      postDataLogUserTracking();
+    }
+  }, [deleteRoleId]);
+
+  const deleteRole = (id) => {
+    setRole(role.filter((item) => item.rl_id !== id));
+  };
+
   // action isactive
   const [idActive, setRoleActive] = useState("");
 
-  const handleActiveRole = (id) => {
+  const handleActiveRole = (id, idActive) => {
     setRoleActive(id);
-    Active(id);
+    Active(id, idActive);
   };
 
-  const Active = async (id, val) => {
+  const Active = async (id, idActive) => {
     try {
+      const requestData = {
+        role_id: id,
+        role_status: idActive ? "deactivate" : "activate",
+        action_by: userid,
+        log_id: id,
+      };
+
+      console.log("Data yang dikirim:", requestData); // Menambahkan console.log untuk mencetak data yang dikirim
+
       await axios.post(
         "http://116.206.196.65:30983/skycore/role/activate",
-        {
-          role_id: id,
-          role_status: activeStatus ? "activate" : "deactivate",
-          action_by: userid,
-          log_id: val,
-        },
+        requestData,
         {
           headers: {
             "Content-Type": "application/json",
@@ -260,11 +262,11 @@ const RoleMenagement = () => {
 
       Swal.fire("Role Berhasil Diupdate", "", "success");
       getRoleList();
-      setActiveStatus(!activeStatus); // Toggle status aktif/nonaktif
     } catch (errorUser) {
       console.log(errorUser);
     }
   };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -402,7 +404,9 @@ const RoleMenagement = () => {
                       {rol.rl_status === false && (
                         <button
                           className="btn btn-warning btn-sm ml-1"
-                          onClick={() => handleActiveRole(rol.rl_id)}
+                          onClick={() =>
+                            handleActiveRole(rol.rl_id, rol.rl_status)
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
