@@ -5,7 +5,7 @@ import "../assets/css/sb-admin-2.css";
 import Sky from "../assets/images/Sky.png";
 import Skysite from "../assets/images/LogoSky.png";
 import "../assets/css/Dashboard.css";
-import Demo from "../component/UserMenagement";
+import Demo from "../component/usermanagement/UserMenagement";
 import Rule from "../component/RoleMenagement";
 import Audit from "../component/auditTrail/AuditTrail";
 import BranchMenagement from "../component/branchmgmt/BranchManagement";

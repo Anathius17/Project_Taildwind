@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
-import { getToken } from "../API/api";
+import { getToken } from "../../API/api";
 import Modal from "./Modal";
 import ModalEdit from "./ModalEdit";
 // import ModalChecker from "./ModalCheckedUserM";

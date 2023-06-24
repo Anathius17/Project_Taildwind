@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { getToken } from "../API/api";
+import { getToken } from "../../API/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";

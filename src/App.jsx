@@ -6,9 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import BranchMenagement from "./component/branchmgmt/BranchManagement";
 
 // ! untuk testing
-import Demo from "./component/UserMenagement";
+import Demo from "./component/usermanagement/UserMenagement";
 import Rule from "./component/RoleMenagement";
-import Modal from "./component/Modal";
+import Modal from "./component/usermanagement/Modal";
 import BatchScheduler from "./component/system/BatchScheduler";
 
 import React, { useState, useEffect } from "react";
