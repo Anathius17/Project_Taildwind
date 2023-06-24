@@ -149,7 +149,7 @@ const RoleMenagement = () => {
   };
 
   const handleDeleteRole = (id) => {
-    console.log(deleteRoleId)
+    console.log(deleteRoleId);
     Swal.fire({
       title: "Are you sure you want to delete this data?",
       showConfirmButton: true,
