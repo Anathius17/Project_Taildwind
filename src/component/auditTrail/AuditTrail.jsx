@@ -365,7 +365,7 @@ const AuditTrail = () => {
                   <th className="py-3 px-6 text-center">User Id</th>
                   <th className="py-3 px-6 text-center">Action Date</th>
                   <th className="py-3 px-6 text-center">Client IP</th>
-                  <th className="py-3 px-6 text-center">Server Name</th>
+                  <th className="py-3 px-6 text-center">Operation System</th>
                   <th className="py-3 px-6 text-center">Activity</th>
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
@@ -390,7 +390,7 @@ const AuditTrail = () => {
                         {modul.b_log_https}
                       </td>
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
-                        {modul.b_log_server_name}
+                        {modul.b_log_operating_system}
                       </td>
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         {modul.b_log_activity}

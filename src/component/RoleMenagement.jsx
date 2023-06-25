@@ -379,7 +379,7 @@ const RoleMenagement = () => {
                     <td className="py-2 px-4 text-center whitespace-nowrap font-semibold">
                       {rol.rl_created_by}
                     </td>
-                    <td className="py-2 px-4 text-center whitespace-nowrap ">
+                    <td className="py-2 px-4 text-left whitespace-nowrap ">
                       {level.map((item, i) => {
                         if (item.ldlmdescription === "lvl_adm_acl_modify") {
                           return (
