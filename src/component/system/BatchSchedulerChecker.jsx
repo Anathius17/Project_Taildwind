@@ -2,11 +2,22 @@ import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
 import ModalEdit from "./ModalEditSchedulerChecker";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  Link,
+  NavLink,
+} from "react-router-dom";
 
 import axios from "axios";
 
 const BatchSchedulerChecker = () => {
   const [bs, setSchedulerChecker] = useState([]);
+  const userid = JSON.parse(localStorage.getItem("userid"));
+
+  const navigate = useNavigate();
 
   //const [token, setToken] = useState();
 
@@ -40,7 +51,32 @@ const BatchSchedulerChecker = () => {
 
       setSchedulerChecker(cekData);
     } catch (error) {
-      alert(error);
+      //alert(error);
+      postJDataUserResetIsLogin();
+      navigate("/");
+    }
+  };
+  const datalogout = {
+    p_usr: userid,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
     }
   };
 

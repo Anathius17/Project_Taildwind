@@ -21,6 +21,10 @@ const ModalManualScheduler = ({
 
   useEffect(() => {
     getTokenApi();
+    localStorage.setItem("tokenData", JSON.stringify(token));
+  }, [token]);
+
+  useEffect(() => {
     setScheduler(currentScheduler);
   }, [currentScheduler]);
 

@@ -14,6 +14,16 @@ const RoleMenagement = () => {
   //const [token, setToken] = useState();
 
   // hit token
+  // const [token, setToken] = useState("");
+  // const getTokenApi = () => {
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+  // useEffect(() => {
+  //   getTokenApi();
+  // }, [token]);
+
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
   const token = sessionData;
@@ -461,7 +471,6 @@ const RoleMenagement = () => {
                           return null;
                         }
                       })}
-
                     </td>
                   </tr>
                 ))}

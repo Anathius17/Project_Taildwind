@@ -610,7 +610,7 @@ const Login = (props) => {
                   />
                 </div>
                 <div>
-                  <Captcha charNum={6} onChange={setCaptcha} />
+                  <Captcha className="w-40" charNum={6} onChange={setCaptcha} />
                 </div>
               </div>
               <div className="">

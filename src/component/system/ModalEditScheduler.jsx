@@ -23,13 +23,16 @@ const ModalEditScheduler = ({
       setToken(e);
     });
   };
+  useEffect(() => {
+    getTokenApi();
+    localStorage.setItem("tokenData", JSON.stringify(token));
+  }, [token]);
 
   useEffect(() => {
     setSchedulerDetail(currentSchedulerdetail);
   }, [currentSchedulerdetail]);
 
   useEffect(() => {
-    getTokenApi();
     setSchedulerData(currentScheduler);
     setSchedulerDetail(currentSchedulerdetail);
     getobject(currentScheduler, currentSchedulerdetail);

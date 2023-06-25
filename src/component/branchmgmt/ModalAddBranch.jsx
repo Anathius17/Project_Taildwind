@@ -26,8 +26,6 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
   const userid = JSON.parse(localStorage.getItem("userid"));
 
   // untuk Token yang tersimpan di session
-  //  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-  //  const token = sessionData;
   const [token, setToken] = useState();
   const getTokenApi = () => {
     getToken().then((e) => {
@@ -37,20 +35,16 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
 
   useEffect(() => {
     getTokenApi();
+    localStorage.setItem("tokenData", JSON.stringify(token));
   }, [token]);
 
+ 
+
+
   // insert log activity
-  const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
-    //passing getData method to the lifecycle method
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+
   const dataLogUserTracking = {
     plcd: "branch_mgmt",
     plusr: userid,
