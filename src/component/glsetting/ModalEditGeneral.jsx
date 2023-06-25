@@ -35,17 +35,7 @@ const ModalGeneral = ({ isOpen, onClose, currentGeneral, reload }) => {
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
-
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   const dataLogUserTracking = {
     plcd: "general_setting",
@@ -141,8 +131,7 @@ const ModalGeneral = ({ isOpen, onClose, currentGeneral, reload }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}
-            ></button>
+              onClick={onClose}></button>
           </div>
           <div className="modal-body">
             <form>
@@ -231,8 +220,7 @@ const ModalGeneral = ({ isOpen, onClose, currentGeneral, reload }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}
-            >
+              onClick={onClose}>
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Submit}>

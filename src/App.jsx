@@ -9,7 +9,7 @@ import BranchMenagement from "./component/branchmgmt/BranchManagement";
 
 // ! untuk testing
 import Demo from "./component/usermanagement/UserMenagement";
-
+import Rule from "./component/RuleMenagement";
 import Modal from "./component/usermanagement/Modal";
 import BatchScheduler from "./component/system/BatchScheduler";
 
@@ -88,6 +88,7 @@ function App() {
           mn_icon: "",
           mn_breadcrumb: "Role Management",
           child: [],
+          element: <Rule />,
         },
         {
           id: "6",

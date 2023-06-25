@@ -58,7 +58,6 @@ const GeneralSetting = () => {
     } catch (error) {
       //alert(error);
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
 

@@ -37,7 +37,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
-    const newValue = type === "checkbox" ? !checked : value;
+    const newValue = type === "checkbox" ? checked : value;
 
     setroleid((prevState) => ({
       ...prevState,
@@ -46,17 +46,18 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  // const [ip, setIP] = useState("");
+  // const [logid, setlogid] = useState("");
 
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data.ip);
-      setIP(res.data.ip);
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const res = await axios.get("https://api.ipify.org/?format=json");
+  //     console.log(res.data.ip);
+  //     setIP(res.data.ip);
+  //   };
+  //   getData();
+  // }, []);
 
   const dataLogUserTracking = {
     plcd: "role_management",
@@ -150,13 +151,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   const UpdateRoleNew = async (val) => {
-    if (
-      !roleid.rl_id ||
-      !roleid.rl_name ||
-      !roleid.rl_description ||
-      !roleid.rl_status ||
-      !checkedValues
-    ) {
+    if (!roleid.rl_id || !roleid.rl_name) {
       Swal.fire("Please completed all fields", "", "error");
       return;
     }
@@ -297,7 +292,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
       <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
         <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
-            <h5 className="modal-title fw-bold">Role Add New</h5>
+            <h5 className="modal-title fw-bold">Role Edit</h5>
           </div>
           <div className="modal-body">
             <form>
@@ -341,8 +336,8 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
                   type="checkbox"
                   role="switch"
                   id="flexSwitchCheckDefault"
-                  name="rl_status" // Remove the "roleid." prefix
-                  checked={roleid?.rl_status || false}
+                  name="rl_status"
+                  checked={roleid.rl_status || false}
                   onChange={handleInputChange}
                 />
               </div>
@@ -462,7 +457,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Submit}>
-              Save
+              Save changes
             </button>
           </div>
         </div>

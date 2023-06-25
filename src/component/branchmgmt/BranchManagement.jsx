@@ -18,6 +18,7 @@ import {
 const BranchMenagement = () => {
   const [branch, setBranch] = useState([]);
   const [currentBranch, setCurrentBranch] = useState(branch);
+  const level = JSON.parse(localStorage.getItem("detailRoleUser"));
   //const [token, setToken] = useState();
 
   // hit token
@@ -66,7 +67,6 @@ const BranchMenagement = () => {
     } catch (errorbranch) {
       //alert(errorbranch);
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
 
@@ -95,17 +95,7 @@ const BranchMenagement = () => {
   };
 
   // log activity object
-  const [ip, setIP] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-
-  useEffect(() => {
-    //passing getData method to the lifecycle method
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   const dataLogUserTracking = {
     plcd: "branch_mgmt",
@@ -334,11 +324,17 @@ const BranchMenagement = () => {
         <div className="test">
           <h4> Branch Management</h4>
         </div>
-        <div className="btn-new">
-          <button className="btn btn-primary" onClick={openModal}>
-            Add new
-          </button>
-        </div>
+        {level.map((item, i) => {
+          if (item.ldlmdescription === "lvl_prm_brm_add") {
+            return (
+              <div className="btn-new" key={i}>
+                <button className="btn btn-primary" onClick={openModal}>
+                  Add new
+                </button>
+              </div>
+            );
+          }
+        })}
       </div>
 
       <div className="card-body">
@@ -406,7 +402,51 @@ const BranchMenagement = () => {
                       {brc.lbrc_phone_num}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
-                      <button
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_prm_brm_edit") {
+                          return (
+                            <button
+                              key={i}
+                              className="btn btn-success btn-sm"
+                              onClick={() => editBranch(brc.lbrc_code)}>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-6 h-6">
+                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                              </svg>
+                            </button>
+                          );
+                        }
+                      })}
+
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_prm_brm_del") {
+                          return (
+                            <button
+                              key={i}
+                              className="btn btn-danger btn-sm ml-1"
+                              onClick={() => handleDeletebranch(brc.lbrc_code)}>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-6 h-6">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          );
+                        }
+                      })}
+
+                      <></>
+                      {/* <button
                         className="btn btn-success btn-sm"
                         onClick={() => editBranch(brc.lbrc_code)}>
                         <svg
@@ -433,7 +473,7 @@ const BranchMenagement = () => {
                           />
                         </svg>
                       </button>
-                      <></>
+                      <></> */}
                     </td>
                   </tr>
                 ))}

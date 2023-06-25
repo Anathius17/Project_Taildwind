@@ -32,6 +32,7 @@ const UserMenagement = () => {
   const [currentUser, setCurrentUser] = useState(users);
 
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
@@ -66,7 +67,6 @@ const UserMenagement = () => {
     } catch (errorUser) {
       // alert(errorUser);
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
 
@@ -96,16 +96,6 @@ const UserMenagement = () => {
 
   // console.log
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
 
   // ! nanti atur secara dinamis
   const dataLogUserTracking = {
@@ -504,7 +494,7 @@ const UserMenagement = () => {
         })} */}
 
         {level.map((item, i) => {
-          if (item.ldlmdescription === "lvl_prm_brm_add") {
+          if (item.ldlmdescription === "lvl_adm_mgt_add") {
             return (
               <div className="btn-new" key={i}>
                 <button className="btn btn-primary" onClick={openModal}>
@@ -584,41 +574,56 @@ const UserMenagement = () => {
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
-                        className=" btn-success btn-sm"
+                        className=" btn-success btn-sm rounded"
                         onClick={() => editUser(user.usruserid, "edit")}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-3.5 h-3.5">
+                          className="w-3.5 h-3.5 text-white">
                           <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                           <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                         </svg>
                       </button>
-                      <button
-                        className=" btn-danger btn-sm ml-1"
-                        onClick={() => handleDeleteUser(user.usruserid)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-3.5 h-3.5">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                      {user.usrstatusformat !== "Active" ? (
+
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_mgt_del") {
+                          return (
+                            <>
+                              <button
+                                key={i}
+                                className=" bg-red-600 btn-sm ml-1 rounded"
+                                onClick={() =>
+                                  handleDeleteUser(user.usruserid)
+                                }>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  className="w-3.5 h-3.5 text-white">
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                            </>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
+                      {/* {user.usrstatusformat !== "Active" ? (
                         <button
-                          className=" btn-warning btn-sm ml-1"
+                          className=" btn-warning btn-sm ml-1 rounded"
                           onClick={() => handleActiveUser(user.usruserid)}>
                           <svg
                             viewBox="0 0 16 16"
                             fill="currentColor"
                             height="1em"
-                            width="1em">
+                            width="1em"
+                            className="text-white">
                             <path
                               fill="currentColor"
                               d="M14 0H2C.9 0 0 .9 0 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 12.414L3.293 8.707l1.414-1.414L7 9.586l4.793-4.793 1.414 1.414L7 12.414z"
@@ -627,12 +632,62 @@ const UserMenagement = () => {
                         </button>
                       ) : (
                         <></>
-                      )}
+                      )} */}
+                      {/* {user.usrstatusformat !== "Active" ? (
+                        <button
+                          className=" btn-warning btn-sm ml-1 rounded"
+                          onClick={() => handleActiveUser(user.usruserid)}>
+                          <svg
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            height="1em"
+                            width="1em"
+                            className="text-white">
+                            <path
+                              fill="currentColor"
+                              d="M14 0H2C.9 0 0 .9 0 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 12.414L3.293 8.707l1.414-1.414L7 9.586l4.793-4.793 1.414 1.414L7 12.414z"
+                            />
+                          </svg>
+                        </button>
+                      ) : (
+                        <></>
+                      )} */}
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_mgt_act") {
+                          return (
+                            <>
+                              {user.usrstatusformat !== "Active" ? (
+                                <button
+                                  className=" btn-warning btn-sm ml-1 rounded"
+                                  onClick={() =>
+                                    handleActiveUser(user.usruserid)
+                                  }>
+                                  <svg
+                                    viewBox="0 0 16 16"
+                                    fill="currentColor"
+                                    height="1em"
+                                    width="1em"
+                                    className="text-white">
+                                    <path
+                                      fill="currentColor"
+                                      d="M14 0H2C.9 0 0 .9 0 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 12.414L3.293 8.707l1.414-1.414L7 9.586l4.793-4.793 1.414 1.414L7 12.414z"
+                                    />
+                                  </svg>
+                                </button>
+                              ) : (
+                                <></>
+                              )}
+                            </>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
 
-                      {user.usr_approved_status === "Created" ||
+                      {/* {user.usr_approved_status === "Created" ||
                       user.usr_approved_status === "Updated" ? (
                         <button
-                          className="text-white bg-blue-800 btn-sm ml-1 m-0"
+                          className="text-white bg-blue-800 btn-sm ml-1 m-0 rounded"
                           onClick={() =>
                             editUser(user.usruserid, user.usr_approved_status)
                           }>
@@ -647,10 +702,41 @@ const UserMenagement = () => {
                         </button>
                       ) : (
                         <></>
-                      )}
-                      {user.usr_approved_status === "checked" ? (
+                      )}  */}
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_mgt_checker") {
+                          return (
+                            <>
+                              {user.usr_approved_status === "Created" ||
+                              user.usr_approved_status === "Updated" ? (
+                                <button
+                                  className="text-white bg-blue-800 btn-sm ml-1 m-0 rounded"
+                                  onClick={() =>
+                                    editUser(
+                                      user.usruserid,
+                                      user.usr_approved_status
+                                    )
+                                  }
+                                  key={i}>
+                                  <svg
+                                    fill="currentColor"
+                                    viewBox="0 0 16 16"
+                                    height="1em"
+                                    width="1em">
+                                    <path d="M10 .5a.5.5 0 00-.5-.5h-3a.5.5 0 00-.5.5.5.5 0 01-.5.5.5.5 0 00-.5.5V2a.5.5 0 00.5.5h5A.5.5 0 0011 2v-.5a.5.5 0 00-.5-.5.5.5 0 01-.5-.5z" />
+                                    <path d="M4.085 1H3.5A1.5 1.5 0 002 2.5v12A1.5 1.5 0 003.5 16h9a1.5 1.5 0 001.5-1.5v-12A1.5 1.5 0 0012.5 1h-.585c.055.156.085.325.085.5V2a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 014 2v-.5c0-.175.03-.344.085-.5zm6.769 6.854l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 11.708-.708L7.5 9.793l2.646-2.647a.5.5 0 01.708.708z" />
+                                  </svg>
+                                </button>
+                              ) : null}
+                            </>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
+                      {/* {user.usr_approved_status === "checked" ? (
                         <button
-                          className="text-white bg-blue-400 btn-sm ml-1 m-0"
+                          className="text-white bg-blue-400 btn-sm ml-1 m-0 rounded"
                           onClick={() =>
                             editUser(user.usruserid, user.usr_approved_status)
                           }>
@@ -664,7 +750,36 @@ const UserMenagement = () => {
                         </button>
                       ) : (
                         <></>
-                      )}
+                      )} */}
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_mgt_approval") {
+                          return (
+                            <>
+                              {user.usr_approved_status === "checked" ? (
+                                <button
+                                  className="text-white bg-blue-400 btn-sm ml-1 m-0 rounded"
+                                  onClick={() =>
+                                    editUser(
+                                      user.usruserid,
+                                      user.usr_approved_status
+                                    )
+                                  }
+                                  key={i}>
+                                  <svg
+                                    viewBox="0 0 512 512"
+                                    fill="currentColor"
+                                    height="1em"
+                                    width="1em">
+                                    <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2h144c26.5 0 48 21.5 48 48 0 25.3-19.5 46-44.3 47.9 7.7 8.5 12.3 19.8 12.3 32.1 0 23.4-16.8 42.9-38.9 47.1 4.4 7.2 6.9 15.8 6.9 24.9 0 21.3-13.9 39.4-33.1 45.6.7 3.3 1.1 6.8 1.1 10.4 0 26.5-21.5 48-48 48h-73.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192h64c17.7 0 32 14.3 32 32v224c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
+                                  </svg>
+                                </button>
+                              ) : null}
+                            </>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
                     </td>
                   </tr>
                 ))}

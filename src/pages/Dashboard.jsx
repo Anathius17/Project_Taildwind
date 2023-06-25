@@ -117,7 +117,7 @@ const Dashboard = (props) => {
               ) : (
                 <NavLink to={`${rute}${child.mn_link}`}>
                   <button
-                    className="text-white ml-10"
+                    className={`text-white ml-10 ${child.mn_name}`}
                     // onClick={() => setclickButton(child.mn_link)}
                     id={child.mn_name}>
                     <span className="text-sm">{child.mn_name}</span>
@@ -131,7 +131,7 @@ const Dashboard = (props) => {
   };
 
   const datalogout = {
-    p_usr: userId,
+    p_usr: userid,
   };
 
   const postJDataUserResetIsLogin = async () => {
@@ -146,6 +146,7 @@ const Dashboard = (props) => {
           },
         }
       );
+      await navigate("/");
     } catch (error) {
       alert("reset fail login gagal");
       console.log(error);
@@ -153,11 +154,14 @@ const Dashboard = (props) => {
   };
 
   const LogOut = () => {
+    sessionStorage.clear();
     postJDataUserResetIsLogin();
+    // localStorage.removeItem("detailRoleUser");
+    // localStorage.removeItem("MenuList");
 
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+    // setTimeout(() => {
+    //   navigate("/");
+    // }, 1000);
   };
 
   const currentDate = new Date();
@@ -173,8 +177,8 @@ const Dashboard = (props) => {
             className="sidebar-brand d-flex align-items-center justify-content-center"
             href="index.html">
             <div className="sidebar-brand-icon rotate-n-15"></div>
-            <div className="sidebar-brand-text mx-3 shadow">
-              <img src={Sky} alt="" className="logoSky" />
+            <div className="sidebar-brand-text mx-3 ">
+              <img src={Sky} alt="" className="logoSky w-44" />
             </div>
           </div>
           {}

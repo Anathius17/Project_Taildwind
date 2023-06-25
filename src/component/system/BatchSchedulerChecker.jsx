@@ -53,7 +53,6 @@ const BatchSchedulerChecker = () => {
     } catch (error) {
       //alert(error);
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
   const datalogout = {

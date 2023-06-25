@@ -32,17 +32,18 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
     }
   }, [token]);
 
-  const [ip, setIP] = useState("");
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  // const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
-    //passing getData method to the lifecycle method
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const res = await axios.get("https://api.ipify.org/?format=json");
+  //     console.log(res.data);
+  //     setIP(res.data.ip);
+  //   };
+  //   //passing getData method to the lifecycle method
+  //   getData();
+  // }, []);
   const dataLogUserTracking = {
     plcd: "role_management",
     plusr: userid,
@@ -97,6 +98,12 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
     postDataLogUserTracking();
 
     console.log("Checked Role IDs:", checkedRoleIds);
+    setidRole("");
+    setNameRole("");
+    setDescRole("");
+    setStatsRole(false);
+    setCheckedRoleIds([]);
+    clearState();
   };
 
   const insertobjectdata = (val) => {
@@ -195,6 +202,14 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
         return {
           ...ctgry,
           is_checked: !ctgry.is_checked, // Toggle the checked status
+          detail: ctgry.detail.map((detailItem) => ({
+            ...detailItem,
+            is_checked: !ctgry.is_checked, // Toggle the checked status
+            child: detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: !ctgry.is_checked, // Toggle the checked status
+            })),
+          })),
         };
       }
       const updatedDetail = ctgry.detail.map((detailItem) => {
@@ -202,6 +217,10 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
           return {
             ...detailItem,
             is_checked: !detailItem.is_checked, // Toggle the checked status
+            child: detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: !detailItem.is_checked, // Toggle the checked status
+            })),
           };
         }
         const updatedChild = detailItem.child.map((childItem) => {
@@ -243,6 +262,35 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
 
     setListCtgrDtl(updatedCtgrydtl);
     setCheckedRoleIds(checkedRoleIds); // Store checked role IDs in state variable
+  };
+
+  const clearState = () => {
+    setIsChecked(false);
+    setListCtgrDtl((prevCtgrDtl) => {
+      const updatedCtgrDtl = prevCtgrDtl.map((ctgry) => ({
+        ...ctgry,
+        is_checked: false,
+        detail: ctgry.detail.map((detailItem) => ({
+          ...detailItem,
+          is_checked: false,
+          child: detailItem.child.map((childItem) => ({
+            ...childItem,
+            is_checked: false,
+          })),
+        })),
+      }));
+      return updatedCtgrDtl;
+    });
+  };
+
+  const onCloseModal = () => {
+    setidRole("");
+    setNameRole("");
+    setDescRole("");
+    setStatsRole(false);
+    setCheckedRoleIds([]);
+    clearState(); // Menghapus state saat menutup modal
+    onClose(); // Menutup modal
   };
 
   useEffect(() => {
@@ -329,8 +377,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
                             />
                             <label
                               htmlFor={item.rlm_id}
-                              className="form-check-label"
-                            >
+                              className="form-check-label">
                               {item.rlm_name}
                             </label>
                           </div>
@@ -357,8 +404,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
                                 />
                                 <label
                                   htmlFor={detailItem.rlm_id}
-                                  className="form-check-label"
-                                >
+                                  className="form-check-label">
                                   {detailItem.rlm_name}
                                 </label>
                               </div>
@@ -384,8 +430,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
                                   />
                                   <label
                                     htmlFor={childItem.rlm_id}
-                                    className="form-check-label"
-                                  >
+                                    className="form-check-label">
                                     {childItem.rlm_name}
                                   </label>
                                 </div>
@@ -405,12 +450,11 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}
-            >
+              onClick={onCloseModal}>
               Close
             </button>
             <button type="button" className="btn btn-primary" onClick={Save}>
-              Save
+              Save changes
             </button>
           </div>
         </div>

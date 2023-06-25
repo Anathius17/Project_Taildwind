@@ -44,8 +44,8 @@
     "Liberation Mono", "Courier New", monospace;
 }
 
-#Schedule {
-  margin-left: 10px;
+.Schedule {
+  margin-left: 52px;
 }
 
 *,
@@ -10914,7 +10914,7 @@ a:focus {
 .sidebar-brand {
   height: 70px;
   /* border: 1px solid #806520; */
-  background-color: #1c294e;
+  background-color: white;
   margin: 0;
 }
 .sidebar .sidebar-brand {

@@ -34,17 +34,7 @@ const ApiManagement = () => {
     }
   }, [token]);
 
-  // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   const dataLogUserTracking = {
     plcd: "api_management",
@@ -105,7 +95,6 @@ const ApiManagement = () => {
       setAPI(cekData);
     } catch (error) {
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
 

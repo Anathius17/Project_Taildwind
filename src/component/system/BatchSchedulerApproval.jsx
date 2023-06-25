@@ -52,7 +52,6 @@ const BatchSchedulerApproval = () => {
     } catch (error) {
       //alert(error);
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
   const datalogout = {

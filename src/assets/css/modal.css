@@ -10,6 +10,14 @@
   align-items: center;
 }
 
+/* .modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  max-width: 1268px;
+  width: 730px;
+} */
 .modal-content {
   background-color: #fff;
   padding: 20px;
@@ -17,6 +25,21 @@
   position: relative;
   max-width: 1268px;
   width: 730px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 730px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .modal-content {
+    max-width: 1268px;
+    width: 100%;
+  }
 }
 
 .close {

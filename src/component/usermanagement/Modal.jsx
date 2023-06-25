@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import { getToken } from "../../API/api";
 
 const Modal = ({ isOpen, onClose, reload, currentUser }) => {
   // const [user, setUser] = useState(currentUser);
@@ -55,6 +56,8 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
     }
   }, [startDate]);
 
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
+
   // untuk Token yang tersimpan di session
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
 
@@ -102,17 +105,9 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
       });
       return;
     }
-    // else if (email !== regex1) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "Oops... Data Email Salah",
-    //     text: "",
-    //     footer: '<a href="">Why do I have this issue?</a>',
-    //   });
-    //   return;
-    // }
 
     postDataLogUserTracking();
+    postDataLogUserTrackingaAddUser();
   };
 
   const Updateobjectdata = (val) => {
@@ -122,21 +117,43 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
 
   // const handleReload = () => {};
 
-  const insertUser = {
-    p_usrid: userId,
-    p_name: name,
-    p_nip: nip,
-    p_email: email,
-    p_notlp: noTelepon,
-    p_branchcode: branchName,
-    p_spv: superVisiorName,
-    p_position: "SUPPORT",
-    p_acclevel: numRole,
-    p_efectivedate: tampung,
-    p_status: status,
-    p_usr: "kijang1",
-    p_defaultpwd: "5fec4ba8376f207d1ff2f0cac0882b01",
-    p_logid: "12",
+  const dataLogUserTrackingAddUser = {
+    plcd: "user_management",
+    plusr: userId,
+    plhtt: "OFF",
+    plsvrn: window.location.hostname,
+    plact: "Create User Management",
+    plpgur: window.location.href,
+    plqry: "-",
+    plbro: browserName + " " + browserVersion,
+    plos: osName,
+    plcli: ip,
+  };
+
+  const postDataLogUserTrackingaAddUser = async () => {
+    let log = "";
+    try {
+      await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
+          dataLogUserTrackingAddUser,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.data[0].resultprocess);
+          log = response.data.data[0].resultprocess;
+        });
+
+      // await UpdateobjectdataAdd(log);
+    } catch (error) {
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
+    }
   };
 
   const InsertUserNew = async (val) => {
@@ -201,18 +218,6 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
       });
     }
   };
-
-  const [ip, setIP] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-
-  useEffect(() => {
-    //passing getData method to the lifecycle method
-    getData();
-  }, []);
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -617,7 +622,7 @@ const Modal = ({ isOpen, onClose, reload, currentUser }) => {
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Save}>
-              Save
+              Save changes
             </button>
           </div>
         </div>

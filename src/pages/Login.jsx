@@ -24,6 +24,14 @@ import Captcha from "react-captcha-code";
 // };
 
 const Login = (props) => {
+  const [hasReloaded, setHasReloaded] = useState(false);
+
+  // useEffect(() => {
+  //   // Jalankan window.location.reload() hanya sekali
+  //   // window.location.reload();
+
+  // }, []);
+
   // ! pada kodingan dibawah kita memasukan nilai ke variabel captcha pada render awal
   const [captcha, setCaptcha] = useState("");
   // ! pada kodingan dibawah kita set input pada saat render pertama
@@ -48,8 +56,8 @@ const Login = (props) => {
 
   const today = new Date();
   console.log(today);
-
   const [ip, setIP] = useState("");
+  localStorage.setItem("ipAddres", JSON.stringify(ip));
   const getData = async () => {
     const res = await axios.get("https://api.ipify.org/?format=json");
     console.log(res.data);
@@ -57,7 +65,6 @@ const Login = (props) => {
   };
 
   useEffect(() => {
-    //passing getData method to the lifecycle method
     getData();
   }, []);
 

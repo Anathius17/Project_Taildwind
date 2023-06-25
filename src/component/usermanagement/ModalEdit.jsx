@@ -22,6 +22,7 @@ const Modal = ({
   const [isChecked, setIsChecked] = useState(false);
   const [status, setStatus] = useState("");
   const [password, setPassword] = useState("");
+  const level = JSON.parse(localStorage.getItem("detailRoleUser"));
   console.log(password);
 
   const statusLast = sendStatus;
@@ -136,16 +137,7 @@ const Modal = ({
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -1088,12 +1080,41 @@ const Modal = ({
                   onClick={onClose}>
                   Close
                 </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  onClick={Submit}>
-                  Save changes
-                </button>
+                {/* {level.map((item, i) => {
+                  if (item.ldlmdescription === "lvl_adm_mgt_read") {
+                    return (
+                      <>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          onClick={Submit}
+                          key={i}>
+                          Save changes
+                        </button>
+                      </>
+                    );
+                  } else  {
+                    return null;
+                  }
+                })} */}
+
+                {level.map((item, i) => {
+                  if (item.ldlmdescription === "lvl_adm_mgt_edit") {
+                    return (
+                      <>
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          onClick={Submit}
+                          key={i}>
+                          Save changes
+                        </button>
+                      </>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
-  const [modalData, setModalData] = useState(null);
+  const [modalData, setModalData] = useState({});
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
   console.log(modulName);
@@ -130,6 +130,54 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
         }
 
         setModalData({ beforeData, afterData });
+      } else if (modulName === "role_management") {
+        const sortedData = response.data.data.sort((a, b) =>
+          a.p_rl_log_action.localeCompare(b.p_rl_log_action)
+        );
+
+        let roleData = {
+          beforeData: null,
+          afterData: null,
+        };
+
+        let roleDetailData = {
+          beforeData: [],
+          afterData: [],
+        };
+
+        for (let i = 0; i < sortedData[0].role.length; i++) {
+          const role = sortedData[0].role[i];
+
+          if (
+            role.p_rl_log_action === "before" ||
+            role.p_rl_log_action === "delete"
+          ) {
+            roleData.beforeData = role;
+          } else if (
+            role.p_rl_log_action === "after" ||
+            role.p_rl_log_action === "create"
+          ) {
+            roleData.afterData = role;
+          }
+        }
+
+        for (let i = 0; i < sortedData[0].role_detail.length; i++) {
+          const roleDetail = sortedData[0].role_detail[i];
+
+          if (
+            roleDetail.p_rld_log_action === "before" ||
+            roleDetail.p_rld_log_action === "delete"
+          ) {
+            roleDetailData.beforeData.push(roleDetail);
+          } else if (
+            roleDetail.p_rld_log_action === "after" ||
+            roleDetail.p_rld_log_action === "create"
+          ) {
+            roleDetailData.afterData.push(roleDetail);
+          }
+        }
+
+        setModalData({ roleData, roleDetailData });
       }
     } catch (error) {
       console.log(error);
@@ -162,8 +210,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
             hasDifference && beforeRenderValue && afterRenderValue
               ? "text-red-500"
               : ""
-          }`}
-        >
+          }`}>
           {beforeRenderValue}
         </td>
         <td
@@ -171,14 +218,78 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
             hasDifference && beforeRenderValue && afterRenderValue
               ? "text-red-500"
               : ""
-          }`}
-        >
+          }`}>
+          {afterRenderValue}
+        </td>
+      </>
+    );
+  };
+  const renderRoleTableCell = (fieldName) => {
+    const beforeValue = modalData?.roleData?.beforeData?.[fieldName];
+    const afterValue = modalData?.roleData?.afterData?.[fieldName];
+    const hasDifference = beforeValue !== afterValue;
+    let beforeRenderValue = beforeValue;
+    let afterRenderValue = afterValue;
+    if (fieldName === "p_rl_status" || fieldName === "api_status") {
+      beforeRenderValue =
+        beforeValue !== undefined && beforeValue !== ""
+          ? String(beforeValue)
+          : null;
+      afterRenderValue =
+        afterValue !== undefined && afterValue !== ""
+          ? String(afterValue)
+          : null;
+    }
+
+    return (
+      <>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
+          }`}>
+          {beforeRenderValue}
+        </td>
+        <td
+          className={`py-3 px-6 text-left ${
+            hasDifference && beforeRenderValue && afterRenderValue
+              ? "text-red-500"
+              : ""
+          }`}>
           {afterRenderValue}
         </td>
       </>
     );
   };
 
+  const renderRoleDetailTableCell = (fieldName) => {
+    const roleDetailData = modalData?.roleDetailData ?? {
+      beforeData: [],
+      afterData: [],
+    };
+
+    const { beforeData, afterData } = roleDetailData;
+
+    const beforeCells = beforeData.map((data, index) => (
+      <td className="py-3 px-6 text-left" key={`before_${index}`}>
+        {data[fieldName]}
+      </td>
+    ));
+
+    const afterCells = afterData.map((data, index) => (
+      <td className="py-3 px-6 text-left" key={`after_${index}`}>
+        {data[fieldName]}
+      </td>
+    ));
+
+    return (
+      <>
+        {beforeCells}
+        {afterCells}
+      </>
+    );
+  };
   if (!isOpen) return null;
 
   // Ubah format modulName menjadi User Access
@@ -196,8 +307,8 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute bg-white p-6 rounded-lg shadow-lg overflow-y-auto max-h-full">
-        <div className="max-w-full">
+      <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
+        <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
             <h5 className="modal-title">Audit Trail - {formattedModulName}</h5>
             <button
@@ -205,8 +316,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-              onClick={onClose}
-            ></button>
+              onClick={onClose}></button>
           </div>
           <div className="modal-body">
             {modulName === "branch_mgmt" && (
@@ -223,6 +333,7 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                     const fieldNames = [
                       { fieldName: "p_lbrc_code", label: "Code" },
                       { fieldName: "p_lbrc_name", label: "Name" },
+                      { fieldName: "p_lbrc_group", label: "Group" },
                       { fieldName: "p_lbrc_address", label: "Address" },
                       { fieldName: "p_lbrc_city", label: "City" },
                       { fieldName: "p_lbrc_phone_num", label: "Phone Number" },
@@ -408,14 +519,86 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                 </tbody>
               </table>
             )}
+
+            {modulName === "role_management" && (
+              <>
+                <h2>Role Table</h2>
+                <table className="min-w-max w-full table-auto table-bordered">
+                  <thead>
+                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">Field Name</th>
+                      <th className="py-3 px-6 text-left">Before</th>
+                      <th className="py-3 px-6 text-left">After</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const fieldNames = [
+                        { fieldName: "p_rl_id", label: "ID" },
+                        { fieldName: "p_rl_name", label: "Name" },
+                        { fieldName: "p_rl_description", label: "Description" },
+                        { fieldName: "p_rl_status", label: "Status" },
+                        { fieldName: "p_rl_action_by", label: "Action By" },
+                        { fieldName: "p_rl_log_date", label: "Log Date" },
+                        { fieldName: "p_rl_log_action", label: "Log Action" },
+                      ];
+
+                      return fieldNames.map(({ fieldName, label }) => {
+                        const tableCells = renderRoleTableCell(fieldName);
+                        return (
+                          <tr key={fieldName}>
+                            <td className="py-3 px-6 text-left">{label}</td>
+                            {tableCells}
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+
+                <h2>Role Detail Table</h2>
+                <table className="min-w-max w-full table-auto table-bordered">
+                  <thead>
+                    <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                      <th className="py-3 px-6 text-left">Field Name</th>
+                      {renderRoleDetailTableCell("p_rld_log_action")}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const fieldNames = [
+                        { fieldName: "p_ids", label: "IDS" },
+                        { fieldName: "p_rld_id", label: "ID" },
+                        { fieldName: "p_rld_rl_id", label: "Role ID" },
+                        { fieldName: "p_rld_rlm_id", label: "Role Manager ID" },
+                        { fieldName: "p_rlm_name", label: "Role Manager Name" },
+                        { fieldName: "p_rlm_code", label: "Role Manager Code" },
+                        { fieldName: "p_rld_action_by", label: "Action By" },
+                        { fieldName: "p_rld_log_date", label: "Log Date" },
+                        { fieldName: "p_rld_log_action", label: "Log Action" },
+                      ];
+
+                      return fieldNames.map(({ fieldName, label }) => {
+                        const tableCells = renderRoleDetailTableCell(fieldName);
+                        return (
+                          <tr key={fieldName}>
+                            <td className="py-3 px-6 text-left">{label}</td>
+                            {tableCells}
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </>
+            )}
           </div>
           <div className="modal-footer">
             <button
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
-              onClick={onClose}
-            >
+              onClick={onClose}>
               Close
             </button>
           </div>

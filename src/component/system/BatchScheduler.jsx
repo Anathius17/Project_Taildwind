@@ -61,7 +61,6 @@ const BatchScheduler = () => {
     } catch (error) {
       // alert(error);
       postJDataUserResetIsLogin();
-      navigate("/");
     }
   };
 

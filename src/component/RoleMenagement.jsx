@@ -4,27 +4,31 @@ import ModalEdit from "./ModalEditRole";
 import ModalAdd from "./ModalAddRole";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import _ from "lodash";
 
 const RoleMenagement = () => {
   const [role, setRole] = useState([]);
   const [currentRole, setcurrentRole] = useState(role);
   const userid = JSON.parse(localStorage.getItem("userid"));
-  const [activeStatus, setActiveStatus] = useState(false);
 
   //const [token, setToken] = useState();
 
   // hit token
+  // const [token, setToken] = useState("");
+  // const getTokenApi = () => {
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+  // useEffect(() => {
+  //   getTokenApi();
+  // }, [token]);
+
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   // console.log(sessionData);
   const token = sessionData;
-  // Dapatkan data sesi
 
-  // get userid
-  //const userid = JSON.parse(localStorage.getItem("userid"));
-  //console.log("test1233");
-  //console.log(userid);
-  //const userid = sessionUserid;
-  // Dapatkan data sesi
+  const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
   useEffect(() => {
     if (token && token.map !== "") {
@@ -66,7 +70,8 @@ const RoleMenagement = () => {
   const filteredData = role.filter((item) =>
     item.rl_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const sortedData = _.orderBy(filteredData, ["rl_created_date"], ["desc"]);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -126,22 +131,23 @@ const RoleMenagement = () => {
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  // const [ip, setIP] = useState("");
+  // const [logid, setlogid] = useState("");
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const res = await axios.get("https://api.ipify.org/?format=json");
+  //     console.log(res.data);
+  //     setIP(res.data.ip);
+  //   };
 
-    getData();
-  }, []);
+  //   getData();
+  // }, []);
   // ? Menghapus pengguna
-  const [id, setDeleteRole] = useState("");
+  const [deleteRoleId, setDeleteRoleId] = useState("");
 
   const dataLogUserTracking = {
-    plcd: "general_setting",
+    plcd: "role_management",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
@@ -155,10 +161,10 @@ const RoleMenagement = () => {
 
   const Updateobjectdata = (val) => {
     DeleteRole(val);
-    Active(val);
   };
 
   const handleDeleteRole = (id) => {
+    console.log(deleteRoleId);
     Swal.fire({
       title: "Are you sure you want to delete this data?",
       showConfirmButton: true,
@@ -168,19 +174,15 @@ const RoleMenagement = () => {
       icon: "warning",
     }).then((result) => {
       if (result.isConfirmed) {
-        postDataLogUserTracking();
-        DeleteRole(id);
+        // postDataLogUserTracking();
+        deleteRole(id);
+        setDeleteRoleId(id);
       } else {
         Swal.fire("Cancelled", "", "error");
       }
     });
   };
 
-  // useEffect(() => {
-  //   if (id !== "") {
-  //     DeleteRole();
-  //   }
-  // }, [id]);
   const postDataLogUserTracking = async () => {
     let log = "";
     try {
@@ -210,49 +212,76 @@ const RoleMenagement = () => {
 
   const DeleteRole = async (val) => {
     try {
-      const userDelete = await axios.post(
-        "http://116.206.196.65:30983/skycore/role/delete",
-        {
-          role_id: roleEdit.rl_id,
-          role_detail_id: roleEdit.action
-            .filter((action) => action.is_checked)
-            .map((action) => action.rlm_id),
-          action_by: userid,
-          log_id: val,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      const userDelete = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/role/delete",
+          {
+            role_id: deleteRoleId,
+            role_detail_id: "",
+            action_by: userid,
+            log_id: val,
           },
-        }
-      );
-
-      Swal.fire("Role Berhasil Di Hapus", "", "success");
-      getRoleList();
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
+            Swal.fire("Role Berhasil Di Hapus", "", "success");
+            getRoleList();
+          } else {
+            Swal.fire(response.data.message, "", "error");
+            getRoleList();
+          }
+        });
     } catch (error) {
       alert(error);
     }
+  };
+  //     console.log(userDelete);
+  //     Swal.fire("Role Berhasil Di Hapus", "", "success");
+  //
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  useEffect(() => {
+    if (deleteRoleId !== "") {
+      postDataLogUserTracking();
+    }
+  }, [deleteRoleId]);
+
+  const deleteRole = (id) => {
+    setRole(role.filter((item) => item.rl_id !== id));
   };
 
   // action isactive
   const [idActive, setRoleActive] = useState("");
 
-  const handleActiveRole = (id) => {
+  const handleActiveRole = (id, idActive) => {
     setRoleActive(id);
-    Active(id);
+    Active(id, idActive);
   };
 
-  const Active = async (id, val) => {
+  const Active = async (id, idActive) => {
     try {
+      const requestData = {
+        role_id: id,
+        role_status: idActive ? "deactivate" : "activate",
+        action_by: userid,
+        log_id: id,
+      };
+
+      console.log("Data yang dikirim:", requestData); // Menambahkan console.log untuk mencetak data yang dikirim
+
       await axios.post(
         "http://116.206.196.65:30983/skycore/role/activate",
-        {
-          role_id: id,
-          role_status: activeStatus ? "activate" : "deactivate",
-          action_by: userid,
-          log_id: val,
-        },
+        requestData,
         {
           headers: {
             "Content-Type": "application/json",
@@ -263,11 +292,11 @@ const RoleMenagement = () => {
 
       Swal.fire("Role Berhasil Diupdate", "", "success");
       getRoleList();
-      setActiveStatus(!activeStatus); // Toggle status aktif/nonaktif
     } catch (errorUser) {
       console.log(errorUser);
     }
   };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -299,11 +328,17 @@ const RoleMenagement = () => {
         <div className="test">
           <h4> Role Management</h4>
         </div>
-        <div className="btn-new">
-          <button className="btn btn-primary" onClick={openModal}>
-            Add new
-          </button>
-        </div>
+        {level.map((item, i) => {
+          if (item.ldlmdescription === "lvl_adm_acl_add") {
+            return (
+              <div className="btn-new" key={i}>
+                <button className="btn btn-primary" onClick={openModal}>
+                  Add new
+                </button>
+              </div>
+            );
+          }
+        })}
       </div>
 
       <div className="card-body">
@@ -368,52 +403,82 @@ const RoleMenagement = () => {
                     <td className="py-2 px-4 text-center whitespace-nowrap font-semibold">
                       {rol.rl_created_by}
                     </td>
-                    <td className="py-2 px-4 text-center whitespace-nowrap ">
-                      <button
-                        className="btn btn-success btn-sm"
-                        onClick={() => editRole(rol.rl_id)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6">
-                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeleteRole(rol.rl_id)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
+                    <td className="py-2 px-4 text-left whitespace-nowrap ">
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_acl_modify") {
+                          return (
+                            <button
+                              key={i}
+                              className="btn btn-success btn-sm"
+                              onClick={() => editRole(rol.rl_id)}>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-6 h-6">
+                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                              </svg>
+                            </button>
+                          );
+                        }
+                      })}
 
-                      <button
-                        className="btn btn-warning btn-sm ml-1"
-                        onClick={() => handleActiveRole(rol.rl_id)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-6 h-6">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </button>
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_acl_delete") {
+                          return (
+                            <button
+                              key={i}
+                              className="btn btn-danger btn-sm ml-1"
+                              onClick={() => handleDeleteRole(rol.rl_id)}>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-6 h-6">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          );
+                        }
+                      })}
+
+                      {level.map((item, i) => {
+                        if (item.ldlmdescription === "lvl_adm_acl_act") {
+                          return (
+                            <>
+                              {rol.rl_status === false ? (
+                                <button
+                                  key={i}
+                                  className="btn btn-warning btn-sm ml-1"
+                                  onClick={() =>
+                                    handleActiveRole(rol.rl_id, rol.rl_status)
+                                  }>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-6 h-6">
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                </button>
+                              ) : null}
+                            </>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
                     </td>
                   </tr>
                 ))}
