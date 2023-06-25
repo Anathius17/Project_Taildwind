@@ -46,17 +46,18 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  // const [ip, setIP] = useState("");
+  // const [logid, setlogid] = useState("");
 
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data.ip);
-      setIP(res.data.ip);
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const res = await axios.get("https://api.ipify.org/?format=json");
+  //     console.log(res.data.ip);
+  //     setIP(res.data.ip);
+  //   };
+  //   getData();
+  // }, []);
 
   const dataLogUserTracking = {
     plcd: "role_management",

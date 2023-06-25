@@ -32,17 +32,19 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
     }
   }, [token]);
 
-  const [ip, setIP] = useState("");
+
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  // const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
-    //passing getData method to the lifecycle method
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const res = await axios.get("https://api.ipify.org/?format=json");
+  //     console.log(res.data);
+  //     setIP(res.data.ip);
+  //   };
+  //   //passing getData method to the lifecycle method
+  //   getData();
+  // }, []);
   const dataLogUserTracking = {
     plcd: "role_management",
     plusr: userid,

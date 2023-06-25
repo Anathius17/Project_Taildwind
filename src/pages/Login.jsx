@@ -50,14 +50,14 @@ const Login = (props) => {
   console.log(today);
 
   const [ip, setIP] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-
+  const [logid, setlogid] = useState("");
   useEffect(() => {
-    //passing getData method to the lifecycle method
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      console.log(res.data);
+      setIP(res.data.ip);
+    };
+
     getData();
   }, []);
 

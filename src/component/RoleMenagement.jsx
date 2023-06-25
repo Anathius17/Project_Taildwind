@@ -131,17 +131,18 @@ const RoleMenagement = () => {
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  // const [ip, setIP] = useState("");
+  // const [logid, setlogid] = useState("");
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const res = await axios.get("https://api.ipify.org/?format=json");
+  //     console.log(res.data);
+  //     setIP(res.data.ip);
+  //   };
 
-    getData();
-  }, []);
+  //   getData();
+  // }, []);
   // ? Menghapus pengguna
   const [deleteRoleId, setDeleteRoleId] = useState("");
 
@@ -225,14 +226,28 @@ const RoleMenagement = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
-      console.log(userDelete);
-      Swal.fire("Role Berhasil Di Hapus", "", "success");
-      getRoleList();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      )
+      .then((response) => {
+        console.log(response.data.status);
+        if (response.data.status === "true") {
+          Swal.fire("Role Berhasil Di Hapus", "", "success");
+          getRoleList();
+        } else {
+          Swal.fire(response.data.message, "", "error");
+          getRoleList();
+        }
+      });
+  } catch (error) {
+    alert(error);
+  }
+};
+  //     console.log(userDelete);
+  //     Swal.fire("Role Berhasil Di Hapus", "", "success");
+  //     
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
     if (deleteRoleId !== "") {
