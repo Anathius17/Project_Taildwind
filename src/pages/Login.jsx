@@ -602,7 +602,7 @@ const Login = (props) => {
                   required=""
                 />
               </div>
-              <div className="flex gap-10 bg-gray-700 items-center p-2">
+              <div className="flex gap-5 bg-gray-700 items-center p-2">
                 <div>
                   <input
                     type="text"
