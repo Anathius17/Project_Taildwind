@@ -212,38 +212,39 @@ const RoleMenagement = () => {
 
   const DeleteRole = async (val) => {
     try {
-      const userDelete = await axios.post(
-        "http://116.206.196.65:30983/skycore/role/delete",
-        {
-          role_id: deleteRoleId,
-          role_detail_id: "",
-          action_by: userid,
-          log_id: val,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+      const userDelete = await axios
+        .post(
+          "http://116.206.196.65:30983/skycore/role/delete",
+          {
+            role_id: deleteRoleId,
+            role_detail_id: "",
+            action_by: userid,
+            log_id: val,
           },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status === "true") {
-          Swal.fire("Role Berhasil Di Hapus", "", "success");
-          getRoleList();
-        } else {
-          Swal.fire(response.data.message, "", "error");
-          getRoleList();
-        }
-      });
-  } catch (error) {
-    alert(error);
-  }
-};
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.status);
+          if (response.data.status === "true") {
+            Swal.fire("Role Berhasil Di Hapus", "", "success");
+            getRoleList();
+          } else {
+            Swal.fire(response.data.message, "", "error");
+            getRoleList();
+          }
+        });
+    } catch (error) {
+      alert(error);
+    }
+  };
   //     console.log(userDelete);
   //     Swal.fire("Role Berhasil Di Hapus", "", "success");
-  //     
+  //
   //   } catch (error) {
   //     console.log(error);
   //   }

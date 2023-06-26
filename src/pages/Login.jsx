@@ -74,6 +74,7 @@ const Login = (props) => {
   // Simpan data sesi
   localStorage.setItem("tokenData", JSON.stringify(token));
   localStorage.setItem("userid", JSON.stringify(username));
+  localStorage.setItem("ipclient", JSON.stringify(ip));
 
   const getTokenApi = () => {
     getToken().then((e) => {
@@ -563,11 +564,13 @@ const Login = (props) => {
               className="space-y-4 md:space-y-6"
               onSubmit={(event) => {
                 handleSubmit(event);
-              }}>
+              }}
+            >
               <div>
                 <label
                   for="email"
-                  className="block mb-2 text-sm font-medium text-white dark:text-white">
+                  className="block mb-2 text-sm font-medium text-white dark:text-white"
+                >
                   User Name
                 </label>
                 <input
@@ -584,7 +587,8 @@ const Login = (props) => {
               <div>
                 <label
                   for="password"
-                  className="block mb-2 text-sm font-medium dark:text-white text-white">
+                  className="block mb-2 text-sm font-medium dark:text-white text-white"
+                >
                   Password
                 </label>
                 <input
@@ -616,7 +620,8 @@ const Login = (props) => {
               <div className="">
                 <button
                   type="submit"
-                  className="text-white bg-teal-800 hover:bg-teal-200 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">
+                  className="text-white bg-teal-800 hover:bg-teal-200 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full"
+                >
                   Login
                 </button>
               </div>
