@@ -9,7 +9,7 @@ import {
   Link,
   NavLink,
 } from "react-router-dom";
-
+import _ from "lodash";
 import axios from "axios";
 
 const ApiManagement = () => {
@@ -184,7 +184,8 @@ const ApiManagement = () => {
   const filteredData = api.filter((item) =>
     item.api_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const sortedData = _.orderBy(filteredData, ["api_modified_date"], ["desc"]);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -239,7 +240,8 @@ const ApiManagement = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control">
+                className="form-control"
+              >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -274,11 +276,13 @@ const ApiManagement = () => {
                 {currentItems.map((apis) => (
                   <tr
                     key={apis.api_code}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
+                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                  >
                     <td
                       id="txtcode"
                       name="txtcode"
-                      className="py-3 px-6 text-left whitespace-nowrap font-semibold">
+                      className="py-3 px-6 text-left whitespace-nowrap font-semibold"
+                    >
                       {apis.api_code}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
@@ -340,7 +344,8 @@ const ApiManagement = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}>
+                          disabled={currentPage === 1}
+                        >
                           Previous
                         </button>
                       </li>
@@ -353,7 +358,8 @@ const ApiManagement = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}>
+                            disabled={pageNumber === currentPage}
+                          >
                             {pageNumber}
                           </button>
                         ))}
@@ -362,7 +368,8 @@ const ApiManagement = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}>
+                          disabled={currentPage === totalPages}
+                        >
                           Next
                         </button>
                       </li>
