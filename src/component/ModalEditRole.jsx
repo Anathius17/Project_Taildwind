@@ -199,15 +199,29 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
           return {
             ...ctgry,
             is_checked: !ctgry.is_checked, // Toggle the checked status
+            detail: ctgry.detail.map((detailItem) => ({
+              ...detailItem,
+              is_checked: !ctgry.is_checked, // Toggle the checked status
+              child: detailItem.child.map((childItem) => ({
+                ...childItem,
+                is_checked: !ctgry.is_checked, // Toggle the checked status
+              })),
+            })),
           };
         }
+
         const updatedDetail = ctgry.detail.map((detailItem) => {
           if (detailItem.rlm_id === item.rlm_id) {
             return {
               ...detailItem,
               is_checked: !detailItem.is_checked, // Toggle the checked status
+              child: detailItem.child.map((childItem) => ({
+                ...childItem,
+                is_checked: !detailItem.is_checked, // Toggle the checked status
+              })),
             };
           }
+
           const updatedChild = detailItem.child.map((childItem) => {
             if (childItem.rlm_id === item.rlm_id) {
               return {
@@ -251,7 +265,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
           if (action.rlm_id === item.rlm_id) {
             return {
               ...action,
-              is_checked: !action.is_checked,
+              is_checked: !action.is_checked, // Toggle the checked status
             };
           }
           return action;
@@ -268,8 +282,16 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
         checkedRoleIds
       );
 
+      const updatedRoleidWithCheckedStatus = {
+        ...updatedRoleid,
+        action: updatedRoleid.action.map((action) => ({
+          ...action,
+          is_checked: updatedCheckedRoleIds.includes(action.rlm_id),
+        })),
+      };
+
       setUpdatedCheckedRoleIds(updatedCheckedRoleIds);
-      setroleid(updatedRoleid);
+      setroleid(updatedRoleidWithCheckedStatus);
 
       return updatedCtgrydtl;
     });
