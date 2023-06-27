@@ -32,7 +32,7 @@ const ModalAddRole = ({ isOpen, onClose, reload, currentUser }) => {
     }
   }, [token]);
 
-  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
   // const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
   // useEffect(() => {

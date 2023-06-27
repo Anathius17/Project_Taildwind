@@ -135,16 +135,16 @@ const Modal = ({
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
+  // const [ip, setIP] = useState("");
+  // const [logid, setlogid] = useState("");
+  // const getData = async () => {
+  //   const res = await axios.get("https://api.ipify.org/?format=json");
+  //   console.log(res.data);
+  //   setIP(res.data.ip);
+  // };
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -158,7 +158,7 @@ const Modal = ({
     plqry: "-",
     plbro: browserName + " " + browserVersion,
     plos: osName,
-    plcli: ip,
+    plcli: "ip",
   };
 
   const Updateobjectdata = (val) => {

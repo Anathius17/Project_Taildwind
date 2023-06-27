@@ -19,7 +19,7 @@
   --orange: #fd7e14;
   --yellow: #f6c23e;
   --green: #1cc88a;
-  --teal: #20c9a6;
+  --teal: #27c9de;
   --cyan: #36b9cc;
   --white: #fff;
   --gray: #858796;
@@ -8199,10 +8199,10 @@ button.bg-dark:focus {
   margin-bottom: 1.5rem !important;
 }
 
-.ml-4,
+/* .ml-4,
 .mx-4 {
   margin-left: 1.5rem !important;
-}
+} */
 
 .m-5 {
   margin: 3rem !important;
@@ -8223,10 +8223,10 @@ button.bg-dark:focus {
   margin-bottom: 3rem !important;
 }
 
-.ml-5,
+/* .ml-5,
 .mx-5 {
-  margin-left: 3rem !important;
-}
+  margin-left: 1.5rem !important;
+} */
 
 .p-0 {
   padding: 0 !important;

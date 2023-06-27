@@ -534,13 +534,11 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                   <tbody>
                     {(() => {
                       const fieldNames = [
-                        { fieldName: "p_rl_id", label: "ID" },
                         { fieldName: "p_rl_name", label: "Name" },
                         { fieldName: "p_rl_description", label: "Description" },
                         { fieldName: "p_rl_status", label: "Status" },
                         { fieldName: "p_rl_action_by", label: "Action By" },
                         { fieldName: "p_rl_log_date", label: "Log Date" },
-                        { fieldName: "p_rl_log_action", label: "Log Action" },
                       ];
 
                       return fieldNames.map(({ fieldName, label }) => {
@@ -567,15 +565,10 @@ const ModalTrail = ({ isOpen, onClose, modulName, b_log_id, lgc_name }) => {
                   <tbody>
                     {(() => {
                       const fieldNames = [
-                        { fieldName: "p_ids", label: "IDS" },
-                        { fieldName: "p_rld_id", label: "ID" },
-                        { fieldName: "p_rld_rl_id", label: "Role ID" },
-                        { fieldName: "p_rld_rlm_id", label: "Role Manager ID" },
                         { fieldName: "p_rlm_name", label: "Role Manager Name" },
                         { fieldName: "p_rlm_code", label: "Role Manager Code" },
                         { fieldName: "p_rld_action_by", label: "Action By" },
                         { fieldName: "p_rld_log_date", label: "Log Date" },
-                        { fieldName: "p_rld_log_action", label: "Log Action" },
                       ];
 
                       return fieldNames.map(({ fieldName, label }) => {

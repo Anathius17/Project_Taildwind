@@ -46,7 +46,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
   };
 
   // insert log activity
-  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
   // const [ip, setIP] = useState("");
   // const [logid, setlogid] = useState("");
 
@@ -196,32 +196,52 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     setListCtgrDtl((prevCtgrydtl) => {
       const updatedCtgrydtl = prevCtgrydtl.map((ctgry) => {
         if (ctgry.rlm_id === item.rlm_id) {
+          const is_checked = !ctgry.is_checked; // Toggle the checked status
           return {
             ...ctgry,
-            is_checked: !ctgry.is_checked, // Toggle the checked status
+            is_checked,
+            detail: ctgry.detail.map((detailItem) => ({
+              ...detailItem,
+              is_checked,
+              child: detailItem.child.map((childItem) => ({
+                ...childItem,
+                is_checked,
+              })),
+            })),
           };
         }
+
         const updatedDetail = ctgry.detail.map((detailItem) => {
           if (detailItem.rlm_id === item.rlm_id) {
+            const is_checked = !detailItem.is_checked; // Toggle the checked status
+            const updatedChild = detailItem.child.map((childItem) => ({
+              ...childItem,
+              is_checked: !detailItem.is_checked, // Toggle the checked status of childItem
+            }));
             return {
               ...detailItem,
-              is_checked: !detailItem.is_checked, // Toggle the checked status
+              is_checked,
+              child: updatedChild,
             };
           }
+
           const updatedChild = detailItem.child.map((childItem) => {
             if (childItem.rlm_id === item.rlm_id) {
+              const is_checked = !childItem.is_checked; // Toggle the checked status
               return {
                 ...childItem,
-                is_checked: !childItem.is_checked, // Toggle the checked status
+                is_checked,
               };
             }
             return childItem;
           });
+
           return {
             ...detailItem,
             child: updatedChild,
           };
         });
+
         return {
           ...ctgry,
           detail: updatedDetail,
@@ -251,7 +271,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
           if (action.rlm_id === item.rlm_id) {
             return {
               ...action,
-              is_checked: !action.is_checked,
+              is_checked: !action.is_checked, // Toggle the checked status
             };
           }
           return action;
@@ -268,8 +288,28 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
         checkedRoleIds
       );
 
+      const updatedCtgrydtlIds = updatedCtgrydtl.map((ctgry) => ctgry.rlm_id);
+      const updatedDetailIds = updatedCtgrydtl.flatMap((ctgry) =>
+        ctgry.detail.map((detailItem) => detailItem.rlm_id)
+      );
+      const updatedChildIds = updatedCtgrydtl.flatMap((ctgry) =>
+        ctgry.detail.flatMap((detailItem) =>
+          detailItem.child.map((childItem) => childItem.rlm_id)
+        )
+      );
+
+      const updatedRoleidWithCheckedStatus = {
+        ...updatedRoleid,
+        action: updatedRoleid.action.map((action) => ({
+          ...action,
+          is_checked: updatedCheckedRoleIds.includes(action.rlm_id),
+          detail: updatedDetailIds.includes(action.rlm_id),
+          child: updatedChildIds.includes(action.rlm_id),
+        })),
+      };
+
       setUpdatedCheckedRoleIds(updatedCheckedRoleIds);
-      setroleid(updatedRoleid);
+      setroleid(updatedRoleidWithCheckedStatus);
 
       return updatedCtgrydtl;
     });
