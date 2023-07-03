@@ -6,30 +6,43 @@ import ModalEdit from "./ModalEditBranch";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  Link,
+  NavLink,
+} from "react-router-dom";
 
 const BranchMenagement = () => {
   const [branch, setBranch] = useState([]);
   const [currentBranch, setCurrentBranch] = useState(branch);
-  //const [token, setToken] = useState();
 
   // hit token
+  // const [token, setToken] = useState("");
   // const getTokenApi = () => {
-  //     getToken().then((e) => {
-  //       setToken(e);
-  //     });
-  //   };
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+  // useEffect(() => {
+  //   getTokenApi();
+  // }, [token]);
 
-  //   useEffect(() => {
-  //     getTokenApi();
-  //   }, [token]);
+
 
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-  // console.log(sessionData);
   const token = sessionData;
-  // Dapatkan data sesi
+
+
+
+  // end token
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
+  const navigate = useNavigate();
+  const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
   useEffect(() => {
     if (token && token.map !== "") {
@@ -52,25 +65,41 @@ const BranchMenagement = () => {
       const cekData = listbranch.data.data.map((e) => {
         return e;
       });
-
+    
       setBranch(cekData);
     } catch (errorbranch) {
-      alert(errorbranch);
+      //alert(errorbranch);
+      postJDataUserResetIsLogin();
+      navigate("/");
+    }
+  };
+
+  const datalogout = {
+    p_usr: userid,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
     }
   };
 
   // log activity object
-  const [ip, setIP] = useState("");
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    console.log(res.data);
-    setIP(res.data.ip);
-  };
-
-  useEffect(() => {
-    //passing getData method to the lifecycle method
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
 
   const dataLogUserTracking = {
     plcd: "branch_mgmt",
@@ -85,7 +114,7 @@ const BranchMenagement = () => {
     plcli: ip,
   };
 
-  const postDataLogUserTracking = async () => {
+  const postDataLogUserTracking = async (id) => {
     let log = "";
     try {
       const frisLogin = await axios
@@ -103,10 +132,12 @@ const BranchMenagement = () => {
           console.log(response.data.data[0].resultprocess);
           log = response.data.data[0].resultprocess;
         });
-      await deletebranchbycode(log);
+        console.log("delete1");
+      await deletebranchbycode(log, id);
       //alert("postDataLogUserTracking Berhasil");
     } catch (error) {
       alert(error);
+      console.log("delete2");
     }
   };
 
@@ -115,18 +146,18 @@ const BranchMenagement = () => {
 
   //! --------for API delete--------
 
-  const deletebranchbycode = (val) => {
-    Deletebranch(val);
+  const deletebranchbycode = (val, code) => {
+    Deletebranch(val, code);
   };
 
-  const Deletebranch = async (val) => {
+  const Deletebranch = async (val, code) => {
     try {
       const branchDelete = await axios
         .post(
           "http://116.206.196.65:30983/skycore/Branch/delete",
           //JSON.stringify(hitDelete),
           {
-            code: branchcode,
+            code: code,
             logid: val,
           },
           {
@@ -153,11 +184,6 @@ const BranchMenagement = () => {
 
   // ? Menghapus pengguna
   const handleDeletebranch = (id) => {
-    // if (window.confirm("Anda yakin ingin menghapus pengguna ini?")) {
-    //   deletebranch(id);
-    //   setbranchcode(id);
-    // }
-
     Swal.fire({
       title: "Are you sure you want to delete this data?",
       showConfirmButton: true,
@@ -168,18 +194,18 @@ const BranchMenagement = () => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        //postDataLogUserTracking();
         deletebranch(id);
         setbranchcode(id);
+        postDataLogUserTracking(id);
       } else Swal.fire(" Cancelled", "", "error");
     });
   };
 
-  useEffect(() => {
-    if (branchcode !== "") {
-      postDataLogUserTracking();
-    }
-  }, [branchcode]);
+  // useEffect(() => {
+  //   if (branchcode !== "") {
+  //     postDataLogUserTracking();
+  //   }
+  // }, [branchcode]);
 
   const deletebranch = (id) => {
     setBranch(branch.filter((brc) => brc.code !== id));
@@ -222,9 +248,9 @@ const BranchMenagement = () => {
   //! Edit branch
   const [detaiBranchParam, setDetaiBranchParam] = useState("");
 
-  //   useEffect(() => {
-  //     getBranchDetail();
-  //   }, [detaiBranchParam]);
+    useEffect(() => {
+      getBranchDetail();
+    }, [detaiBranchParam]);
 
   const editBranch = (branchcode) => {
     setDetaiBranchParam(branchcode);
@@ -281,9 +307,9 @@ const BranchMenagement = () => {
     // window.location.reload();
   };
 
-  useEffect(() => {
-    getBranchDetail();
-  }, [detaiBranchParam]);
+  // useEffect(() => {
+  //   getBranchDetail();
+  // }, [detaiBranchParam]);
 
   const groupOptions = [
     "Branch",
@@ -299,11 +325,18 @@ const BranchMenagement = () => {
         <div className="test">
           <h4> Branch Management</h4>
         </div>
-        <div className="btn-new">
-          <button className="btn btn-primary" onClick={openModal}>
-            Add new
-          </button>
-        </div>
+        {level.map((item, i) => {
+          if (item.ldlmdescription === "lvl_prm_brm_add")
+          {
+            return (
+            <div className="btn-new" key={i}>
+            <button className="btn btn-primary" onClick={openModal}>
+              Add new
+            </button>
+            </div>
+            )
+          }
+       })}
       </div>
 
       <div className="card-body">
@@ -314,8 +347,7 @@ const BranchMenagement = () => {
               <select
                 value={itemsPerPage}
                 onChange={handleEntriesChange}
-                className="form-control"
-              >
+                className="form-control">
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
@@ -336,7 +368,7 @@ const BranchMenagement = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full ">
+            <table className="min-w-max w-full table-bordered">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-center">Branch Code</th>
@@ -352,8 +384,7 @@ const BranchMenagement = () => {
                 {currentItems.map((brc) => (
                   <tr
                     key={brc.lbrc_id}
-                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
-                  >
+                    className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
                       {brc.lbrc_code}
                     </td>
@@ -373,30 +404,74 @@ const BranchMenagement = () => {
                       {brc.lbrc_phone_num}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
-                      <button
+                    {level.map((item, i) => {
+                      if (item.ldlmdescription === "lvl_prm_brm_edit")
+                        {
+                          return (
+                          <button key={i}
+                            className="btn btn-success btn-sm"
+                            onClick={() => editBranch(brc.lbrc_code)}>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-6 h-6">
+                              <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                              <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                            </svg>
+                          </button>
+                          )
+                        }
+             
+                        })}
+
+                          {level.map((item, i) => {
+                            
+                            if (item.ldlmdescription === "lvl_prm_brm_del")
+                            {
+                              return (
+                              <button key={i}
+                                className="btn btn-danger btn-sm ml-1" 
+                                onClick={() => handleDeletebranch(brc.lbrc_code)} >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  className="w-6 h-6">
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                              )
+                            }
+                        
+                          })}
+                     
+                    
+                        <></>
+                      {/* <button
                         className="btn btn-success btn-sm"
-                        onClick={() => editBranch(brc.lbrc_code)}
-                      >
+                        onClick={() => editBranch(brc.lbrc_code)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6"
-                        >
+                          className="w-3.5 h-3.5">
                           <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
                           <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
                         </svg>
                       </button>
                       <button
                         className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeletebranch(brc.lbrc_code)}
-                      >
+                        onClick={() => handleDeletebranch(brc.lbrc_code)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-6 h-6"
-                        >
+                          className="w-3.5 h-3.5">
                           <path
                             fillRule="evenodd"
                             d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
@@ -404,7 +479,7 @@ const BranchMenagement = () => {
                           />
                         </svg>
                       </button>
-                      <></>
+                      <></> */}
                     </td>
                   </tr>
                 ))}
@@ -421,8 +496,7 @@ const BranchMenagement = () => {
                         <button
                           className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}
-                        >
+                          disabled={currentPage === 1}>
                           Previous
                         </button>
                       </li>
@@ -435,8 +509,7 @@ const BranchMenagement = () => {
                             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            disabled={pageNumber === currentPage}
-                          >
+                            disabled={pageNumber === currentPage}>
                             {pageNumber}
                           </button>
                         ))}
@@ -445,8 +518,7 @@ const BranchMenagement = () => {
                         <button
                           className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                           onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}
-                        >
+                          disabled={currentPage === totalPages}>
                           Next
                         </button>
                       </li>
@@ -463,8 +535,7 @@ const BranchMenagement = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         reload={getBranchList}
-        groupOptions={groupOptions}
-      >
+        groupOptions={groupOptions}>
         {/* <button onClick={closeModal}>Tutup Modal</button> */}
       </Modal>
 

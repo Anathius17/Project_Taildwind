@@ -1,14 +1,16 @@
 import Login from "./pages/Login";
+
 import Dashboard from "./pages/Dashboard";
+import DasboardDemo from "./pages/DashboardFile/DashboardHome";
 
 // ! untuk testing
 
 import BranchMenagement from "./component/branchmgmt/BranchManagement";
 
 // ! untuk testing
-import Demo from "./component/UserMenagement";
-import Rule from "./component/RuleMenagement";
-import Modal from "./component/Modal";
+import Demo from "./component/usermanagement/UserMenagement";
+import Rule from "./component/RoleMenagement";
+import Modal from "./component/usermanagement/Modal";
 import BatchScheduler from "./component/system/BatchScheduler";
 
 import React, { useState, useEffect } from "react";
@@ -34,6 +36,7 @@ function App() {
   const [menuTest, setMenuTest] = useState();
 
   console.log(menuTest);
+
   const handleRoleDetail = (data) => {
     setDataRoleUserDetail(data);
   };
@@ -73,6 +76,7 @@ function App() {
           mn_icon: "",
           mn_breadcrumb: "User Management",
           child: [],
+          element: <Demo />,
         },
         {
           id: "5",
@@ -84,6 +88,7 @@ function App() {
           mn_icon: "",
           mn_breadcrumb: "Role Management",
           child: [],
+          element: <Rule />,
         },
         {
           id: "6",
@@ -109,7 +114,7 @@ function App() {
             {
               id: "12",
               mn_name: "Batch Schedule Checker",
-              mn_link: "/BatchSchedule/Checker",
+              mn_link: "BatchScheduleChecker",
               mn_parentid: "6",
               mn_acl: "lvl_sys_bch_sch_chk",
               mn_order: "2",
@@ -120,7 +125,7 @@ function App() {
             {
               id: "13",
               mn_name: "Batch Schedule Approval",
-              mn_link: "/BatchSchedule/Approval",
+              mn_link: "BatchScheduleApproval",
               mn_parentid: "6",
               mn_acl: "lvl_sys_bch_sch_apr",
               mn_order: "3",
@@ -178,7 +183,7 @@ function App() {
         {
           id: "14",
           mn_name: "Api Management",
-          mn_link: "/apimanagement",
+          mn_link: "Apimanagement",
           mn_parentid: "3",
           mn_acl: "lvl_prm_api",
           mn_order: "3",
@@ -305,106 +310,43 @@ function App() {
 
   const menuLevel = [
     {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_dash",
-      modules: "CORE",
-    },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
+      usruserid: "devina_gm",
+      usrname: "devina wulandar a",
+      usrnip: "11.22.MM",
+      usraccesslevel: "51",
+      usrbranch: "BC004",
       usrstatus: 1,
       ldlmdescription: "lvl_adm",
       modules: "CORE",
     },
     {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_prm",
-      modules: "CORE",
-    },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
+      usruserid: "devina_gm",
+      usrname: "devina wulandar a",
+      usrnip: "11.22.MM",
+      usraccesslevel: "51",
+      usrbranch: "BC004",
       usrstatus: 1,
       ldlmdescription: "lvl_adm_mgt",
       modules: "CORE",
     },
     {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
+      usruserid: "devina_gm",
+      usrname: "devina wulandar a",
+      usrnip: "11.22.MM",
+      usraccesslevel: "51",
+      usrbranch: "BC004",
       usrstatus: 1,
       ldlmdescription: "lvl_adm_acl",
       modules: "CORE",
     },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_adm_sys",
-      modules: "CORE",
-    },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_adm_adt",
-      modules: "CORE",
-    },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_prm_gnr",
-      modules: "CORE",
-    },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_prm_brm",
-      modules: "CORE",
-    },
-    {
-      usruserid: "crm_admin",
-      usrname: "crm_admin",
-      usrnip: "crm_admin",
-      usraccesslevel: "1",
-      usrbranch: "BC001",
-      usrstatus: 1,
-      ldlmdescription: "lvl_sys_bch_sch",
-      modules: "CORE",
-    },
   ];
+
+  localStorage.setItem("pebanding", JSON.stringify(menuLevel));
+
+  const dataMenu = localStorage.getItem("MenuList");
+  const parsedData = JSON.parse(dataMenu);
+  const dataMenuLevel = localStorage.getItem("detailRoleUser");
+  const parsedDataLevel = JSON.parse(dataMenuLevel);
   return (
     <Router>
       <Routes>
@@ -421,10 +363,18 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            <Dashboard listmenu={users} levelmenu={menuLevel} />
+            <Dashboard
+              listmenu={parsedData}
+              levelmenu={parsedDataLevel}
+              userid={admin}
+            />
           }
         />
-        <Route path="*" element={<Navigate to="/dashboard/" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to="/dashboard/dashboard" replace />}
+        />
+        <Route path="/Demo" element={<DasboardDemo />} />
       </Routes>
     </Router>
   );

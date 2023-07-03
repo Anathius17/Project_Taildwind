@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
 import { saveAs } from "file-saver";
+import _ from "lodash";
 
 const AuditTrail = () => {
   const [users, setUsers] = useState([]);
@@ -118,7 +119,8 @@ const AuditTrail = () => {
     item.b_log_action_date.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const sortedData = _.orderBy(filteredData, ["b_log_id"], ["desc"]);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Menghitung jumlah total halaman
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -363,7 +365,7 @@ const AuditTrail = () => {
                   <th className="py-3 px-6 text-center">User Id</th>
                   <th className="py-3 px-6 text-center">Action Date</th>
                   <th className="py-3 px-6 text-center">Client IP</th>
-                  <th className="py-3 px-6 text-center">Server Name</th>
+                  <th className="py-3 px-6 text-center">Operation System</th>
                   <th className="py-3 px-6 text-center">Activity</th>
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
@@ -388,7 +390,7 @@ const AuditTrail = () => {
                         {modul.b_log_https}
                       </td>
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
-                        {modul.b_log_server_name}
+                        {modul.b_log_operating_system}
                       </td>
                       <td className="py-3 px-6 text-center  whitespace-nowrap font-semibold">
                         {modul.b_log_activity}

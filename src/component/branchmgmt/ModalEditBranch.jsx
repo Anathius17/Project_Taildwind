@@ -15,17 +15,24 @@ const ModalBranch = ({
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
 
-  const [token, setToken] = useState();
+
   const [branch, setBranch] = useState(currentBranch);
 
+  // hit token
+  const [token, setToken] = useState("");
   const getTokenApi = () => {
     getToken().then((e) => {
       setToken(e);
     });
   };
-
   useEffect(() => {
     getTokenApi();
+    localStorage.setItem("tokenData", JSON.stringify(token));
+  }, [token]);
+
+  // end token
+
+  useEffect(() => {
     setBranch(currentBranch);
   }, [currentBranch]);
 
@@ -39,17 +46,9 @@ const ModalBranch = ({
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
   const [logid, setlogid] = useState("");
-
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data.ip);
-      setIP(res.data.ip);
-    };
-    getData();
-  }, []);
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  
 
   const dataLogUserTracking = {
     plcd: "branch_mgmt",

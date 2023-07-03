@@ -3,17 +3,27 @@ import React, { useState, useEffect } from "react";
 import { getToken } from "../../API/api";
 import ModalEdit from "./ModalEditGeneral";
 import axios from "axios";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+  Link,
+  NavLink,
+} from "react-router-dom";
 
 const GeneralSetting = () => {
   const [general, setGeneral] = useState([]);
   const [currentGeneral, setCurrentGeneral] = useState(general);
+  const navigate = useNavigate();
+  const userid = JSON.parse(localStorage.getItem("userid"));
   //const [token, setToken] = useState();
 
-  // hit token
-  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
-  // console.log(sessionData);
-  const token = sessionData;
-  // Dapatkan data sesi
+    // hit token
+    const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+    const token = sessionData;
+
+    // end token
 
   // get userid
   //const userid = JSON.parse(localStorage.getItem("userid"));
@@ -46,7 +56,33 @@ const GeneralSetting = () => {
 
       setGeneral(cekData);
     } catch (error) {
-      alert(error);
+      //alert(error);
+      postJDataUserResetIsLogin();
+      navigate("/");
+    }
+  };
+
+  const datalogout = {
+    p_usr: userid,
+  };
+
+  const postJDataUserResetIsLogin = async () => {
+    try {
+      const failLogin = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/postJDataUserResetIsLogin",
+        JSON.stringify(datalogout),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // alert("failLogin Berhasil");
+    } catch (error) {
+      alert("reset fail login gagal");
+      console.log(error);
     }
   };
 
@@ -179,7 +215,7 @@ const GeneralSetting = () => {
             {/* <input type="number" /> */}
           </div>
           <div className="datatable-container">
-            <table className="min-w-max w-full ">
+            <table className="min-w-max w-full table-bordered">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-center">Code</th>

@@ -11,17 +11,18 @@ const ModalGeneral = ({ isOpen, onClose, currentGeneral, reload }) => {
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
-  console.log("test1233");
-  console.log(userid);
 
   const getTokenApi = () => {
     getToken().then((e) => {
       setToken(e);
     });
   };
-
   useEffect(() => {
     getTokenApi();
+    localStorage.setItem("tokenData", JSON.stringify(token));
+  }, [token]);
+
+  useEffect(() => {
     setGeneral(currentGeneral);
   }, [currentGeneral]);
 
@@ -35,17 +36,9 @@ const ModalGeneral = ({ isOpen, onClose, currentGeneral, reload }) => {
   };
 
   // insert log activity
-  const [ip, setIP] = useState("");
+  const ip = JSON.parse(localStorage.getItem("ipclient"));
   const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
-
-    getData();
-  }, []);
+  
 
   const dataLogUserTracking = {
     plcd: "general_setting",
