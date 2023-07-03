@@ -288,29 +288,16 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
         checkedRoleIds
       );
 
-      const updatedCtgrydtlIds = updatedCtgrydtl.map((ctgry) => ctgry.rlm_id);
-      const updatedDetailIds = updatedCtgrydtl.flatMap((ctgry) =>
-        ctgry.detail.map((detailItem) => detailItem.rlm_id)
-      );
-      const updatedChildIds = updatedCtgrydtl.flatMap((ctgry) =>
-        ctgry.detail.flatMap((detailItem) =>
-          detailItem.child.map((childItem) => childItem.rlm_id)
-        )
-      );
-
       const updatedRoleidWithCheckedStatus = {
         ...updatedRoleid,
         action: updatedRoleid.action.map((action) => ({
           ...action,
           is_checked: updatedCheckedRoleIds.includes(action.rlm_id),
-          detail: updatedDetailIds.includes(action.rlm_id),
-          child: updatedChildIds.includes(action.rlm_id),
         })),
       };
 
-      setUpdatedCheckedRoleIds(updatedCheckedRoleIds);
       setroleid(updatedRoleidWithCheckedStatus);
-
+      console.log("isi check = ", updatedRoleidWithCheckedStatus);
       return updatedCtgrydtl;
     });
   };
@@ -320,7 +307,7 @@ const ModalEditRole = ({ isOpen, onClose, reload, currentRole }) => {
     .filter((action) => action.is_checked)
     .map((action) => action.rlm_id);
 
-  console.log(checkedValues);
+  console.log("Isi rlm_id = ", checkedValues);
 
   useEffect(() => {
     getListCategoryDetail();
