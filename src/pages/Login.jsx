@@ -24,6 +24,14 @@ import Captcha from "react-captcha-code";
 // };
 
 const Login = (props) => {
+  const [hasReloaded, setHasReloaded] = useState(false);
+
+  // useEffect(() => {
+  //   // Jalankan window.location.reload() hanya sekali
+  //   // window.location.reload();
+
+  // }, []);
+
   // ! pada kodingan dibawah kita memasukan nilai ke variabel captcha pada render awal
   const [captcha, setCaptcha] = useState("");
   // ! pada kodingan dibawah kita set input pada saat render pertama
@@ -48,16 +56,15 @@ const Login = (props) => {
 
   const today = new Date();
   console.log(today);
-
   const [ip, setIP] = useState("");
-  const [logid, setlogid] = useState("");
-  useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("https://api.ipify.org/?format=json");
-      console.log(res.data);
-      setIP(res.data.ip);
-    };
+  localStorage.setItem("ipAddres", JSON.stringify(ip));
+  const getData = async () => {
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    console.log(res.data);
+    setIP(res.data.ip);
+  };
 
+  useEffect(() => {
     getData();
   }, []);
 
@@ -74,7 +81,6 @@ const Login = (props) => {
   // Simpan data sesi
   localStorage.setItem("tokenData", JSON.stringify(token));
   localStorage.setItem("userid", JSON.stringify(username));
-  localStorage.setItem("ipclient", JSON.stringify(ip));
 
   const getTokenApi = () => {
     getToken().then((e) => {
@@ -550,13 +556,13 @@ const Login = (props) => {
     // </div>
 
     <div className="fullscreen_bg bg-gray-50 dark:bg-gray-900">
-      <div className="flex justify-end  py-8 mx-auto md:h-screen lg:py-0">
+      <div className="flex justify-end py-8 mx-auto md:h-screen lg:py-0">
         {/* <div>
           <img src={Branch} alt="" className="w-96 my-20 " />
         </div> */}
         <div className="w-full md:w-full lg:w-full bg-gradient-to-b from-teal-200 to-teal-600 rounded-bl-full shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 ">
           <div className="flex justify-center">
-            <img className="w-32 mt-28 sm:mt-28" src={Logo} alt="logo" />
+            <img className="w-32 mt-10 sm:mt-28" src={Logo} alt="logo" />
           </div>
 
           <div className="p-36 space-y-4  md:space-y-6 sm:p-8 ">
@@ -602,8 +608,8 @@ const Login = (props) => {
                   required=""
                 />
               </div>
-              <div className="flex gap-5 bg-gray-700 items-center p-2">
-                <div>
+              <div className="flex gap-10 bg-gray-700 items-center p-2">
+                <div className="ml-1">
                   <input
                     type="text"
                     value={input}
@@ -613,8 +619,15 @@ const Login = (props) => {
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 placeholder-gray-300 placeholder-opacity-100 "
                   />
                 </div>
-                <div>
-                  <Captcha className="w-40" charNum={6} onChange={setCaptcha} />
+                <div className="mr-3">
+                  <Captcha
+                    charNum={6}
+                    onChange={setCaptcha}
+                    bgColor={"#FFFFFF"}
+                    width={150}
+                    fontSize={30}
+                    className="rounded"
+                  />
                 </div>
               </div>
               <div className="">
