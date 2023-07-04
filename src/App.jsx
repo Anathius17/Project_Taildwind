@@ -9,7 +9,7 @@ import BranchMenagement from "./component/branchmgmt/BranchManagement";
 
 // ! untuk testing
 import Demo from "./component/usermanagement/UserMenagement";
-import Rule from "./component/RoleMenagement";
+import Rule from "./component/roleManagement/RoleMenagement";
 import Modal from "./component/usermanagement/Modal";
 import BatchScheduler from "./component/system/BatchScheduler";
 

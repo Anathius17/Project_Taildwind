@@ -4,7 +4,7 @@ import Sky from "../assets/images/Sky.png";
 import Skysite from "../assets/images/LogoSky.png";
 import "../assets/css/Dashboard.css";
 import Demo from "../component/usermanagement/UserMenagement";
-import Rule from "../component/RoleMenagement";
+import Rule from "../component/roleManagement/RoleMenagement";
 import Audit from "../component/auditTrail/AuditTrail";
 import BranchMenagement from "../component/branchmgmt/BranchManagement";
 import GeneralSettings from "../component/glsetting/GenenalSetting";
@@ -12,6 +12,7 @@ import BatchScheduler from "../component/system/BatchScheduler";
 import BatchSchedulerApp from "../component/system/BatchSchedulerApproval";
 import BatchSchedulerCk from "../component/system/BatchSchedulerChecker";
 import Apimanagement from "../component/apimgmt/ApiManagement";
+import DynamicOption from "../component/dynamicOption/DynamicOption";
 import { IconName } from "react-icons/ri";
 import "../assets/css/modal.css";
 import axios from "axios";
@@ -33,8 +34,15 @@ import {
 const Dashboard = (props) => {
   const [sidebarActive, setActiveSideBAr] = useState(true);
   const [activeUsers, setActiveUsers] = useState([]);
+
+  const [menuListBaru, setMenuListBaru] = useState([]);
+  const [menuLevelBaru, setMenuLevelBaru] = useState([]);
+  localStorage.setItem("detailRoleUser", JSON.stringify(menuLevelBaru));
+
   // ! get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
+  const tokenTest = JSON.parse(localStorage.getItem("tokenData"));
+
   const userId = props.userid;
   console.log(userId);
   const menuTest = props.listmenu;
@@ -59,14 +67,71 @@ const Dashboard = (props) => {
     getTokenApi();
   }, []);
 
+  useEffect(() => {
+    getDataUserRoleDetail();
+    generalListMenuAPI();
+  }, [token]);
+
+  // ! nanti atur secara dinamis
+  const data1 = {
+    user: userid,
+    modules: "CORE",
+  };
+  const getDataUserRoleDetail = async () => {
+    try {
+      const userRoleDetail = await axios.post(
+        "http://116.206.196.65:30983/skycore/Login/getDataUserRoleDetail",
+        JSON.stringify(data1),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenTest}`,
+          },
+        }
+      );
+
+      let dataUserRoleDetailApi = userRoleDetail.data.data.map((e) => {
+        return e;
+      });
+      console.log(dataUserRoleDetailApi);
+      setMenuLevelBaru(dataUserRoleDetailApi);
+
+      // alert("userRoleDetail Berhasil ke Hit");
+    } catch (error) {
+      alert("reset fail login gagal");
+    }
+  };
+
+  const generalListMenuAPI = async () => {
+    try {
+      const listMenu = await axios.get(
+        "http://116.206.196.65:30983/skycore/Login/GenerateListMenu/0",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenTest}`,
+          },
+        }
+      );
+
+      let generalListMenu = listMenu.data.data.map((e) => {
+        return e;
+      });
+
+      setMenuListBaru(generalListMenu);
+    } catch (error) {
+      alert("List Menu gagal");
+    }
+  };
+
   // Dapatkan data sesi
   const sessionData = JSON.parse(localStorage.getItem("sessionData"));
   const listMenu = JSON.parse(localStorage.getItem("ListMenu"));
   const levelMenu = JSON.parse(localStorage.getItem("LevelMenu"));
   console.log(clickButton);
 
-  const filteredUsers = menuTest.filter((user) => {
-    const matchingMenuLevel = levelm.find(
+  const filteredUsers = menuListBaru.filter((user) => {
+    const matchingMenuLevel = menuLevelBaru.find(
       (menu) => menu.ldlmdescription === user.mn_acl
     );
     return matchingMenuLevel !== undefined;
@@ -99,7 +164,7 @@ const Dashboard = (props) => {
       <ul className="dropdown-menu1">
         {children
           .filter((child) => {
-            const level = levelm.find(
+            const level = menuLevelBaru.find(
               (menu) => menu.ldlmdescription === child.mn_acl
             );
             return level;
@@ -110,7 +175,7 @@ const Dashboard = (props) => {
                 <div>
                   <button
                     onClick={() => toggleDropdown(child)}
-                    className="text-white ml-6"
+                    className="text-white ml-6 font-semibold"
                   >
                     <span className="text-sm">{child.mn_name}</span>
                   </button>
@@ -149,10 +214,10 @@ const Dashboard = (props) => {
         }
       );
       await navigate("/");
-      setTimeout(() => {
-        // alert("Berhasil Reload");
-        window.location.reload();
-      }, 900);
+      // setTimeout(() => {
+      //   // alert("Berhasil Reload");
+      //   window.location.reload();
+      // }, 900);
       // await window.location.reload();
       // window.location.href = "/";
     } catch (error) {
@@ -202,7 +267,7 @@ const Dashboard = (props) => {
                         <div className="Menu p-1">
                           <button
                             onClick={() => toggleDropdown(user)}
-                            className="flex items-center text-white rounded-lg dark:text-white"
+                            className="flex items-center text-white"
                             id={user.mn_name}
                           >
                             {" "}
@@ -219,8 +284,8 @@ const Dashboard = (props) => {
                               />
                             </svg>
                             <span className="text-base font-semibold ml-2">
-                              {user.mn_name}
-                            </span>
+                              {user.mn_name}{" "}
+                            </span>{" "}
                           </button>
 
                           {activeUsers.includes(user) &&
@@ -250,6 +315,25 @@ const Dashboard = (props) => {
                     )}
                   </li>
                 ))}
+                <li>
+                  <NavLink to={"/dashboard" + "/dynamicOption"}>
+                    <button className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                      <span className="flex items-center p-1 text-white rounded-lg dark:text-white text-base font-semibold">
+                        {" "}
+                        <svg
+                          viewBox="0 0 1024 1024"
+                          fill="currentColor"
+                          height="1em"
+                          width="1em"
+                          className="mr-2"
+                        >
+                          <path d="M924.8 385.6a446.7 446.7 0 00-96-142.4 446.7 446.7 0 00-142.4-96C631.1 123.8 572.5 112 512 112s-119.1 11.8-174.4 35.2a446.7 446.7 0 00-142.4 96 446.7 446.7 0 00-96 142.4C75.8 440.9 64 499.5 64 560c0 132.7 58.3 257.7 159.9 343.1l1.7 1.4c5.8 4.8 13.1 7.5 20.6 7.5h531.7c7.5 0 14.8-2.7 20.6-7.5l1.7-1.4C901.7 817.7 960 692.7 960 560c0-60.5-11.9-119.1-35.2-174.4zM482 232c0-4.4 3.6-8 8-8h44c4.4 0 8 3.6 8 8v80c0 4.4-3.6 8-8 8h-44c-4.4 0-8-3.6-8-8v-80zM270 582c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8v-44c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v44zm90.7-204.5l-31.1 31.1a8.03 8.03 0 01-11.3 0L261.7 352a8.03 8.03 0 010-11.3l31.1-31.1c3.1-3.1 8.2-3.1 11.3 0l56.6 56.6c3.1 3.1 3.1 8.2 0 11.3zm291.1 83.6l-84.5 84.5c5 18.7.2 39.4-14.5 54.1a55.95 55.95 0 01-79.2 0 55.95 55.95 0 010-79.2 55.87 55.87 0 0154.1-14.5l84.5-84.5c3.1-3.1 8.2-3.1 11.3 0l28.3 28.3c3.1 3.1 3.1 8.1 0 11.3zm43-52.4l-31.1-31.1a8.03 8.03 0 010-11.3l56.6-56.6c3.1-3.1 8.2-3.1 11.3 0l31.1 31.1c3.1 3.1 3.1 8.2 0 11.3l-56.6 56.6a8.03 8.03 0 01-11.3 0zM846 582c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8v-44c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v44z" />
+                        </svg>
+                        Dynamic Option
+                      </span>
+                    </button>
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </>
@@ -261,7 +345,7 @@ const Dashboard = (props) => {
           <div id="content">
             <nav className="navbar navbar-expand navbar-light bg-white topbar mb-2 static-top shadow">
               <button
-                className="btn mr-3 "
+                className="btn mr-3 bg-gray-300"
                 onClick={() => setActiveSideBAr(!sidebarActive)}
               >
                 <svg
@@ -345,35 +429,41 @@ const Dashboard = (props) => {
                 </li>
               </ul>
             </nav>
-            <Routes>
-              <Route path="/user" element={<Demo></Demo>}></Route>
-              <Route path="/RoleManagement" element={<Rule></Rule>}></Route>
-              <Route
-                path="/BatchSchedule"
-                element={<BatchScheduler></BatchScheduler>}
-              ></Route>
-              <Route
-                path="/BatchSchedule/Checker"
-                element={<BatchSchedulerCk></BatchSchedulerCk>}
-              ></Route>
-              <Route
-                path="/BatchSchedule/Approval"
-                element={<BatchSchedulerApp></BatchSchedulerApp>}
-              ></Route>
-              <Route path="/AuditTrail" element={<Audit></Audit>}></Route>
-              <Route
-                path="/global"
-                element={<GeneralSettings></GeneralSettings>}
-              ></Route>
-              <Route
-                path="/Branch"
-                element={<BranchMenagement></BranchMenagement>}
-              ></Route>
-              <Route
-                path="/Apimanagement"
-                element={<Apimanagement></Apimanagement>}
-              ></Route>
-            </Routes>
+            <div className="main">
+              <Routes>
+                <Route path="/user" element={<Demo></Demo>}></Route>
+                <Route path="/RoleManagement" element={<Rule></Rule>}></Route>
+                <Route
+                  path="/BatchSchedule"
+                  element={<BatchScheduler></BatchScheduler>}
+                ></Route>
+                <Route
+                  path="/BatchSchedule/Checker"
+                  element={<BatchSchedulerCk></BatchSchedulerCk>}
+                ></Route>
+                <Route
+                  path="/BatchSchedule/Approval"
+                  element={<BatchSchedulerApp></BatchSchedulerApp>}
+                ></Route>
+                <Route path="/AuditTrail" element={<Audit></Audit>}></Route>
+                <Route
+                  path="/global"
+                  element={<GeneralSettings></GeneralSettings>}
+                ></Route>
+                <Route
+                  path="/Branch"
+                  element={<BranchMenagement></BranchMenagement>}
+                ></Route>
+                <Route
+                  path="/Apimanagement"
+                  element={<Apimanagement></Apimanagement>}
+                ></Route>
+                <Route
+                  path="/dynamicOption"
+                  element={<DynamicOption></DynamicOption>}
+                ></Route>
+              </Routes>
+            </div>
           </div>
           <footer className="sticky-footer bg-white">
             <div className="container my-auto">

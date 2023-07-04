@@ -15,7 +15,6 @@ const ModalBranch = ({
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
 
-
   const [branch, setBranch] = useState(currentBranch);
 
   // hit token
@@ -47,8 +46,7 @@ const ModalBranch = ({
 
   // insert log activity
   const [logid, setlogid] = useState("");
-  const ip = JSON.parse(localStorage.getItem("ipclient"));
-  
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   const dataLogUserTracking = {
     plcd: "branch_mgmt",

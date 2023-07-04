@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
-import Modal from "./ModalAddBranch";
-import ModalEdit from "./ModalEditBranch";
+import Modal from "./ModalAddOption";
+// import ModalEdit from "./ModalEditBranch";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
@@ -15,7 +15,7 @@ import {
   NavLink,
 } from "react-router-dom";
 
-const BranchMenagement = () => {
+const DynamicOption = () => {
   const [branch, setBranch] = useState([]);
   const [currentBranch, setCurrentBranch] = useState(branch);
 
@@ -42,14 +42,14 @@ const BranchMenagement = () => {
 
   useEffect(() => {
     if (token && token.map !== "") {
-      getBranchList();
+      getDynamicList();
     }
   }, [token]);
 
-  const getBranchList = async () => {
+  const getDynamicList = async () => {
     try {
       const listbranch = await axios.get(
-        "http://116.206.196.65:30983/skycore/Branch/list",
+        "http://116.206.196.65:30992/skyparameter/DynamicOption/list",
         {
           headers: {
             "Content-Type": "application/json",
@@ -150,7 +150,7 @@ const BranchMenagement = () => {
     try {
       const branchDelete = await axios
         .post(
-          "http://116.206.196.65:30983/skycore/Branch/delete",
+          "http://116.206.196.65:30992/skyparameter/DynamicOption/delete",
           //JSON.stringify(hitDelete),
           {
             code: code,
@@ -167,10 +167,10 @@ const BranchMenagement = () => {
           console.log(response.data.status);
           if (response.data.status === "true") {
             Swal.fire("Branch Successfully Deleted", "", "success");
-            getBranchList();
+            getDynamicList();
           } else {
             Swal.fire(response.data.message, "", "error");
-            getBranchList();
+            getDynamicList();
           }
         });
     } catch (error) {
@@ -217,7 +217,7 @@ const BranchMenagement = () => {
 
   // Mengambil data yang sesuai dengan halaman saat ini dan term pencarian
   const filteredData = branch.filter((item) =>
-    item.lbrc_name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.ddh_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -260,7 +260,8 @@ const BranchMenagement = () => {
     console.log(detaiBranchParam);
     try {
       const listBranchDetail = await axios.get(
-        "http://116.206.196.65:30983/skycore/Branch/detail/" + detaiBranchParam,
+        "http://116.206.196.65:30992/skyparameter/DynamicOption/header/detail/" +
+          detaiBranchParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -319,19 +320,14 @@ const BranchMenagement = () => {
     <div className="card shadow mb-4">
       <div className="card-header d-flex justify-content-between mb-2">
         <div className="test">
-          <h4> Branch Management</h4>
+          <h4>Dynamic Option</h4>
         </div>
-        {level.map((item, i) => {
-          if (item.ldlmdescription === "lvl_prm_brm_add") {
-            return (
-              <div className="btn-new" key={i}>
-                <button className="btn btn-primary" onClick={openModal}>
-                  Add new
-                </button>
-              </div>
-            );
-          }
-        })}
+
+        <div className="btn-new">
+          <button className="btn btn-primary" onClick={openModal}>
+            Add new
+          </button>
+        </div>
       </div>
 
       <div className="card-body">
@@ -367,86 +363,60 @@ const BranchMenagement = () => {
             <table className="min-w-max w-full table-bordered">
               <thead>
                 <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-center">Branch Code</th>
-                  <th className="py-3 px-6 text-center">Branch Group</th>
-                  <th className="py-3 px-6 text-center">Branch Name</th>
-                  <th className="py-3 px-6 text-center">Branch Address</th>
-                  <th className="py-3 px-6 text-center">Branch City</th>
-                  <th className="py-3 px-6 text-center">Branch Phone Number</th>
+                  <th className="py-3 px-6 text-center">Code</th>
+                  <th className="py-3 px-6 text-center">Description</th>
+                  <th className="py-3 px-6 text-center">Total Data</th>
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
                 {currentItems.map((brc) => (
                   <tr
-                    key={brc.lbrc_id}
+                    key={brc.ddh_id}
                     className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
                   >
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {brc.lbrc_code}
+                      {brc.ddh_code}
                     </td>
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {brc.lbrc_group}
+                      {brc.ddh_desc}
                     </td>
-                    <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold">
-                      {brc.lbrc_name}
-                    </td>
-                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {brc.lbrc_address}
-                    </td>
-                    <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {brc.lbrc_city}
-                    </td>
-                    <td className="py-3 px-6 text-left  whitespace-nowrap font-semibold ">
-                      {brc.lbrc_phone_num}
+                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                      {brc.count_ddp_code}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
-                      {level.map((item, i) => {
-                        if (item.ldlmdescription === "lvl_prm_brm_edit") {
-                          return (
-                            <button
-                              key={i}
-                              className="btn btn-success btn-sm"
-                              onClick={() => editBranch(brc.lbrc_code)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="w-6 h-6"
-                              >
-                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                              </svg>
-                            </button>
-                          );
-                        }
-                      })}
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={() => editBranch(brc.lbrc_code)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                        </svg>
+                      </button>
 
-                      {level.map((item, i) => {
-                        if (item.ldlmdescription === "lvl_prm_brm_del") {
-                          return (
-                            <button
-                              key={i}
-                              className="btn btn-danger btn-sm ml-1"
-                              onClick={() => handleDeletebranch(brc.lbrc_code)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="w-6 h-6"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </button>
-                          );
-                        }
-                      })}
+                      <button
+                        className="btn btn-danger btn-sm ml-1"
+                        onClick={() => handleDeletebranch(brc.lbrc_code)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
 
                       <></>
                       {/* <button
@@ -534,24 +504,23 @@ const BranchMenagement = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        reload={getBranchList}
+        reload={getDynamicList}
         groupOptions={groupOptions}
-      >
-        {/* <button onClick={closeModal}>Tutup Modal</button> */}
-      </Modal>
+        currentBranch={branchEdit}
+      ></Modal>
 
-      {branchEdit !== undefined ? (
+      {/* {branchEdit !== undefined ? (
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
           currentBranch={branchEdit}
-          reload={getBranchList}
+          reload={getDynamicList}
           groupOptions={groupOptions}
         />
       ) : (
         <></>
-      )}
+      )} */}
     </div>
   );
 };
-export default BranchMenagement;
+export default DynamicOption;

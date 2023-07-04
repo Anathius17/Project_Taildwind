@@ -2,24 +2,28 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { getToken } from "../../API/api";
+import Modal from "./ModalHeaderAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
-  const [code, setCodeBranch] = useState("");
-  const [name, setNameBranch] = useState("");
-  const [address, setAddressBranch] = useState("");
-  const [city, setCityBranch] = useState("");
-  const [phonenum, setNoTelepon] = useState("");
-  const [group, setGroupBranch] = useState("");
+const ModalAddBranch = ({
+  isOpen,
+  onClose,
+  reload,
+  groupOptions,
+  currentBranch,
+}) => {
+  const [code, setCode] = useState("");
+  const [desc, setDesc] = useState("");
+  const [option, setOption] = useState(currentBranch);
 
   useEffect(() => {
-    setCodeBranch("");
-    setNameBranch("");
-    setGroupBranch("");
-    setAddressBranch("");
-    setCityBranch("");
-    setNoTelepon("");
+    setOption(currentBranch);
+  }, [currentBranch]);
+
+  useEffect(() => {
+    setCode("");
+    setDesc("");
   }, [onClose]);
 
   // get userid
@@ -84,7 +88,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
   };
 
   const Save = async (e) => {
-    if (!code || !group || !name || !address || !city || !phonenum) {
+    if (!code || !desc) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -104,15 +108,12 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
     try {
       const branchNew = axios
         .post(
-          "http://116.206.196.65:30983/skycore/Branch/insert",
+          "http://116.206.196.65:30992/skyparameter/DynamicOption/header/add",
           //JSON.stringify(insertBranch),
           {
             code: code,
-            name: name,
-            group: group,
-            address: address,
-            city: city,
-            phonenum: phonenum,
+            name: desc,
+            user: userid,
             logid: val,
           },
           {
@@ -144,13 +145,76 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
     }
   };
 
+  //! Edit branch
+  const [detaiBranchParam, setDetaiBranchParam] = useState("");
+
+  useEffect(() => {
+    getBranchDetail();
+  }, [detaiBranchParam]);
+
+  const editBranch = (branchcode) => {
+    setDetaiBranchParam(branchcode);
+    setIsModalOpenEdit(true);
+  };
+
+  const [branchEdit, setBranchEdit] = useState();
+
+  const getBranchDetail = async () => {
+    console.log("branchcode");
+    console.log(detaiBranchParam);
+    try {
+      const listBranchDetail = await axios.get(
+        "http://116.206.196.65:30992/skyparameter/DynamicOption/detail/" +
+          detaiBranchParam,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const cekData = listBranchDetail.data.data.map((e) => {
+        console.log(e);
+        return e;
+      });
+
+      //console.log(cekData[0]);
+      console.log(listBranchDetail.data.status);
+      setBranchEdit(cekData[0]);
+    } catch (errorUser) {
+      console.log(errorUser);
+    }
+  };
+
+  const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
+
+  const openModalEdit = () => {
+    setIsModalOpenEdit(true);
+  };
+
+  const closeModalEdit = () => {
+    setIsModalOpenEdit(false);
+    // window.location.reload();
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   if (!isOpen) return null;
   return (
     <div class="fixed inset-0 flex items-center justify-center z-50">
       <div class="absolute bg-white p-6 rounded-lg shadow-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title fw-bold">Branch Management | Add New</h5>
+            <h5 className="modal-title fw-bold">Dynamic Option | Add New</h5>
             <button
               type="button"
               className="btn-close"
@@ -167,7 +231,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
                   <div className=" row mb-2">
                     <div className="col-4">
                       <label class="form-label">
-                        Branch Code <span className="text-danger">*</span>
+                        Code <span className="text-danger">*</span>
                       </label>
                     </div>
                     <div className="col-8">
@@ -177,7 +241,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
                         className="form-control"
                         maxLength={25}
                         id="recipient-name"
-                        onChange={(x) => setCodeBranch(x.target.value)}
+                        onChange={(x) => setCode(x.target.value)}
                         required
                       />
                     </div>
@@ -185,7 +249,7 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
                   <div className=" row mb-2">
                     <div className="col-4">
                       <label class="form-label">
-                        Branch Name <span className="text-danger">*</span>
+                        Description <span className="text-danger">*</span>
                       </label>
                     </div>
 
@@ -193,87 +257,9 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
                       <input
                         type="text"
                         className="form-control"
-                        value={name}
+                        value={desc}
                         id="recipient-name"
-                        onChange={(e) => setNameBranch(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="row mb-2">
-                    <div className="col-4">
-                      <label className="form-label">
-                        Branch Group <span className="text-danger">*</span>
-                      </label>
-                    </div>
-
-                    <div className="col-8">
-                      <select
-                        className="form-control"
-                        value={group || ""}
-                        onChange={(e) => setGroupBranch(e.target.value)}
-                        required
-                      >
-                        <option value="">Select One</option>
-                        {groupOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className=" row mb-2">
-                    <div className="col-4">
-                      <label class="form-label">
-                        Branch Address <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={address}
-                        id="recipient-name"
-                        onChange={(e) => setAddressBranch(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className=" row mb-2">
-                    <div className="col-4">
-                      <label class="form-label">
-                        Branch City <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={city}
-                        id="recipient-name"
-                        onChange={(e) => setCityBranch(e.target.value)}
-                        required
-                      />
-                    </div>
-                    {/* <div id="emailHelp" className="form-text">
-                      We'll never share your email with anyone else.
-                    </div> */}
-                  </div>
-                  <div className=" row mb-2">
-                    <div className="col-4">
-                      <label class="form-label">
-                        Branch Phone Number{" "}
-                        <span className="text-danger">*</span>
-                      </label>
-                    </div>
-                    <div className="col-8">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={phonenum}
-                        id="recipient-name"
-                        onChange={(e) => setNoTelepon(e.target.value)}
+                        onChange={(e) => setDesc(e.target.value)}
                         required
                       />
                     </div>
@@ -291,12 +277,23 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
             >
               Close
             </button>
-            <button type="submit" className="btn btn-primary" onClick={Save}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={openModal}
+            >
               Save Changes
             </button>
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        groupOptions={groupOptions}
+        currentBranch={option}
+        laterBranch={branchEdit}
+      ></Modal>
     </div>
   );
 };

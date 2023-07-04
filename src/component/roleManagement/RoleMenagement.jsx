@@ -131,7 +131,7 @@ const RoleMenagement = () => {
   };
 
   // insert log activity
-  const ip = JSON.parse(localStorage.getItem("ipclient"));
+  const ip = JSON.parse(localStorage.getItem("ipAddres"));
   // const [ip, setIP] = useState("");
   // const [logid, setlogid] = useState("");
   // useEffect(() => {

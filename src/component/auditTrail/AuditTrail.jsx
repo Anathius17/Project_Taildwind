@@ -210,7 +210,10 @@ const AuditTrail = () => {
         "Action Date",
         "HTTPS",
         "Server Name",
+        "Operating System",
         "Activity",
+        "Page Url",
+        "Browser",
       ],
       ...currentItems.map((modul) => [
         modul.lgc_name,
@@ -218,7 +221,10 @@ const AuditTrail = () => {
         modul.b_log_action_date,
         modul.b_log_https,
         modul.b_log_server_name,
+        modul.b_log_operating_system,
         modul.b_log_activity,
+        modul.b_log_page_url,
+        modul.b_log_browser,
       ]),
     ];
 
