@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
 import Modal from "./ModalAddOption";
-// import ModalEdit from "./ModalEditBranch";
+import ModalEdit from "./ModalHeaderAdd";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
@@ -16,8 +16,8 @@ import {
 } from "react-router-dom";
 
 const DynamicOption = () => {
-  const [branch, setBranch] = useState([]);
-  const [currentBranch, setCurrentBranch] = useState(branch);
+  const [dynamic, setDynamic] = useState([]);
+  const [currentDynamic, setCurrentDynamic] = useState(dynamic);
 
   // hit token
   // const [token, setToken] = useState("");
@@ -38,7 +38,7 @@ const DynamicOption = () => {
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
   const navigate = useNavigate();
-  const level = JSON.parse(localStorage.getItem("detailRoleUser"));
+  // const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
   useEffect(() => {
     if (token && token.map !== "") {
@@ -48,7 +48,7 @@ const DynamicOption = () => {
 
   const getDynamicList = async () => {
     try {
-      const listbranch = await axios.get(
+      const listdynamic = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/list",
         {
           headers: {
@@ -58,13 +58,13 @@ const DynamicOption = () => {
         }
       );
 
-      const cekData = listbranch.data.data.map((e) => {
+      const cekData = listdynamic.data.data.map((e) => {
         return e;
       });
 
-      setBranch(cekData);
-    } catch (errorbranch) {
-      //alert(errorbranch);
+      setDynamic(cekData);
+    } catch (errordynamic) {
+      //alert(errordynamic);
       postJDataUserResetIsLogin();
       navigate("/");
     }
@@ -97,12 +97,15 @@ const DynamicOption = () => {
   // log activity object
   const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
+  //! --------for API delete--------
+  const [deleteDynamicId, setDeleteDynamicId] = useState("");
+
   const dataLogUserTracking = {
-    plcd: "branch_mgmt",
+    plcd: "",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Delete Branch Management",
+    plact: "Delete Dynamic Option",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -110,13 +113,37 @@ const DynamicOption = () => {
     plcli: ip,
   };
 
-  const postDataLogUserTracking = async (id) => {
+  const Updateobjectdata = (val) => {
+    DeleteDynamic(val);
+  };
+
+  const handleDeletedynamic = (id) => {
+    console.log(deleteDynamicId);
+    Swal.fire({
+      title: "Are you sure you want to delete this data?",
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      icon: "warning",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // postDataLogUserTracking();
+        deleteDynamic(id);
+        setDeleteDynamicId(id);
+      } else {
+        Swal.fire("Cancelled", "", "error");
+      }
+    });
+  };
+
+  const postDataLogUserTracking = async () => {
     let log = "";
     try {
-      const frisLogin = await axios
+      await axios
         .post(
           "http://116.206.196.65:30983/skycore/LogActivity/postDataLogUserTracking",
-          JSON.stringify(dataLogUserTracking),
+          dataLogUserTracking,
           {
             headers: {
               "Content-Type": "application/json",
@@ -128,32 +155,23 @@ const DynamicOption = () => {
           console.log(response.data.data[0].resultprocess);
           log = response.data.data[0].resultprocess;
         });
-      console.log("delete1");
-      await deletebranchbycode(log, id);
-      //alert("postDataLogUserTracking Berhasil");
+
+      await Updateobjectdata(log);
+      // alert("postDataLogUserTracking Berhasil");
     } catch (error) {
-      alert(error);
-      console.log("delete2");
+      alert("postDataLogUserTracking Tidak Berhasil");
+      console.log(error);
     }
   };
 
-  // ! variables untuk kebutuhan hit delete user
-  const [branchcode, setbranchcode] = useState("");
-
-  //! --------for API delete--------
-
-  const deletebranchbycode = (val, code) => {
-    Deletebranch(val, code);
-  };
-
-  const Deletebranch = async (val, code) => {
+  const DeleteDynamic = async (val) => {
     try {
-      const branchDelete = await axios
+      const userDelete = await axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/delete",
-          //JSON.stringify(hitDelete),
           {
-            code: code,
+            id: deleteDynamicId,
+            user: userid,
             logid: val,
           },
           {
@@ -166,7 +184,7 @@ const DynamicOption = () => {
         .then((response) => {
           console.log(response.data.status);
           if (response.data.status === "true") {
-            Swal.fire("Branch Successfully Deleted", "", "success");
+            Swal.fire("Dynamic List Berhasil Di Hapus", "", "success");
             getDynamicList();
           } else {
             Swal.fire(response.data.message, "", "error");
@@ -177,34 +195,22 @@ const DynamicOption = () => {
       alert(error);
     }
   };
-
-  // ? Menghapus pengguna
-  const handleDeletebranch = (id) => {
-    Swal.fire({
-      title: "Are you sure you want to delete this data?",
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: "OK",
-      cancelButtonText: "Cancel",
-      icon: "warning",
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        deletebranch(id);
-        setbranchcode(id);
-        postDataLogUserTracking(id);
-      } else Swal.fire(" Cancelled", "", "error");
-    });
-  };
-
-  // useEffect(() => {
-  //   if (branchcode !== "") {
-  //     postDataLogUserTracking();
+  //     console.log(userDelete);
+  //     Swal.fire("Role Berhasil Di Hapus", "", "success");
+  //
+  //   } catch (error) {
+  //     console.log(error);
   //   }
-  // }, [branchcode]);
+  // };
 
-  const deletebranch = (id) => {
-    setBranch(branch.filter((brc) => brc.code !== id));
+  useEffect(() => {
+    if (deleteDynamicId !== "") {
+      postDataLogUserTracking();
+    }
+  }, [deleteDynamicId]);
+
+  const deleteDynamic = (id) => {
+    setDynamic(dynamic.filter((dyn) => dyn.ddh_id !== id));
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -216,7 +222,7 @@ const DynamicOption = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   // Mengambil data yang sesuai dengan halaman saat ini dan term pencarian
-  const filteredData = branch.filter((item) =>
+  const filteredData = dynamic.filter((item) =>
     item.ddh_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
@@ -241,27 +247,28 @@ const DynamicOption = () => {
     setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
   };
 
-  //! Edit branch
-  const [detaiBranchParam, setDetaiBranchParam] = useState("");
+  //! Detail dynamic header
+  const [detaiDynamicParam, setDetaiDynamicParam] = useState("");
 
   useEffect(() => {
-    getBranchDetail();
-  }, [detaiBranchParam]);
+    getDynamicDetailHeader();
+    getDynamicDetail();
+  }, [detaiDynamicParam]);
 
-  const editBranch = (branchcode) => {
-    setDetaiBranchParam(branchcode);
+  const editDynamic = (dynamiccode) => {
+    setDetaiDynamicParam(dynamiccode);
     setIsModalOpenEdit(true);
   };
 
-  const [branchEdit, setBranchEdit] = useState();
+  const [dynamicEditHeader, setDynamicEditHeader] = useState();
 
-  const getBranchDetail = async () => {
-    console.log("branchcode");
-    console.log(detaiBranchParam);
+  const getDynamicDetailHeader = async () => {
+    console.log("dynamiccode");
+    console.log(detaiDynamicParam);
     try {
-      const listBranchDetail = await axios.get(
+      const listDynamicDetailHeader = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/header/detail/" +
-          detaiBranchParam,
+          detaiDynamicParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -270,14 +277,44 @@ const DynamicOption = () => {
         }
       );
 
-      const cekData = listBranchDetail.data.data.map((e) => {
+      const cekData = listDynamicDetailHeader.data.data.map((e) => {
         console.log(e);
         return e;
       });
 
       //console.log(cekData[0]);
-      console.log(listBranchDetail.data.status);
-      setBranchEdit(cekData[0]);
+      console.log(listDynamicDetailHeader.data.status);
+      setDynamicEditHeader(cekData[0]);
+    } catch (errorUser) {
+      console.log(errorUser);
+    }
+  };
+
+  //! Detail dynamic Detail
+
+  const getDynamicDetail = async () => {
+    console.log("dynamiccode");
+    console.log(detaiDynamicParam);
+    try {
+      const listDynamicDetail = await axios.get(
+        "http://116.206.196.65:30992/skyparameter/DynamicOption/detail/" +
+          detaiDynamicParam,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const cekData = listDynamicDetail.data.data.map((e) => {
+        console.log(e);
+        return e;
+      });
+
+      //console.log(cekData[0]);
+      console.log(listDynamicDetail.data.status);
+      setDynamicEditHeader(cekData[0]);
     } catch (errorUser) {
       console.log(errorUser);
     }
@@ -307,14 +344,6 @@ const DynamicOption = () => {
   // useEffect(() => {
   //   getBranchDetail();
   // }, [detaiBranchParam]);
-
-  const groupOptions = [
-    "Branch",
-    "Cash Office",
-    "Payment Point",
-    "Sub Branch",
-    "Syariah Branch",
-  ];
 
   return (
     <div className="card shadow mb-4">
@@ -370,24 +399,24 @@ const DynamicOption = () => {
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
-                {currentItems.map((brc) => (
+                {currentItems.map((dyn) => (
                   <tr
-                    key={brc.ddh_id}
+                    key={dyn.ddh_id}
                     className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
                   >
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {brc.ddh_code}
+                      {dyn.ddh_code}
                     </td>
                     <td className="py-3 px-6 text-left whitespace-nowrap font-semibold">
-                      {brc.ddh_desc}
+                      {dyn.ddh_desc}
                     </td>
                     <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                      {brc.count_ddp_code}
+                      {dyn.count_ddp_code}
                     </td>
                     <td className="py-3 px-6 text-left  whitespace-nowrap ">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={() => editBranch(brc.lbrc_code)}
+                        onClick={() => editDynamic(dyn.ddh_code)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -402,7 +431,7 @@ const DynamicOption = () => {
 
                       <button
                         className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeletebranch(brc.lbrc_code)}
+                        onClick={() => handleDeletedynamic(dyn.ddh_id)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -419,34 +448,6 @@ const DynamicOption = () => {
                       </button>
 
                       <></>
-                      {/* <button
-                        className="btn btn-success btn-sm"
-                        onClick={() => editBranch(brc.lbrc_code)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-3.5 h-3.5">
-                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm ml-1"
-                        onClick={() => handleDeletebranch(brc.lbrc_code)}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-3.5 h-3.5">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                      <></> */}
                     </td>
                   </tr>
                 ))}
@@ -505,21 +506,19 @@ const DynamicOption = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         reload={getDynamicList}
-        groupOptions={groupOptions}
-        currentBranch={branchEdit}
+        currentDynamic={dynamicEditHeader}
       ></Modal>
 
-      {/* {branchEdit !== undefined ? (
+      {dynamicEditHeader !== undefined ? (
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
-          currentBranch={branchEdit}
+          currentDynamic={dynamicEditHeader}
           reload={getDynamicList}
-          groupOptions={groupOptions}
         />
       ) : (
         <></>
-      )} */}
+      )}
     </div>
   );
 };

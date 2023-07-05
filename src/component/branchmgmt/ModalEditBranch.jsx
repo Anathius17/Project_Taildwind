@@ -18,16 +18,18 @@ const ModalBranch = ({
   const [branch, setBranch] = useState(currentBranch);
 
   // hit token
-  const [token, setToken] = useState("");
-  const getTokenApi = () => {
-    getToken().then((e) => {
-      setToken(e);
-    });
-  };
-  useEffect(() => {
-    getTokenApi();
-    localStorage.setItem("tokenData", JSON.stringify(token));
-  }, [token]);
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const token = sessionData;
+  // const [token, setToken] = useState("");
+  // const getTokenApi = () => {
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+  // useEffect(() => {
+  //   getTokenApi();
+  //   localStorage.setItem("tokenData", JSON.stringify(token));
+  // }, [token]);
 
   // end token
 

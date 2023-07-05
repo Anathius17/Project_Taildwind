@@ -6,52 +6,50 @@ import Modal from "./ModalHeaderAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalAddBranch = ({
+const ModalAddOption = ({
   isOpen,
   onClose,
   reload,
-  groupOptions,
-  currentBranch,
+  currentDynamic,
+  laterDynamic,
 }) => {
   const [code, setCode] = useState("");
-  const [desc, setDesc] = useState("");
-  const [option, setOption] = useState(currentBranch);
-
-  useEffect(() => {
-    setOption(currentBranch);
-  }, [currentBranch]);
+  const [desc, setDescription] = useState("");
 
   useEffect(() => {
     setCode("");
-    setDesc("");
+    setDescription("");
   }, [onClose]);
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
 
   // untuk Token yang tersimpan di session
-  const [token, setToken] = useState();
-  const getTokenApi = () => {
-    getToken().then((e) => {
-      setToken(e);
-    });
-  };
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const token = sessionData;
 
-  useEffect(() => {
-    getTokenApi();
-    localStorage.setItem("tokenData", JSON.stringify(token));
-  }, [token]);
+  // const [token, setToken] = useState();
+  // const getTokenApi = () => {
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   getTokenApi();
+  //   localStorage.setItem("tokenData", JSON.stringify(token));
+  // }, [token]);
 
   // insert log activity
   const [logid, setlogid] = useState("");
   const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   const dataLogUserTracking = {
-    plcd: "branch_mgmt",
+    plcd: "",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Add Branch Management",
+    plact: "Add Dynamic Option",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -97,22 +95,23 @@ const ModalAddBranch = ({
       });
       return;
     }
+    setIsModalOpen(true);
     postDataLogUserTracking();
   };
 
   const insertobjectdata = (val) => {
-    InsertBranchNew(val);
+    InsertDynamicNew(val);
   };
 
-  const InsertBranchNew = (val) => {
+  const InsertDynamicNew = (val) => {
     try {
-      const branchNew = axios
+      const dynamicNew = axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/header/add",
           //JSON.stringify(insertBranch),
           {
             code: code,
-            name: desc,
+            desc: desc,
             user: userid,
             logid: val,
           },
@@ -143,59 +142,6 @@ const ModalAddBranch = ({
         footer: '<a href="">Why do I have this issue?</a>',
       });
     }
-  };
-
-  //! Edit branch
-  const [detaiBranchParam, setDetaiBranchParam] = useState("");
-
-  useEffect(() => {
-    getBranchDetail();
-  }, [detaiBranchParam]);
-
-  const editBranch = (branchcode) => {
-    setDetaiBranchParam(branchcode);
-    setIsModalOpenEdit(true);
-  };
-
-  const [branchEdit, setBranchEdit] = useState();
-
-  const getBranchDetail = async () => {
-    console.log("branchcode");
-    console.log(detaiBranchParam);
-    try {
-      const listBranchDetail = await axios.get(
-        "http://116.206.196.65:30992/skyparameter/DynamicOption/detail/" +
-          detaiBranchParam,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const cekData = listBranchDetail.data.data.map((e) => {
-        console.log(e);
-        return e;
-      });
-
-      //console.log(cekData[0]);
-      console.log(listBranchDetail.data.status);
-      setBranchEdit(cekData[0]);
-    } catch (errorUser) {
-      console.log(errorUser);
-    }
-  };
-
-  const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
-
-  const openModalEdit = () => {
-    setIsModalOpenEdit(true);
-  };
-
-  const closeModalEdit = () => {
-    setIsModalOpenEdit(false);
-    // window.location.reload();
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -259,7 +205,7 @@ const ModalAddBranch = ({
                         className="form-control"
                         value={desc}
                         id="recipient-name"
-                        onChange={(e) => setDesc(e.target.value)}
+                        onChange={(e) => setDescription(e.target.value)}
                         required
                       />
                     </div>
@@ -277,24 +223,20 @@ const ModalAddBranch = ({
             >
               Close
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              onClick={openModal}
-            >
+            <button type="submit" className="btn btn-primary" onClick={Save}>
               Save Changes
             </button>
           </div>
         </div>
       </div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        groupOptions={groupOptions}
-        currentBranch={option}
-        laterBranch={branchEdit}
-      ></Modal>
+        reload={reload}
+        currentDynamic={currentDynamic}
+        laterDynamic={laterDynamic}
+      ></Modal> */}
     </div>
   );
 };
-export default ModalAddBranch;
+export default ModalAddOption;

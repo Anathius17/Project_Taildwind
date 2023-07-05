@@ -26,17 +26,20 @@ const ModalAddBranch = ({ isOpen, onClose, reload, groupOptions }) => {
   const userid = JSON.parse(localStorage.getItem("userid"));
 
   // untuk Token yang tersimpan di session
-  const [token, setToken] = useState();
-  const getTokenApi = () => {
-    getToken().then((e) => {
-      setToken(e);
-    });
-  };
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const token = sessionData;
 
-  useEffect(() => {
-    getTokenApi();
-    localStorage.setItem("tokenData", JSON.stringify(token));
-  }, [token]);
+  // const [token, setToken] = useState();
+  // const getTokenApi = () => {
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   getTokenApi();
+  //   localStorage.setItem("tokenData", JSON.stringify(token));
+  // }, [token]);
 
   // insert log activity
   const [logid, setlogid] = useState("");

@@ -10,17 +10,13 @@ const ModalHeaderAdd = ({
   onClose,
   reload,
   groupOptions,
-  currentBranch,
-  laterBranch,
+  currentDynamic,
+  laterDynamic,
 }) => {
   const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
-  const [dynamic, setDynamic] = useState(currentBranch);
-  const [option, setOption] = useState(laterBranch);
+  const [dynamic, setDynamic] = useState(currentDynamic);
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setCode("");
@@ -28,35 +24,47 @@ const ModalHeaderAdd = ({
   }, [onClose]);
 
   useEffect(() => {
-    setDynamic(currentBranch);
-  }, [currentBranch]);
+    setDynamic(currentDynamic);
+  }, [currentDynamic]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    setDynamic((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
 
   // untuk Token yang tersimpan di session
-  const [token, setToken] = useState();
-  const getTokenApi = () => {
-    getToken().then((e) => {
-      setToken(e);
-    });
-  };
+  const sessionData = JSON.parse(localStorage.getItem("tokenData"));
+  const token = sessionData;
 
-  useEffect(() => {
-    getTokenApi();
-    localStorage.setItem("tokenData", JSON.stringify(token));
-  }, [token]);
+  // const [token, setToken] = useState();
+  // const getTokenApi = () => {
+  //   getToken().then((e) => {
+  //     setToken(e);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   getTokenApi();
+  //   localStorage.setItem("tokenData", JSON.stringify(token));
+  // }, [token]);
 
   // insert log activity
   const [logid, setlogid] = useState("");
   const ip = JSON.parse(localStorage.getItem("ipAddres"));
 
   const dataLogUserTracking = {
-    plcd: "branch_mgmt",
+    plcd: "",
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Add Branch Management",
+    plact: "Add Header Option",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -117,14 +125,14 @@ const ModalHeaderAdd = ({
   };
 
   const insertobjectdata = (val) => {
-    InsertBranchNew(val);
+    InsertDynamicNew(val);
   };
 
-  const InsertBranchNew = (val) => {
+  const InsertDynamicNew = (val) => {
     try {
-      const branchNew = axios
+      const dynamicNew = axios
         .post(
-          "http://116.206.196.65:30992/skyparameter/DynamicOption/header/add",
+          "http://116.206.196.65:30992/skyparameter/DynamicOption/insert",
           //JSON.stringify(insertBranch),
           {
             code: code,
@@ -163,9 +171,9 @@ const ModalHeaderAdd = ({
 
   if (!isOpen) return null;
   return (
-    <div class="fixed inset-0 flex items-center justify-center z-50">
-      <div class="absolute bg-white p-6 rounded-lg shadow-lg">
-        <div className="modal-content">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
+        <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
             <h5 className="modal-title fw-bold">
               Dynamic Option | Header Add{" "}
@@ -192,12 +200,12 @@ const ModalHeaderAdd = ({
                     <div className="col-8">
                       <input
                         type="text"
-                        value={code}
                         className="form-control"
-                        maxLength={25}
-                        id="recipient-name"
-                        onChange={(x) => setCode(x.target.value)}
+                        value={dynamic.ddh_code}
+                        name="ddh_code"
+                        onChange={handleInputChange}
                         required
+                        readOnly
                       />
                     </div>
                   </div>
@@ -212,10 +220,11 @@ const ModalHeaderAdd = ({
                       <input
                         type="text"
                         className="form-control"
-                        value={description}
-                        id="recipient-name"
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={dynamic.ddh_desc}
+                        name="ddh_desc"
+                        onChange={handleInputChange}
                         required
+                        readOnly
                       />
                     </div>
                   </div>
@@ -232,6 +241,72 @@ const ModalHeaderAdd = ({
                   <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
+              <tbody className="text-gray-600 text-sm font-light border-b">
+                <tr className=" transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
+                  <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={dynamic.ddl_value}
+                      name="ddl_value"
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </td>
+                  <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={dynamic.ddl_name}
+                      name="ddl_name"
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </td>
+                  <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={dynamic.urut}
+                      name="urut"
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </td>
+                  <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                    <button
+                      className="btn btn-success btn-sm"
+                      // onClick={() => addDynamic(dynamic.ddp_code)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                        <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                      </svg>
+                    </button>
+                  </td>
+                  <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                    <button
+                      className="btn btn-primary btn-sm"
+                      // onClick={() => updateDynamic(dynamic.ddp_code)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                        <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <div className="modal-footer">
