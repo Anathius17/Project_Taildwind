@@ -248,27 +248,27 @@ const DynamicOption = () => {
   };
 
   //! Detail dynamic header
-  const [detaiDynamicParam, setDetaiDynamicParam] = useState("");
+  const [detailDynamicHeaderParam, setDetailDynamicHeaderParam] = useState("");
 
   useEffect(() => {
     getDynamicDetailHeader();
-    getDynamicDetail();
-  }, [detaiDynamicParam]);
+  }, [detailDynamicHeaderParam]);
 
-  const editDynamic = (dynamiccode) => {
-    setDetaiDynamicParam(dynamiccode);
+  const editDynamic = (dynamicCode) => {
+    setDetailDynamicHeaderParam(dynamicCode);
+    setDetailDynamicParam(dynamicCode);
     setIsModalOpenEdit(true);
   };
 
-  const [dynamicEditHeader, setDynamicEditHeader] = useState();
+  const [dynamicEditHeader, setDynamicEditHeader] = useState(undefined);
 
   const getDynamicDetailHeader = async () => {
-    console.log("dynamiccode");
-    console.log(detaiDynamicParam);
+    console.log("dynamicCode");
+    console.log(detailDynamicHeaderParam);
     try {
       const listDynamicDetailHeader = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/header/detail/" +
-          detaiDynamicParam,
+          detailDynamicHeaderParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -290,15 +290,22 @@ const DynamicOption = () => {
     }
   };
 
-  //! Detail dynamic Detail
+  //! Detail dynamic detail
+  const [detailDynamicParam, setDetailDynamicParam] = useState("");
+
+  useEffect(() => {
+    getDynamicDetail();
+  }, [detailDynamicParam]);
+
+  const [dynamicEdit, setDynamicEdit] = useState(undefined);
 
   const getDynamicDetail = async () => {
-    console.log("dynamiccode");
-    console.log(detaiDynamicParam);
+    console.log("dynamicCode");
+    console.log(detailDynamicParam);
     try {
       const listDynamicDetail = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/detail/" +
-          detaiDynamicParam,
+          detailDynamicParam,
         {
           headers: {
             "Content-Type": "application/json",
@@ -314,12 +321,11 @@ const DynamicOption = () => {
 
       //console.log(cekData[0]);
       console.log(listDynamicDetail.data.status);
-      setDynamicEditHeader(cekData[0]);
+      setDynamicEdit(cekData[0]);
     } catch (errorUser) {
       console.log(errorUser);
     }
   };
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -514,6 +520,7 @@ const DynamicOption = () => {
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
           currentDynamic={dynamicEditHeader}
+          laterDynamic={dynamicEdit}
           reload={getDynamicList}
         />
       ) : (
