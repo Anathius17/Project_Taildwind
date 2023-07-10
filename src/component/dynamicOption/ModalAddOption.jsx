@@ -28,18 +28,6 @@ const ModalAddOption = ({
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
 
-  // const [token, setToken] = useState();
-  // const getTokenApi = () => {
-  //   getToken().then((e) => {
-  //     setToken(e);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   getTokenApi();
-  //   localStorage.setItem("tokenData", JSON.stringify(token));
-  // }, [token]);
-
   // insert log activity
   const [logid, setlogid] = useState("");
   const ip = JSON.parse(localStorage.getItem("ipAddres"));
