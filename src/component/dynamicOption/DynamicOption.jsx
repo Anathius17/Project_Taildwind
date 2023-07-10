@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
 import Modal from "./ModalAddOption";
-import ModalEdit from "./ModalHeaderAdd";
+import ModalEdit from "./ModalHeaderAdd2";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
@@ -519,8 +519,8 @@ const DynamicOption = () => {
         <ModalEdit
           isOpen={isModalOpenEdit}
           onClose={closeModalEdit}
-          currentDynamic={dynamicEditHeader}
-          laterDynamic={dynamicEdit}
+          currentDynamic={dynamicEditHeader || ""}
+          laterDynamic={dynamicEdit || ""}
           reload={getDynamicList}
         />
       ) : (

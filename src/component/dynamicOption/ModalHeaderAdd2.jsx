@@ -13,10 +13,9 @@ const ModalHeaderAdd = ({
   currentDynamic,
   laterDynamic,
 }) => {
-  const [value, setValue] = useState("");
+  const [value, setvalue] = useState("");
   const [name, setName] = useState("");
   const [urut, setUrut] = useState("");
-  const [isNewRow, setIsNewRow] = useState(true);
   const [dynamicHeader, setDynamicHeader] = useState(currentDynamic);
   const [dynamic, setDynamic] = useState(laterDynamic);
   const [dynamicRows, setDynamicRows] = useState([laterDynamic]); // Menyimpan semua row dinamis
@@ -24,7 +23,7 @@ const ModalHeaderAdd = ({
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
   useEffect(() => {
-    setValue("");
+    setvalue("");
     setName("");
     setUrut("");
   }, [onClose]);
@@ -43,25 +42,21 @@ const ModalHeaderAdd = ({
     }));
   };
 
-  const addDynamicRow = (ddh_code) => {
-    setIsNewRow(true);
+  const handleInputChange2 = (index, event) => {
+    const { name, value } = event.target;
+    const updatedDynamicRows = [...dynamicRows];
+    updatedDynamicRows[index] = {
+      ...updatedDynamicRows[index],
+      [name]: value,
+    };
+    setDynamicRows(updatedDynamicRows);
   };
 
-  //   const handleInputChange2 = (index, event) => {
-  //     const { name, value } = event.target;
-  //     const updatedDynamicRows = [...dynamicRows];
-  //     updatedDynamicRows[index] = {
-  //       ...updatedDynamicRows[index],
-  //       [name]: value,
-  //     };
-  //     setDynamicRows(updatedDynamicRows);
-  //   };
-
-  //   const addDynamicRow = () => {
-  //     const newDynamicRow = { ddl_value: "", ddl_name: "", urut: "" };
-  //     setDynamicRows((prevRows) => [...prevRows, newDynamicRow]);
-  //     Save();
-  //   };
+  const addDynamicRow = () => {
+    const newDynamicRow = { ddl_value: "", ddl_name: "", urut: "" };
+    setDynamicRows((prevRows) => [...prevRows, newDynamicRow]);
+    Save();
+  };
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -126,7 +121,7 @@ const ModalHeaderAdd = ({
   };
 
   const Save = async (e) => {
-    if (!dynamicHeader.ddh_code) {
+    if (!dynamicHeader.ddh_code || !dynamic.ddl_value || !dynamic.ddl_name) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -135,6 +130,9 @@ const ModalHeaderAdd = ({
       });
       return;
     }
+    console.log("data code : ", dynamicHeader.ddh_code); // Tambahkan console.log di sini
+    console.log("data value : ", dynamic.ddl_value);
+    console.log("");
     postDataLogUserTracking();
     setIsModalOpen(true);
   };
@@ -147,13 +145,14 @@ const ModalHeaderAdd = ({
     try {
       const dynamicNew = axios
         .post(
-          "http://116.206.196.65:30992/skyparameter/DynamicOption/insert",
+          "http://116.206.196.65:30992/skyparameter/DynamicOption/update",
           //JSON.stringify(insertBranch),
           {
+            id: dynamicHeader.ddh_id,
             code: dynamicHeader.ddh_code,
-            value: value,
-            name: name,
-            urut: urut,
+            value: dynamic.ddl_value,
+            name: dynamic.ddl_name,
+            urut: dynamic.urut,
             user: userid,
             logid: val,
           },
@@ -259,79 +258,75 @@ const ModalHeaderAdd = ({
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
-                <tr className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
-                  <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                    <input
-                      type="text"
-                      value={value}
-                      className="form-control"
-                      maxLength={25}
-                      id="recipient-name"
-                      onChange={(x) => setValue(x.target.value)}
-                      required
-                      disabled={isNewRow}
-                    />
-                  </td>
-                  <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                    <input
-                      type="text"
-                      value={name}
-                      className="form-control"
-                      maxLength={25}
-                      id="recipient-name"
-                      onChange={(x) => setName(x.target.value)}
-                      required
-                      disabled={isNewRow}
-                    />
-                  </td>
-                  <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                    <input
-                      type="text"
-                      value={urut}
-                      className="form-control"
-                      maxLength={25}
-                      id="recipient-name"
-                      onChange={(x) => setUrut(x.target.value)}
-                      required
-                      disabled={isNewRow}
-                    />
-                  </td>
-                  <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={() => {
-                        addDynamicRow(dynamicHeader.ddh_code);
-                        setIsNewRow(false);
-                      }}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="w-6 h-6"
+                {dynamicRows.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                  >
+                    <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={row.ddl_value} // Use row.ddl_value instead of value
+                        name="ddl_value"
+                        onChange={(event) => handleInputChange2(index, event)}
+                        required
+                      />
+                    </td>
+                    <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={row.ddl_name} // Use row.ddl_name instead of name
+                        name="ddl_name"
+                        onChange={(event) => handleInputChange2(index, event)}
+                        required
+                      />
+                    </td>
+                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={row.urut} // Use row.urut instead of urut
+                        name="urut"
+                        onChange={(event) => handleInputChange2(index, event)}
+                        required
+                      />
+                    </td>
+                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={() => addDynamicRow(dynamicHeader.ddh_code)}
                       >
-                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                        <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                      </svg>
-                    </button>
-                  </td>
-                  <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                    <button
-                      className="btn btn-primary btn-sm"
-                      // onClick={() => updateDynamic(dynamic.ddp_code)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="w-6 h-6"
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                        </svg>
+                      </button>
+                    </td>
+                    <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                      <button
+                        className="btn btn-primary btn-sm"
+                        // onClick={() => updateDynamic(dynamic.ddp_code)}
                       >
-                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                        <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                          <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -344,8 +339,8 @@ const ModalHeaderAdd = ({
             >
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
-              Prev
+            <button type="submit" className="btn btn-primary" onClick={Save}>
+              Save Changes
             </button>
           </div>
         </div>
