@@ -85,6 +85,8 @@ const ModalAddOption = ({
     }
     setIsModalOpen(true);
     postDataLogUserTracking();
+    console.log("Codenya : ", code);
+    console.log("Descriptinya : ", desc);
   };
 
   const insertobjectdata = (val) => {
@@ -211,7 +213,7 @@ const ModalAddOption = ({
             >
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary" onClick={Save}>
               Save Changes
             </button>
           </div>
