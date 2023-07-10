@@ -45,6 +45,7 @@ const ModalHeaderAdd = ({
 
   const addDynamicRow = (ddh_code) => {
     setIsNewRow(true);
+    Save();
   };
 
   //   const handleInputChange2 = (index, event) => {
