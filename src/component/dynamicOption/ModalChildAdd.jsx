@@ -2,24 +2,23 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { getToken } from "../../API/api";
-import Modal from "./ModalChildAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalHeaderAdd = ({
+const ModalChildAdd = ({
   isOpen,
   onClose,
   reload,
   groupOptions,
-  currentDynamic,
-  laterDynamic,
+  currentChild,
+  currentDetail,
 }) => {
   const [value, setValue] = useState("");
   const [name, setName] = useState("");
   const [urut, setUrut] = useState("");
 
-  const [dynamicHeader, setDynamicHeader] = useState(currentDynamic);
-  const [dynamicDetail, setDynamicDetail] = useState([laterDynamic]);
+  const [dynamicHeader, setDynamicHeader] = useState(currentChild);
+  const [dynamicDetail, setDynamicDetail] = useState(currentDetail);
 
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
@@ -30,12 +29,12 @@ const ModalHeaderAdd = ({
   }, [onClose]);
 
   useEffect(() => {
-    setDynamicHeader(currentDynamic);
-  }, [currentDynamic]);
+    setDynamicHeader(currentChild);
+  }, [currentChild]);
 
   useEffect(() => {
-    setDynamicDetail(laterDynamic);
-  }, [laterDynamic]);
+    setDynamicDetail(currentDetail);
+  }, [currentDetail]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -46,30 +45,24 @@ const ModalHeaderAdd = ({
     }));
   };
 
-  const handleInputChange2 = (event, index) => {
+  const handleInputChange2 = (event) => {
     const { name, value } = event.target;
 
-    setDynamicDetail((prevState) => {
-      const updatedDetail = [...prevState];
-      updatedDetail[index] = {
-        ...updatedDetail[index],
-        [name]: value,
-      };
-      return updatedDetail;
-    });
+    setDynamicHeader((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const addDynamic = (ddh_code) => {
     Save();
   };
 
-  const updateDynamic = (ddl_value) => {
+  const updateDynamic = (ddh_code) => {
     saveUpdate();
   };
 
-  const addChild = (ddh_id) => {
-    setIsModalOpen(true);
-  };
+  const addChild = (ddh_id) => {};
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -144,6 +137,7 @@ const ModalHeaderAdd = ({
       return;
     }
     postDataLogUserTracking();
+    setIsModalOpen(true);
   };
 
   const insertobjectdata = (val) => {
@@ -155,6 +149,7 @@ const ModalHeaderAdd = ({
       const dynamicNew = axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/insert",
+          //JSON.stringify(insertBranch),
           {
             code: dynamicHeader.ddh_code,
             value: value,
@@ -233,7 +228,7 @@ const ModalHeaderAdd = ({
     }
   };
 
-  const saveUpdate = async (dynamicCode) => {
+  const saveUpdate = async (e) => {
     if (!dynamicHeader.ddh_code) {
       Swal.fire({
         icon: "error",
@@ -244,8 +239,9 @@ const ModalHeaderAdd = ({
       return;
     }
     postDataLogUserTracking2();
-    console.log("Code nya : ", dynamicHeader.ddh_code);
-    console.log("Id nya : ", dynamicHeader.ddh_id);
+    setIsModalOpen(true);
+    console.log("valuenya : ", dynamicDetail.ddl_value);
+    console.log("namenya : ", dynamicDetail.ddl_name);
   };
 
   const insertobjectdataUpdate = (val) => {
@@ -254,9 +250,10 @@ const ModalHeaderAdd = ({
 
   const UpdateDynamicNew = (val) => {
     try {
-      axios
+      const dynamicNew = axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/update",
+          //JSON.stringify(insertBranch),
           {
             id: dynamicHeader.ddh_id,
             code: dynamicHeader.ddh_code,
@@ -301,9 +298,7 @@ const ModalHeaderAdd = ({
       <div className="modal-dialog modal-dialog-scrollable modal-xl w-10/12 mr-10">
         <div className="modal-content" style={{ width: "1000px" }}>
           <div className="modal-header">
-            <h5 className="modal-title fw-bold">
-              Dynamic Option | Header Add{" "}
-            </h5>
+            <h5 className="modal-title fw-bold">Dynamic Option | Child Add </h5>
             <button
               type="button"
               className="btn-close"
@@ -320,7 +315,7 @@ const ModalHeaderAdd = ({
                   <div className=" row mb-2">
                     <div className="col-4">
                       <label class="form-label">
-                        Code <span className="text-danger">*</span>
+                        Parent Code<span className="text-danger">*</span>
                       </label>
                     </div>
                     <div className="col-8">
@@ -338,7 +333,7 @@ const ModalHeaderAdd = ({
                   <div className=" row mb-2">
                     <div className="col-4">
                       <label class="form-label">
-                        Description <span className="text-danger">*</span>
+                        Parent Value <span className="text-danger">*</span>
                       </label>
                     </div>
 
@@ -346,7 +341,7 @@ const ModalHeaderAdd = ({
                       <input
                         type="text"
                         className="form-control"
-                        value={dynamicHeader.ddh_desc}
+                        value={dynamicDetail.ddl_value}
                         name="ddh_desc"
                         onChange={handleInputChange}
                         required
@@ -369,7 +364,7 @@ const ModalHeaderAdd = ({
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
                 {/*update Data Dynamic*/}
-                {dynamicDetail.map((dyn, index) => (
+                {/* {dynamicDetail.map((dyn, index) => (
                   <tr
                     key={dyn.ddp_id}
                     className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
@@ -419,16 +414,26 @@ const ModalHeaderAdd = ({
                           <button
                             className="btn btn-success btn-sm"
                             onClick={() => {
-                              addChild(dynamicDetail.ddl_value);
+                              addChild(dynamicHeader.ddh_code);
                             }}
                           >
-                            Add Child
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-6 h-6"
+                            >
+                              <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                              <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                            </svg>
                           </button>
                         </td>
                         <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                           <button
                             className="btn btn-primary btn-sm"
-                            onClick={() => updateDynamic(index)}
+                            onClick={() =>
+                              updateDynamic(dynamicHeader.ddh_code)
+                            }
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -444,7 +449,7 @@ const ModalHeaderAdd = ({
                       </>
                     ) : null}
                   </tr>
-                ))}
+                ))} */}
 
                 {/*add Data Dynamic*/}
                 <tr className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
@@ -483,12 +488,20 @@ const ModalHeaderAdd = ({
                   </td>
                   <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                     <button
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-success btn-sm"
                       onClick={() => {
                         addDynamic(dynamicHeader.ddh_code);
                       }}
                     >
-                      Add New
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                        <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                      </svg>
                     </button>
                   </td>
                 </tr>
@@ -510,15 +523,14 @@ const ModalHeaderAdd = ({
           </div>
         </div>
       </div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        reload={reload}
+        // reload={getBranchList}
         groupOptions={groupOptions}
-        currentChild={dynamicHeader}
-        currentDetail={dynamicDetail}
-      ></Modal>
+        currentBranch={branch}
+      ></Modal> */}
     </div>
   );
 };
-export default ModalHeaderAdd;
+export default ModalChildAdd;

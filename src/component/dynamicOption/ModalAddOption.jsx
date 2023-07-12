@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { getToken } from "../../API/api";
-import Modal from "./ModalHeaderAdd2";
+import Modal from "./ModalHeaderAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 

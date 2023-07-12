@@ -321,7 +321,7 @@ const DynamicOption = () => {
 
       //console.log(cekData[0]);
       console.log(listDynamicDetail.data.status);
-      setDynamicEdit(cekData[0]);
+      setDynamicEdit(cekData);
     } catch (errorUser) {
       console.log(errorUser);
     }
