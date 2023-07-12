@@ -57,17 +57,22 @@ const ModalHeaderAdd = ({
       };
       return updatedDetail;
     });
+
+    console.log("ddl_value:", dynamicDetail[index].ddl_value); // Mencetak ddl_value yang sudah berubah
+    console.log("ddl_name:", dynamicDetail[index].ddl_name); // Mencetak ddl_name sebelum perubahan
+    console.log("urut:", dynamicDetail[index].urut); // Mencetak urut sebelum perubahan
+    console.log("ddp_id:", dynamicDetail[index].ddp_id);
   };
 
-  const addDynamic = (ddh_code) => {
+  const addDynamic = () => {
     Save();
   };
 
-  const updateDynamic = (ddl_value) => {
-    saveUpdate();
+  const updateDynamic = (dynamicId, index) => {
+    saveUpdate(dynamicId, index);
   };
 
-  const addChild = (ddh_id) => {
+  const addChild = (dynamicId, index) => {
     setIsModalOpen(true);
   };
 
@@ -233,7 +238,7 @@ const ModalHeaderAdd = ({
     }
   };
 
-  const saveUpdate = async (dynamicCode) => {
+  const saveUpdate = async (dynamicCode, index) => {
     if (!dynamicHeader.ddh_code) {
       Swal.fire({
         icon: "error",
@@ -245,24 +250,24 @@ const ModalHeaderAdd = ({
     }
     postDataLogUserTracking2();
     console.log("Code nya : ", dynamicHeader.ddh_code);
-    console.log("Id nya : ", dynamicHeader.ddh_id);
+    insertobjectdataUpdate(dynamicCode, index);
   };
 
-  const insertobjectdataUpdate = (val) => {
-    UpdateDynamicNew(val);
+  const insertobjectdataUpdate = (val, index) => {
+    UpdateDynamicNew(val, dynamicDetail[index]);
   };
 
-  const UpdateDynamicNew = (val) => {
+  const UpdateDynamicNew = (val, dynamicDetailData) => {
     try {
       axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/update",
           {
-            id: dynamicHeader.ddh_id,
+            id: dynamicDetailData.ddp_id,
             code: dynamicHeader.ddh_code,
-            value: dynamicDetail.ddl_value,
-            name: dynamicDetail.ddl_name,
-            urut: dynamicDetail.urut,
+            value: dynamicDetailData.ddl_value,
+            name: dynamicDetailData.ddl_name,
+            urut: dynamicDetailData.urut,
             user: userid,
             logid: val,
           },
@@ -277,6 +282,7 @@ const ModalHeaderAdd = ({
           console.log(response.data.status);
           if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
+            console.log("ddp_id : ", dynamicDetailData.ddp_id);
             reload();
             onClose();
           } else {
@@ -419,7 +425,7 @@ const ModalHeaderAdd = ({
                           <button
                             className="btn btn-success btn-sm"
                             onClick={() => {
-                              addChild(dynamicDetail.ddl_value);
+                              addChild(dyn.ddp_id, index);
                             }}
                           >
                             Add Child
@@ -428,7 +434,7 @@ const ModalHeaderAdd = ({
                         <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                           <button
                             className="btn btn-primary btn-sm"
-                            onClick={() => updateDynamic(index)}
+                            onClick={() => updateDynamic(dyn.ddp_id, index)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

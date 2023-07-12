@@ -521,7 +521,7 @@ const DynamicOption = () => {
           onClose={closeModalEdit}
           currentDynamic={dynamicEditHeader || ""}
           laterDynamic={dynamicEdit || ""}
-          reload={getDynamicList}
+          reload={getDynamicDetail}
         />
       ) : (
         <></>

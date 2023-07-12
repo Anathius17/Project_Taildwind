@@ -255,7 +255,7 @@ const ModalChildAdd = ({
           "http://116.206.196.65:30992/skyparameter/DynamicOption/update",
           //JSON.stringify(insertBranch),
           {
-            id: dynamicHeader.ddh_id,
+            id: dynamicDetail.ddp_id,
             code: dynamicHeader.ddh_code,
             value: dynamicDetail.ddl_value,
             name: dynamicDetail.ddl_name,
