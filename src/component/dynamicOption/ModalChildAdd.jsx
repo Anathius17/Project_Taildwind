@@ -12,7 +12,7 @@ const ModalChildAdd = ({
   groupOptions,
   currentChild,
   currentDetail,
-  currentHeader,
+  laterChild,
 }) => {
   const [key, setkey] = useState("");
   const [value, setValue] = useState("");
@@ -22,9 +22,9 @@ const ModalChildAdd = ({
 
   const [dynamicHeader, setDynamicHeader] = useState(currentChild);
   const [dynamicDetail, setDynamicDetail] = useState(currentDetail);
-  // const [childDetail, setChildDetail] = useState(
-  //   Array.isArray(currentChild) ? currentChild : []
-  // );
+  const [childDetail, setChildDetail] = useState(
+    Array.isArray(laterChild) ? laterChild : []
+  );
 
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
   const storedDdlValue = JSON.parse(localStorage.getItem("ddl_value"));
@@ -43,6 +43,15 @@ const ModalChildAdd = ({
     setDynamicDetail(currentDetail);
   }, [currentDetail]);
 
+  useEffect(() => {
+    setChildDetail(laterChild);
+  }, [laterChild]);
+
+  // console.log("ddt_key:", key); // Mencetak ddl_value yang sudah berubah
+  // console.log("ddt_value:", value); // Mencetak ddl_name sebelum perubahan
+  // console.log("ddt_name:", name); // Mencetak urut sebelum perubahan
+  // console.log("ddt_id:", parent);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
@@ -52,30 +61,30 @@ const ModalChildAdd = ({
     }));
   };
 
-  // const handleInputChange2 = (event, index) => {
-  //   const { name, value } = event.target;
+  const handleInputChange2 = (event, index) => {
+    const { name, value } = event.target;
 
-  //   setChildDetail((prevState) => {
-  //     const updatedDetail = [...prevState];
-  //     updatedDetail[index] = {
-  //       ...updatedDetail[index],
-  //       [name]: value,
-  //     };
-  //     return updatedDetail;
-  //   });
+    setChildDetail((prevState) => {
+      const updatedDetail = [...prevState];
+      updatedDetail[index] = {
+        ...updatedDetail[index],
+        [name]: value,
+      };
+      return updatedDetail;
+    });
 
-  //   console.log("ddt_key:", childDetail[index].ddt_key); // Mencetak ddl_value yang sudah berubah
-  //   console.log("ddt_value:", childDetail[index].ddt_value); // Mencetak ddl_name sebelum perubahan
-  //   console.log("ddt_name:", childDetail[index].ddt_name); // Mencetak urut sebelum perubahan
-  //   console.log("ddt_id:", childDetail[index].ddt_id);
-  // };
+    console.log("ddt_key:", childDetail[index].ddt_key); // Mencetak ddl_value yang sudah berubah
+    console.log("ddt_value:", childDetail[index].ddt_value); // Mencetak ddl_name sebelum perubahan
+    console.log("ddt_name:", childDetail[index].ddt_name); // Mencetak urut sebelum perubahan
+    console.log("ddt_id:", childDetail[index].ddt_id);
+  };
 
-  const addDynamic = (ddh_code) => {
+  const addDynamic = () => {
     Save();
   };
 
-  const updateDynamic = (ddh_code) => {
-    saveUpdate();
+  const updateDynamic = (dynamicId, index) => {
+    saveUpdate(dynamicId, index);
   };
 
   const addChild = (ddh_id) => {};
@@ -96,7 +105,7 @@ const ModalChildAdd = ({
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Add Header Option",
+    plact: "Add Child Dynamic",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -153,7 +162,12 @@ const ModalChildAdd = ({
       return;
     }
     postDataLogUserTracking();
-    setIsModalOpen(true);
+    console.log("Code nya : ", dynamicHeader.ddh_code);
+    console.log("key nya : ", key);
+    console.log("value nya : ", value);
+    console.log("name nya : ", name);
+    console.log("counter nya : ", urut);
+    console.log("parentar nya : ", parent);
   };
 
   const insertobjectdata = (val) => {
@@ -165,14 +179,13 @@ const ModalChildAdd = ({
       const dynamicNew = axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/child/add",
-          //JSON.stringify(insertBranch),
           {
             code: dynamicHeader.ddh_code,
-            key: "KEL02",
-            value: "Fabuaran",
-            urut: "2",
-            parent: "5",
-            name: "Fabuaran",
+            key: key,
+            value: value,
+            urut: urut,
+            parent: parent,
+            name: name,
             user: userid,
             logid: val,
           },
@@ -190,7 +203,7 @@ const ModalChildAdd = ({
             reload();
             onClose();
           } else {
-            Swal.fire(response.data.message, "", "error");
+            console.log(response.data.message, "", "error");
             reload();
             onClose();
           }
@@ -210,7 +223,7 @@ const ModalChildAdd = ({
     plusr: userid,
     plhtt: "OFF",
     plsvrn: window.location.hostname,
-    plact: "Update Header Option",
+    plact: "Update Child Dynamic",
     plpgur: window.location.href,
     plqry: "-",
     plbro: browserName + " " + browserVersion,
@@ -246,7 +259,7 @@ const ModalChildAdd = ({
     }
   };
 
-  const saveUpdate = async (e) => {
+  const saveUpdate = async (dynamicCode, index) => {
     if (!dynamicHeader.ddh_code) {
       Swal.fire({
         icon: "error",
@@ -257,27 +270,26 @@ const ModalChildAdd = ({
       return;
     }
     postDataLogUserTracking2();
-    setIsModalOpen(true);
-    console.log("valuenya : ", dynamicDetail.ddl_value);
-    console.log("namenya : ", dynamicDetail.ddl_name);
+    console.log("Code nya : ", dynamicHeader.ddh_code);
+    insertobjectdataUpdate(dynamicCode, index);
   };
 
-  const insertobjectdataUpdate = (val) => {
-    UpdateDynamicNew(val);
+  const insertobjectdataUpdate = (val, index) => {
+    UpdateDynamicNew(val, childDetail[index]);
   };
 
-  const UpdateDynamicNew = (val) => {
+  const UpdateDynamicNew = (val, childDetailData) => {
     try {
-      const dynamicNew = axios
+      axios
         .post(
-          "http://116.206.196.65:30992/skyparameter/DynamicOption/update",
-          //JSON.stringify(insertBranch),
+          "http://116.206.196.65:30992/skyparameter/DynamicOption/child/update",
           {
-            id: dynamicDetail.ddp_id,
-            code: dynamicHeader.ddh_code,
-            value: dynamicDetail.ddl_value,
-            name: dynamicDetail.ddl_name,
-            urut: dynamicDetail.urut,
+            id: childDetailData.ddt_id,
+            key: childDetailData.ddt_key,
+            value: childDetailData.ddt_value,
+            urut: childDetailData.urut,
+            parent: childDetailData.ddt_parent,
+            name: childDetailData.ddt_name,
             user: userid,
             logid: val,
           },
@@ -290,6 +302,7 @@ const ModalChildAdd = ({
         )
         .then((response) => {
           console.log(response.data.status);
+          console.log("ddt_id : ", childDetailData.ddt_id);
           if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
             reload();
@@ -383,122 +396,93 @@ const ModalChildAdd = ({
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
                 {/*update Data Dynamic*/}
-                {/* {Array.isArray(childDetail) &&
+                {Array.isArray(childDetail) &&
                   childDetail.map((dyn, index) => (
                     <tr
                       key={dyn.ddt_id}
                       className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
                     >
-                      {dyn.ddt_key && (
-                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={dyn.ddt_key}
-                            name="ddt_key"
-                            onChange={(event) =>
-                              handleInputChange2(event, index)
-                            }
-                            required
-                            readOnly
-                          />
-                        </td>
-                      )}
-                      {dyn.ddt_value && (
-                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={dyn.ddt_value}
-                            name="ddt_value"
-                            onChange={(event) =>
-                              handleInputChange2(event, index)
-                            }
-                            required
-                          />
-                        </td>
-                      )}
-                      {dyn.ddt_name && (
-                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={dyn.ddt_name}
-                            name="ddt_name"
-                            onChange={(event) =>
-                              handleInputChange2(event, index)
-                            }
-                            required
-                          />
-                        </td>
-                      )}
-                      {dyn.urut && (
-                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={dyn.urut}
-                            name="urut"
-                            onChange={(event) =>
-                              handleInputChange2(event, index)
-                            }
-                            required
-                          />
-                        </td>
-                      )}
-                      {dyn.ddt_parent && (
-                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                          <select
-                            type="text"
-                            className="form-control"
-                            id="recipient-name"
-                            name="lbrc_group"
-                            value={dyn.lbrc_group}
-                            onChange={handleInputChange}
+                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={dyn.ddt_key}
+                          name="ddt_key"
+                          onChange={(event) => handleInputChange2(event, index)}
+                          required
+                          readOnly
+                        />
+                      </td>
+
+                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={dyn.ddt_value}
+                          name="ddt_value"
+                          onChange={(event) => handleInputChange2(event, index)}
+                          required
+                        />
+                      </td>
+
+                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={dyn.ddt_name}
+                          name="ddt_name"
+                          onChange={(event) => handleInputChange2(event, index)}
+                          required
+                        />
+                      </td>
+
+                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={dyn.urut}
+                          name="urut"
+                          onChange={(event) => handleInputChange2(event, index)}
+                          required
+                        />
+                      </td>
+
+                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                        <select
+                          type="text"
+                          className="form-control"
+                          id="recipient-name"
+                          name="ddt_parent"
+                          value={dyn.ddt_parent}
+                          onChange={(event) => handleInputChange2(event, index)}
+                        >
+                          <option value="">Select One</option>
+                          {groupOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+
+                      <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => updateDynamic(dyn.ddt_id, index)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-6 h-6"
                           >
-                            <option value="">Select One</option>
-                            {groupOptions.map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                      )}
-                      {dyn.ddl_value !== undefined ||
-                      dyn.ddl_name !== undefined ||
-                      dyn.urut !== undefined ? (
-                        <>
-                          <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                            <button
-                              className="btn btn-success btn-sm"
-                              onClick={() => {
-                                addChild(dyn.ddp_id, index);
-                              }}
-                            >
-                              Add Child
-                            </button>
-                          </td>
-                          <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                            <button
-                              className="btn btn-primary btn-sm"
-                              onClick={() => updateDynamic(dyn.ddp_id, index)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="w-6 h-6"
-                              >
-                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                              </svg>
-                            </button>
-                          </td>
-                        </>
-                      ) : null}
+                            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                            <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                          </svg>
+                        </button>
+                      </td>
                     </tr>
-                  ))} */}
+                  ))}
 
                 {/*add Data Dynamic*/}
                 <tr className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
@@ -563,20 +547,12 @@ const ModalChildAdd = ({
                   </td>
                   <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
                     <button
-                      className="btn btn-success btn-sm"
+                      className="btn btn-primary btn-sm"
                       onClick={() => {
                         addDynamic(dynamicHeader.ddh_code);
                       }}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                        <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                      </svg>
+                      Add New
                     </button>
                   </td>
                 </tr>

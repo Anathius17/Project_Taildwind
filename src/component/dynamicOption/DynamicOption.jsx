@@ -349,13 +349,7 @@ const DynamicOption = () => {
     // window.location.reload();
   };
 
-  const groupOptions = [
-    "Branch",
-    "Cash Office",
-    "Payment Point",
-    "Sub Branch",
-    "Syariah Branch",
-  ];
+  const groupOptions = ["0", "1", "2", "3", "4", "5"];
 
   // useEffect(() => {
   //   getBranchDetail();
@@ -517,14 +511,18 @@ const DynamicOption = () => {
           </div>
         </div>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        reload={getDynamicList}
-        currentDynamic={dynamicEditHeader}
-        groupOptions={groupOptions}
-      ></Modal>
+      {dynamicEditHeader !== undefined ? (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          reload={getDynamicList}
+          currentDynamic={dynamicEditHeader}
+          laterDynamic={dynamicEdit || ""}
+          groupOptions={groupOptions}
+        />
+      ) : (
+        <></>
+      )}
 
       {dynamicEditHeader !== undefined ? (
         <ModalEdit
