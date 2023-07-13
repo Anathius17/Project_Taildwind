@@ -33,6 +33,8 @@ const DynamicOption = () => {
   const sessionData = JSON.parse(localStorage.getItem("tokenData"));
   const token = sessionData;
 
+  const codeSession = JSON.parse(localStorage.getItem("code"));
+
   // end token
 
   // get userid
@@ -255,7 +257,7 @@ const DynamicOption = () => {
   }, [detailDynamicHeaderParam]);
 
   const editDynamic = (dynamicCode) => {
-    setDetailDynamicHeaderParam(dynamicCode);
+    setDetailDynamicHeaderParam(dynamicCode || codeSession);
     setDetailDynamicParam(dynamicCode);
     setIsModalOpenEdit(true);
   };
@@ -268,7 +270,7 @@ const DynamicOption = () => {
     try {
       const listDynamicDetailHeader = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/header/detail/" +
-          detailDynamicHeaderParam,
+          (detailDynamicHeaderParam || codeSession),
         {
           headers: {
             "Content-Type": "application/json",
@@ -346,6 +348,14 @@ const DynamicOption = () => {
     setIsModalOpenEdit(false);
     // window.location.reload();
   };
+
+  const groupOptions = [
+    "Branch",
+    "Cash Office",
+    "Payment Point",
+    "Sub Branch",
+    "Syariah Branch",
+  ];
 
   // useEffect(() => {
   //   getBranchDetail();
@@ -513,6 +523,7 @@ const DynamicOption = () => {
         onClose={closeModal}
         reload={getDynamicList}
         currentDynamic={dynamicEditHeader}
+        groupOptions={groupOptions}
       ></Modal>
 
       {dynamicEditHeader !== undefined ? (
@@ -522,6 +533,7 @@ const DynamicOption = () => {
           currentDynamic={dynamicEditHeader || ""}
           laterDynamic={dynamicEdit || ""}
           reload={getDynamicDetail}
+          groupOptions={groupOptions}
         />
       ) : (
         <></>

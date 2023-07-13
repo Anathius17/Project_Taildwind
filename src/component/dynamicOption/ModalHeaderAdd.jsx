@@ -19,7 +19,9 @@ const ModalHeaderAdd = ({
   const [urut, setUrut] = useState("");
 
   const [dynamicHeader, setDynamicHeader] = useState(currentDynamic);
-  const [dynamicDetail, setDynamicDetail] = useState([laterDynamic]);
+  const [dynamicDetail, setDynamicDetail] = useState(
+    Array.isArray(laterDynamic) ? laterDynamic : []
+  );
 
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
 
@@ -70,10 +72,6 @@ const ModalHeaderAdd = ({
 
   const updateDynamic = (dynamicId, index) => {
     saveUpdate(dynamicId, index);
-  };
-
-  const addChild = (dynamicId, index) => {
-    setIsModalOpen(true);
   };
 
   // get userid
@@ -301,6 +299,51 @@ const ModalHeaderAdd = ({
     }
   };
 
+  //! Detail dynamic
+  const [detailDynamicParam, setDetailDynamicParam] = useState("");
+
+  useEffect(() => {
+    getDynamicDetail();
+  }, [detailDynamicParam]);
+
+  const addChild = (dynamicCode, index) => {
+    // ...
+    setDetailDynamicParam(dynamicCode);
+    const ddlValue = dynamicDetail[index].ddl_value;
+    localStorage.setItem("ddl_value", JSON.stringify(ddlValue));
+    setIsModalOpen(true);
+  };
+
+  const [dynamicEditChild, setDynamicEditChild] = useState(undefined);
+
+  const getDynamicDetail = async () => {
+    console.log("dynamicCode");
+    console.log(detailDynamicParam);
+    try {
+      const listDynamicDetail = await axios.get(
+        "http://116.206.196.65:30992/skyparameter/DynamicOption/child/detail/" +
+          detailDynamicParam,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const cekData = listDynamicDetail.data.data.map((e) => {
+        console.log(e);
+        return e;
+      });
+
+      //console.log(cekData[0]);
+      console.log(listDynamicDetail.data.status);
+      setDynamicEditChild(cekData);
+    } catch (errorUser) {
+      console.log(errorUser);
+    }
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -375,82 +418,89 @@ const ModalHeaderAdd = ({
               </thead>
               <tbody className="text-gray-600 text-sm font-light border-b">
                 {/*update Data Dynamic*/}
-                {dynamicDetail.map((dyn, index) => (
-                  <tr
-                    key={dyn.ddp_id}
-                    className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
-                  >
-                    {dyn.ddl_value && (
-                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={dyn.ddl_value}
-                          name="ddl_value"
-                          onChange={(event) => handleInputChange2(event, index)}
-                          required
-                          readOnly
-                        />
-                      </td>
-                    )}
-                    {dyn.ddl_name && (
-                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={dyn.ddl_name}
-                          name="ddl_name"
-                          onChange={(event) => handleInputChange2(event, index)}
-                          required
-                        />
-                      </td>
-                    )}
-                    {dyn.urut && (
-                      <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={dyn.urut}
-                          name="urut"
-                          onChange={(event) => handleInputChange2(event, index)}
-                          required
-                        />
-                      </td>
-                    )}
-                    {dyn.ddl_value !== undefined ||
-                    dyn.ddl_name !== undefined ||
-                    dyn.urut !== undefined ? (
-                      <>
-                        <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                          <button
-                            className="btn btn-success btn-sm"
-                            onClick={() => {
-                              addChild(dyn.ddp_id, index);
-                            }}
-                          >
-                            Add Child
-                          </button>
+                {Array.isArray(dynamicDetail) &&
+                  dynamicDetail.map((dyn, index) => (
+                    <tr
+                      key={dyn.ddp_id}
+                      className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600"
+                    >
+                      {dyn.ddl_value && (
+                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={dyn.ddl_value}
+                            name="ddl_value"
+                            onChange={(event) =>
+                              handleInputChange2(event, index)
+                            }
+                            required
+                            readOnly
+                          />
                         </td>
-                        <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => updateDynamic(dyn.ddp_id, index)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="w-6 h-6"
+                      )}
+                      {dyn.ddl_name && (
+                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={dyn.ddl_name}
+                            name="ddl_name"
+                            onChange={(event) =>
+                              handleInputChange2(event, index)
+                            }
+                            required
+                          />
+                        </td>
+                      )}
+                      {dyn.urut && (
+                        <td className="py-1 px-1 text-left whitespace-nowrap font-semibold">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={dyn.urut}
+                            name="urut"
+                            onChange={(event) =>
+                              handleInputChange2(event, index)
+                            }
+                            required
+                          />
+                        </td>
+                      )}
+                      {dyn.ddl_value !== undefined ||
+                      dyn.ddl_name !== undefined ||
+                      dyn.urut !== undefined ? (
+                        <>
+                          <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() => {
+                                addChild(dyn.ddp_id, index);
+                              }}
                             >
-                              <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                              <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </>
-                    ) : null}
-                  </tr>
-                ))}
+                              Add Child
+                            </button>
+                          </td>
+                          <td className="py-3 px-6 text-center whitespace-nowrap font-semibold">
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => updateDynamic(dyn.ddp_id, index)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-6 h-6"
+                              >
+                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </>
+                      ) : null}
+                    </tr>
+                  ))}
 
                 {/*add Data Dynamic*/}
                 <tr className="transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 white:hover:bg-neutral-600">
@@ -516,14 +566,20 @@ const ModalHeaderAdd = ({
           </div>
         </div>
       </div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        reload={reload}
-        groupOptions={groupOptions}
-        currentChild={dynamicHeader}
-        currentDetail={dynamicDetail}
-      ></Modal>
+
+      {dynamicHeader !== undefined ? (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          reload={reload}
+          groupOptions={groupOptions}
+          currentChild={dynamicHeader}
+          currentDetail={dynamicDetail}
+          // currentChild={dynamicEditChild}
+        />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

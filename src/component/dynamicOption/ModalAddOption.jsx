@@ -10,6 +10,7 @@ const ModalAddOption = ({
   isOpen,
   onClose,
   reload,
+  groupOptions,
   currentDynamic,
   laterDynamic,
 }) => {
@@ -137,6 +138,7 @@ const ModalAddOption = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
+    localStorage.setItem("code", JSON.stringify(code));
     setIsModalOpen(true);
   };
 
@@ -213,19 +215,28 @@ const ModalAddOption = ({
             >
               Close
             </button>
-            <button type="submit" className="btn btn-primary" onClick={Save}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={openModal}
+            >
               Save Changes
             </button>
           </div>
         </div>
       </div>
-      {/* <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        reload={reload}
-        currentDynamic={currentDynamic}
-        laterDynamic={laterDynamic}
-      ></Modal> */}
+      {currentDynamic !== undefined ? (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          reload={reload}
+          currentDynamic={currentDynamic || ""}
+          laterDynamic={laterDynamic || ""}
+          groupOptions={groupOptions}
+        />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
