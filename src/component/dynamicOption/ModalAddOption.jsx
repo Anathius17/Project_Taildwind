@@ -99,6 +99,7 @@ const ModalAddOption = ({
       const dynamicNew = axios
         .post(
           "http://116.206.196.65:30992/skyparameter/DynamicOption/header/add",
+
           {
             code: code,
             desc: desc,
