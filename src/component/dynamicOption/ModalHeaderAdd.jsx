@@ -309,7 +309,7 @@ const ModalHeaderAdd = ({
     }
   };
 
-  //! Detail dynamic
+  //! Detail dynamic child
   const [detailDynamicParam, setDetailDynamicParam] = useState("");
 
   useEffect(() => {
@@ -319,6 +319,7 @@ const ModalHeaderAdd = ({
   const addChild = (dynamicCode, index) => {
     // ...
     setDetailDynamicParam(dynamicCode);
+    setDdlParam(dynamicCode);
     const ddlValue = dynamicDetail[index].ddl_value;
     localStorage.setItem("ddl_value", JSON.stringify(ddlValue));
     setIsModalOpen(true);
@@ -349,6 +350,43 @@ const ModalHeaderAdd = ({
       //console.log(cekData[0]);
       console.log(listDynamicDetail.data.status);
       setDynamicEditChild(cekData);
+    } catch (errorUser) {
+      console.log(errorUser);
+    }
+  };
+
+  //ddl parent
+  const [dllParam, setDdlParam] = useState("");
+
+  useEffect(() => {
+    getDdl();
+  }, [detailDynamicParam]);
+
+  const [dynamicEditDdl, setDynamicEditDdl] = useState(undefined);
+
+  const getDdl = async () => {
+    console.log("dynamicCode");
+    console.log(dllParam);
+    try {
+      const listDynamicDetail = await axios.get(
+        "http://116.206.196.65:30992/skyparameter/DynamicOption/ddlparent/" +
+          dllParam,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const cekData = listDynamicDetail.data.data.map((e) => {
+        console.log(e);
+        return e;
+      });
+
+      //console.log(cekData[0]);
+      console.log(listDynamicDetail.data.status);
+      setDynamicEditDdl(cekData);
     } catch (errorUser) {
       console.log(errorUser);
     }
@@ -594,6 +632,7 @@ const ModalHeaderAdd = ({
           currentChild={dynamicHeader}
           currentDetail={dynamicDetail}
           laterChild={dynamicEditChild}
+          ddlParent={dynamicEditDdl}
         />
       ) : (
         <></>

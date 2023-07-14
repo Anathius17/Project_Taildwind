@@ -249,6 +249,7 @@ const DynamicOption = () => {
 
   const handleSave = (code) => {
     setDetailDynamicHeaderParam(code); // Mengubah nilai detailDynamicHeaderParam dengan data code
+    setDetailDynamicParam(code);
     console.log("Data code:", code);
   };
 
@@ -271,7 +272,7 @@ const DynamicOption = () => {
     console.log("dynamicCode");
     console.log(detailDynamicHeaderParam);
     try {
-      const listDynamicDetailHeader = await axios.get(
+      const listDynamicDetail = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/header/detail/" +
           (detailDynamicHeaderParam || codeSession),
         {
@@ -282,17 +283,14 @@ const DynamicOption = () => {
         }
       );
 
-      const cekData = listDynamicDetailHeader.data.data.find((e) => {
-        return e.ddh_isdelete === false;
+      const cekData = listDynamicDetail.data.data.map((e) => {
+        console.log(e);
+        return e;
       });
 
-      if (cekData) {
-        console.log(cekData);
-        console.log(listDynamicDetailHeader.data.status);
-        setDynamicEditHeader(cekData);
-      } else {
-        console.log("Tidak ada data dengan ddh_isdelete bernilai false");
-      }
+      //console.log(cekData[0]);
+      console.log(listDynamicDetail.data.status);
+      setDynamicEditHeader(cekData[0]);
     } catch (errorUser) {
       console.log(errorUser);
     }
@@ -334,6 +332,7 @@ const DynamicOption = () => {
       console.log(errorUser);
     }
   };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -517,12 +516,12 @@ const DynamicOption = () => {
           </div>
         </div>
       </div>
+
       {dynamicEditHeader !== undefined ? (
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
           reload={() => {
-            getDynamicDetail();
             getDynamicList();
           }}
           currentDynamic={dynamicEditHeader || ""}

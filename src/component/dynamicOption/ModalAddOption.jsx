@@ -139,6 +139,7 @@ const ModalAddOption = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
+    // localStorage.setItem("code", JSON.stringify(code));
     setIsModalOpen(true);
   };
 
@@ -216,7 +217,7 @@ const ModalAddOption = ({
               Close
             </button>
             <button type="submit" className="btn btn-primary" onClick={Save}>
-              Save Changes
+              Save Changes & Next
             </button>
           </div>
         </div>

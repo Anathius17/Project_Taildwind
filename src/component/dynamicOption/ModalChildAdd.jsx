@@ -14,6 +14,7 @@ const ModalChildAdd = ({
   currentChild,
   currentDetail,
   laterChild,
+  ddlParent,
 }) => {
   const [key, setkey] = useState("");
   const [value, setValue] = useState("");
@@ -26,7 +27,9 @@ const ModalChildAdd = ({
   const [childDetail, setChildDetail] = useState(
     Array.isArray(laterChild) ? laterChild : []
   );
-
+  const [ddlDetail, setDdlDetail] = useState(
+    Array.isArray(ddlParent) ? ddlParent : []
+  );
   const level = JSON.parse(localStorage.getItem("detailRoleUser"));
   const storedDdlValue = JSON.parse(localStorage.getItem("ddl_value"));
 
@@ -47,6 +50,10 @@ const ModalChildAdd = ({
   useEffect(() => {
     setChildDetail(laterChild);
   }, [laterChild]);
+
+  useEffect(() => {
+    setDdlDetail(ddlParent);
+  }, [ddlParent]);
 
   // console.log("ddt_key:", key); // Mencetak ddl_value yang sudah berubah
   // console.log("ddt_value:", value); // Mencetak ddl_name sebelum perubahan
@@ -456,11 +463,15 @@ const ModalChildAdd = ({
                           onChange={(event) => handleInputChange2(event, index)}
                         >
                           <option value="">Select One</option>
-                          {groupOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
+                          {Array.isArray(ddlDetail) &&
+                            ddlDetail.map((option) => (
+                              <option
+                                key={option.ddt_id}
+                                value={option.ddt_parent}
+                              >
+                                {option.ddt_parent_name}
+                              </option>
+                            ))}
                         </select>
                       </td>
 
