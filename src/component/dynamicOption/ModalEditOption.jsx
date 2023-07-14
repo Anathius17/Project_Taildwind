@@ -6,7 +6,7 @@ import Modal from "./ModalHeaderAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
-const ModalAddOption = ({
+const ModalEditOption = ({
   isOpen,
   onClose,
   reload,
@@ -14,13 +14,24 @@ const ModalAddOption = ({
   currentDynamic,
   laterDynamic,
 }) => {
-  const [code, setCode] = useState("");
-  const [desc, setDescription] = useState("");
+  const [dynamicHeader, setDynamicHeader] = useState(currentDynamic);
 
   useEffect(() => {
-    setCode("");
-    setDescription("");
-  }, [onClose]);
+    setDynamicHeader(currentDynamic);
+  }, [currentDynamic]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    setDynamicHeader((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  console.log("code nya : ", dynamicHeader.ddh_code);
+  console.log("desc nya : ", dynamicHeader.ddh_desc);
+  console.log("Codenya : ", dynamicHeader.ddh_id);
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -75,7 +86,7 @@ const ModalAddOption = ({
   };
 
   const Save = async (e) => {
-    if (!code || !desc) {
+    if (!dynamicHeader.ddh_id || !dynamicHeader.ddh_desc) {
       Swal.fire({
         icon: "error",
         title: "Oops... Data Tidak Boleh Kosong. Please check again?",
@@ -85,25 +96,25 @@ const ModalAddOption = ({
       return;
     }
     setIsModalOpen(true);
-    localStorage.setItem("code", JSON.stringify(code));
     postDataLogUserTracking();
-    console.log("Codenya : ", code);
-    console.log("Descriptinya : ", desc);
+    console.log("Codenya : ", dynamicHeader.ddh_code);
+    console.log("Codenya : ", dynamicHeader.ddh_id);
+    console.log("Descriptinya : ", dynamicHeader.ddh_desc);
   };
 
   const insertobjectdata = (val) => {
-    InsertDynamicNew(val);
+    UpdateDynamicNew(val);
   };
 
-  const InsertDynamicNew = (val) => {
+  const UpdateDynamicNew = (val) => {
     try {
       const dynamicNew = axios
         .post(
-          "http://116.206.196.65:30992/skyparameter/DynamicOption/header/add",
+          "http://116.206.196.65:30992/skyparameter/DynamicOption/header/update",
 
           {
-            code: code,
-            desc: desc,
+            id: dynamicHeader.ddh_id,
+            desc: dynamicHeader.ddh_desc,
             user: userid,
             logid: val,
           },
@@ -152,7 +163,7 @@ const ModalAddOption = ({
       <div class="absolute bg-white p-6 rounded-lg shadow-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title fw-bold">Dynamic Option | Add New</h5>
+            <h5 className="modal-title fw-bold">Dynamic Option | Edit</h5>
             <button
               type="button"
               className="btn-close"
@@ -175,12 +186,12 @@ const ModalAddOption = ({
                     <div className="col-8">
                       <input
                         type="text"
-                        value={code}
                         className="form-control"
-                        maxLength={25}
-                        id="recipient-name"
-                        onChange={(x) => setCode(x.target.value)}
+                        value={dynamicHeader.ddh_code}
+                        name="ddh_code"
+                        onChange={handleInputChange}
                         required
+                        readOnly
                       />
                     </div>
                   </div>
@@ -195,9 +206,9 @@ const ModalAddOption = ({
                       <input
                         type="text"
                         className="form-control"
-                        value={desc}
-                        id="recipient-name"
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={dynamicHeader.ddh_desc}
+                        name="ddh_desc"
+                        onChange={handleInputChange}
                         required
                       />
                     </div>
@@ -218,6 +229,13 @@ const ModalAddOption = ({
             <button type="submit" className="btn btn-primary" onClick={Save}>
               Save Changes
             </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={openModal}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
@@ -236,4 +254,4 @@ const ModalAddOption = ({
     </div>
   );
 };
-export default ModalAddOption;
+export default ModalEditOption;

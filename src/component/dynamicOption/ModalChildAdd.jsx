@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { getToken } from "../../API/api";
+import Modal from "./ModalHeaderAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
 
@@ -568,19 +569,23 @@ const ModalChildAdd = ({
             >
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={openModal && onClose}
+            >
               Prev
             </button>
           </div>
         </div>
       </div>
-      {/* <Modal
+      <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        // reload={getBranchList}
         groupOptions={groupOptions}
-        currentBranch={branch}
-      ></Modal> */}
+        currentDynamic={currentChild}
+        laterDynamic={currentDetail}
+      ></Modal>
     </div>
   );
 };

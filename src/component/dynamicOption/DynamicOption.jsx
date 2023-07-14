@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
 import Modal from "./ModalAddOption";
-import ModalEdit from "./ModalHeaderAdd";
+import ModalEdit from "./ModalEditOption";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { browserName, osName, browserVersion } from "react-device-detect";
@@ -34,7 +34,7 @@ const DynamicOption = () => {
   const token = sessionData;
 
   const codeSession = JSON.parse(localStorage.getItem("code"));
-
+  console.log("code seasonnya : ", codeSession);
   // end token
 
   // get userid
@@ -258,7 +258,7 @@ const DynamicOption = () => {
 
   const editDynamic = (dynamicCode) => {
     setDetailDynamicHeaderParam(dynamicCode || codeSession);
-    setDetailDynamicParam(dynamicCode);
+    setDetailDynamicParam(dynamicCode || codeSession);
     setIsModalOpenEdit(true);
   };
 
@@ -307,7 +307,7 @@ const DynamicOption = () => {
     try {
       const listDynamicDetail = await axios.get(
         "http://116.206.196.65:30992/skyparameter/DynamicOption/detail/" +
-          detailDynamicParam,
+          (detailDynamicParam || codeSession),
         {
           headers: {
             "Content-Type": "application/json",
@@ -515,8 +515,11 @@ const DynamicOption = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
-          reload={getDynamicList}
-          currentDynamic={dynamicEditHeader}
+          reload={() => {
+            getDynamicDetail();
+            getDynamicList();
+          }}
+          currentDynamic={dynamicEditHeader || ""}
           laterDynamic={dynamicEdit || ""}
           groupOptions={groupOptions}
         />
@@ -530,7 +533,10 @@ const DynamicOption = () => {
           onClose={closeModalEdit}
           currentDynamic={dynamicEditHeader || ""}
           laterDynamic={dynamicEdit || ""}
-          reload={getDynamicDetail}
+          reload={() => {
+            getDynamicDetail();
+            getDynamicList();
+          }}
           groupOptions={groupOptions}
         />
       ) : (

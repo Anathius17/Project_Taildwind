@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { getToken } from "../../API/api";
+import ModalPrev from "./ModalEditOption";
 import Modal from "./ModalChildAdd";
 import "react-datepicker/dist/react-datepicker.css";
 import { browserName, osName, browserVersion } from "react-device-detect";
@@ -133,6 +134,16 @@ const ModalHeaderAdd = ({
   };
 
   const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const [isModalPrevOpen, setIsModalPrevOpen] = useState(false);
+
+  const openModalPrev = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModalPrev = () => {
     setIsModalOpen(false);
   };
 
@@ -545,12 +556,29 @@ const ModalHeaderAdd = ({
             >
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={openModalPrev}
+            >
               Prev
             </button>
           </div>
         </div>
       </div>
+
+      {currentDynamic !== undefined ? (
+        <ModalPrev
+          isOpen={isModalPrevOpen}
+          onClose={closeModalPrev}
+          reload={reload}
+          groupOptions={groupOptions}
+          currentDynamic={currentDynamic || ""}
+          laterDynamic={laterDynamic || ""}
+        />
+      ) : (
+        <></>
+      )}
 
       {dynamicHeader !== undefined ? (
         <Modal
