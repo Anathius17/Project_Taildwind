@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../API/api";
 import Modal from "./ModalAddOption";
 import ModalEdit from "./ModalEditOption";
@@ -34,7 +33,6 @@ const DynamicOption = () => {
   const token = sessionData;
 
   const codeSession = JSON.parse(localStorage.getItem("code"));
-  console.log("code seasonnya : ", codeSession);
   // end token
 
   // get userid
@@ -249,6 +247,11 @@ const DynamicOption = () => {
     setCurrentPage(1); // Mengatur halaman kembali ke halaman pertama saat melakukan pencarian baru
   };
 
+  const handleSave = (code) => {
+    setDetailDynamicHeaderParam(code); // Mengubah nilai detailDynamicHeaderParam dengan data code
+    console.log("Data code:", code);
+  };
+
   //! Detail dynamic header
   const [detailDynamicHeaderParam, setDetailDynamicHeaderParam] = useState("");
 
@@ -279,14 +282,17 @@ const DynamicOption = () => {
         }
       );
 
-      const cekData = listDynamicDetailHeader.data.data.map((e) => {
-        console.log(e);
-        return e;
+      const cekData = listDynamicDetailHeader.data.data.find((e) => {
+        return e.ddh_isdelete === false;
       });
 
-      //console.log(cekData[0]);
-      console.log(listDynamicDetailHeader.data.status);
-      setDynamicEditHeader(cekData[0]);
+      if (cekData) {
+        console.log(cekData);
+        console.log(listDynamicDetailHeader.data.status);
+        setDynamicEditHeader(cekData);
+      } else {
+        console.log("Tidak ada data dengan ddh_isdelete bernilai false");
+      }
     } catch (errorUser) {
       console.log(errorUser);
     }
@@ -522,6 +528,7 @@ const DynamicOption = () => {
           currentDynamic={dynamicEditHeader || ""}
           laterDynamic={dynamicEdit || ""}
           groupOptions={groupOptions}
+          onSave={handleSave}
         />
       ) : (
         <></>
@@ -538,6 +545,7 @@ const DynamicOption = () => {
             getDynamicList();
           }}
           groupOptions={groupOptions}
+          onSave={handleSave}
         />
       ) : (
         <></>

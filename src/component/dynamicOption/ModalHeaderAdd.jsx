@@ -189,7 +189,6 @@ const ModalHeaderAdd = ({
           if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
             reload();
-            onClose();
           } else {
             Swal.fire(response.data.message, "", "error");
             reload();
@@ -571,7 +570,10 @@ const ModalHeaderAdd = ({
         <ModalPrev
           isOpen={isModalPrevOpen}
           onClose={closeModalPrev}
-          reload={reload}
+          reload={() => {
+            reload();
+            getDynamicDetail();
+          }}
           groupOptions={groupOptions}
           currentDynamic={currentDynamic || ""}
           laterDynamic={laterDynamic || ""}
@@ -584,7 +586,10 @@ const ModalHeaderAdd = ({
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
-          reload={reload}
+          reload={() => {
+            reload();
+            getDynamicDetail();
+          }}
           groupOptions={groupOptions}
           currentChild={dynamicHeader}
           currentDetail={dynamicDetail}

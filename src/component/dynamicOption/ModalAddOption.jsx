@@ -13,6 +13,7 @@ const ModalAddOption = ({
   groupOptions,
   currentDynamic,
   laterDynamic,
+  onSave,
 }) => {
   const [code, setCode] = useState("");
   const [desc, setDescription] = useState("");
@@ -84,8 +85,8 @@ const ModalAddOption = ({
       });
       return;
     }
+    onSave(code);
     setIsModalOpen(true);
-    localStorage.setItem("code", JSON.stringify(code));
     postDataLogUserTracking();
     console.log("Codenya : ", code);
     console.log("Descriptinya : ", desc);
@@ -119,7 +120,6 @@ const ModalAddOption = ({
           if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
             reload();
-            onClose();
           } else {
             Swal.fire(response.data.message, "", "error");
             reload();

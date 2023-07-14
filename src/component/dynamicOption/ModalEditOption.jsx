@@ -32,6 +32,7 @@ const ModalEditOption = ({
   console.log("code nya : ", dynamicHeader.ddh_code);
   console.log("desc nya : ", dynamicHeader.ddh_desc);
   console.log("Codenya : ", dynamicHeader.ddh_id);
+  console.log("Deletenya : ", dynamicHeader.ddh_isdelete);
 
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
@@ -130,7 +131,6 @@ const ModalEditOption = ({
           if (response.data.status === "true") {
             Swal.fire("Save Successfully ", "", "success");
             reload();
-            onClose();
           } else {
             Swal.fire(response.data.message, "", "error");
             reload();

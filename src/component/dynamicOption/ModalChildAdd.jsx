@@ -88,8 +88,6 @@ const ModalChildAdd = ({
     saveUpdate(dynamicId, index);
   };
 
-  const addChild = (ddh_id) => {};
-
   // get userid
   const userid = JSON.parse(localStorage.getItem("userid"));
 
